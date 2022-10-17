@@ -31,4 +31,5 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://www.well.ox.ac.uk/people/avigail-taylor"
+"Homepage" = "https://avigailtaylor.github.io/GeneFEAST/"
+"Source Code" = "https://github.com/avigailtaylor/GeneFEAST"
