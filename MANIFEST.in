@@ -1,0 +1,4 @@
+# MANIFEST.in
+
+include genefeast/*.obo
+include genefeast/*.html
