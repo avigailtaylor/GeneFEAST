@@ -1,10 +1,10 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "genefeast"
-version = "0.0.9"
+version = "0.0.10"
 authors = [
   { name="Avigail Taylor", email="avigail.taylor@well.ox.ac.uk" },
 ]
@@ -32,12 +32,6 @@ dependencies = [
 
 [tool.setuptools]
 include-package-data = true
-
-[tool.setuptools.packages.find]
-where = ["genefeast"]
-
-[tool.setuptools.package-data]
-genefeast = ["*.obo", "*.html"]
 
 [project.urls]
 "Homepage" = "https://avigailtaylor.github.io/GeneFEAST/"
