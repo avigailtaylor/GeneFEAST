@@ -20,7 +20,7 @@ from genefeast import gf_classes as gfc
 # FUNCTIONS *******************************************************************
 
 def get_output_dir_status(output_dir):
-    
+
     status = 0
     message = ''
     

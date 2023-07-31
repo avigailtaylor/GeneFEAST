@@ -198,7 +198,7 @@ class heatmapDrawer:
         
         if(len(cluster_genes) > 1):
             Z = linkage(heatmap_df.values.T, 'ward', optimal_ordering=True)# MIGHT NEED TO REMOVE optimal_ordering=True
-            dn = dendrogram(Z)
+            dn = dendrogram(Z, no_plot=True)
             heatmap_fm_df = heatmap_fm_df.reindex(columns=[cluster_genes[gi] for gi in dn['leaves']])
             return (heatmap_fm_df, Z, dn['leaves'])
         else:

@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "genefeast"
-version = "0.0.12"
+version = "0.0.14"
 authors = [
   { name="Avigail Taylor", email="avigail.taylor@well.ox.ac.uk" },
 ]
 description = "Gene-centric functional enrichment analysis summarisation tool"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = "==3.7"
 classifiers = [
     "Programming Language :: Python :: 3.7",
     "License :: OSI Approved :: MIT License",
@@ -29,10 +29,15 @@ dependencies = [
     'lxml == 4.4.1',
     'beautifulsoup4 == 4.8.0',
     'pillow == 6.2.0',
+    'PyYAML == 5.1.2'
 ]
 
 [tool.setuptools]
 include-package-data = true
+
+[project.scripts]
+gf = "genefeast:gf.main"
+gf_multi = "genefeast:gf_multi.main"
 
 [project.urls]
 "Homepage" = "https://avigailtaylor.github.io/GeneFEAST/"
