@@ -18,10 +18,11 @@ We **strongly recommend** installing GeneFEAST in a **virtual environment** beca
 - beautifulsoup4 == 4.8.0
 - pillow == 6.2.0
 - PyYAML == 5.1.2
-<br></br>
+
+
 > Please follow the instructions at the top of this **[guide](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment)** to create and activate a virtual environment. Please only follow the instructions to the end of section **Activating a virtual environment** and then **come back here**.
 
-<br></br>
+
 Once you have created and activated your virtual environment, you can install the library using pip:
 
 > $ pip install genefeast
