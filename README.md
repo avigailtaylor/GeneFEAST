@@ -26,3 +26,26 @@ We **strongly recommend** installing GeneFEAST in a **virtual environment** beca
 Once you have created and activated your virtual environment, you can install the library using pip:
 
 > $ pip install genefeast
+
+## Usage
+
+To run GeneFEAST you will need:
+- A comma-delimited file containing the results of a functional enrichment analysis (FEA). GeneFEAST expects a file containing the following ten columns, in this order:
+  - Type (**required**)
+  - ID (**required**)
+  - Description (**required**)
+  - GeneRatio (only required when dot plots are switched on)
+  - BgRatio (only required when dot plots are switched on)
+  - pvalue (optional; field can be empty)
+  - p.adjust (**required**)
+  - qvalue (optional; field can be empty)
+  - geneID (**required**. This should be a "/" delimited list of gene IDs. The gene IDs ***must match*** those used in the genes of interest file (see next))
+  - count (only required when dot plots are switched on)
+
+- A file containing a list of genes of interest, one per line, each with their corresponding quantitative data (eg log2 fold change from an RNASeq analyses). Please note:
+  - Genes of intersest ***must*** be listed using ***IDs that match those used in the FEA results file***.
+  - There can be other columns in the file - these will be ignored.
+  - You will use the config file (see below) to tell GeneFEAST which column contains gene IDs, and which column contains quantitative data.
+  - If you do not have quantitative data, you can just provide a dummy column with the same *numerical* value entered for each gene.
+
+  
