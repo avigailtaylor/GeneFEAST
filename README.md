@@ -20,7 +20,15 @@ We **strongly recommend** installing GeneFEAST in a **virtual environment** beca
 - PyYAML == 5.1.2
 
 
-> Please follow the instructions at the top of this **[guide](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment)** to create and activate a virtual environment. Please only follow the instructions to the end of section **Activating a virtual environment** and then **come back here**.
+> Please follow the instructions at the top of **[this guide](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment)** to create and activate a virtual environment. Please only follow the instructions to the end of section **Activating a virtual environment** and then **come back here**.
+
+
+> **IMPORTANT**
+> If you do not have Python 3.7 installed on your computer, you will need to install it first, ***before*** creating a virtual environment.
+> 
+> (As an example, to install Python 3.7 on Ubuntu you would follow **[these instructions](https://vegastack.com/tutorials/how-to-install-python-3-7-on-ubuntu-20-04)**.)
+>
+> Once this is done, make sure to create the virtual environment using Python 3.7 explicitly (i.e. not just the default Python used by your computer).
 
 
 Once you have created and activated your virtual environment, you can install the library using pip:
@@ -31,17 +39,17 @@ Once you have created and activated your virtual environment, you can install th
 
 To run GeneFEAST you will need:
 - A comma-delimited file containing the results of a functional enrichment analysis (FEA). GeneFEAST expects a file containing the following ten columns, in this order:
-  - Type (**required**)
-  - ID (**required**)
-  - Description (**required**)
-  - GeneRatio (only required when dot plots are switched on)
-  - BgRatio (only required when dot plots are switched on)
-  - pvalue (optional; field can be empty)
-  - p.adjust (**required**)
-  - qvalue (optional; field can be empty)
-  - geneID (**required**. This should be a "/" delimited list of gene IDs. The gene IDs ***must match*** those used in the genes of interest file (see next))
-  - count (only required when dot plots are switched on)
-
+  - Type (**Required**. This refers to the the type of the term and can be, e.g., GO, KEGG, MSIGDB, etc.)
+  - ID (**Required**)
+  - Description (**Required**)
+  - GeneRatio (Required only when dot plots are switched on)
+  - BgRatio (Required only when dot plots are switched on)
+  - pvalue (Optional; field can be empty)
+  - p.adjust (**Required**)
+  - qvalue (Optional; field can be empty)
+  - geneID (**Required**. This should be a "/" delimited list of gene IDs. The gene IDs ***must match*** those used in the genes of interest file (see next))
+  - count (Required only when dot plots are switched on. This is the number of genes of interest annotated with the term. This should match the length of the list of genes given in the geneID column.)
+    
 - A file containing a list of genes of interest, one per line, each with their corresponding quantitative data (eg log2 fold change from an RNASeq analyses). Please note:
   - Genes of intersest ***must*** be listed using ***IDs that match those used in the FEA results file***.
   - There can be other columns in the file - these will be ignored.
