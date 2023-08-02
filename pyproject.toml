@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "genefeast"
-version = "0.0.14"
+version = "0.0.15"
 authors = [
   { name="Avigail Taylor", email="avigail.taylor@well.ox.ac.uk" },
 ]
 description = "Gene-centric functional enrichment analysis summarisation tool"
 readme = "README.md"
-requires-python = "==3.7"
+requires-python = "==3.7.*"
 classifiers = [
     "Programming Language :: Python :: 3.7",
     "License :: OSI Approved :: MIT License",
