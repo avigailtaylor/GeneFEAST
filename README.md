@@ -55,5 +55,7 @@ To run GeneFEAST you will need:
   - There can be other columns in the file - these will be ignored.
   - You will use the config file (see below) to tell GeneFEAST which column contains gene IDs, and which column contains quantitative data.
   - If you do not have quantitative data, you can just provide a dummy column with the same *numerical* value entered for each gene.
+ 
+- A YAML config file. You can create one using [a this template](config_template.yml)
 
   
