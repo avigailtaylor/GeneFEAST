@@ -45,7 +45,7 @@ To run GeneFEAST you will need:
   - GeneRatio (Required only when dot plots are switched on)
   - BgRatio (Required only when dot plots are switched on)
   - pvalue (Optional; field can be empty)
-  - p.adjust (**Required**)
+  - p.adjust (Required only when dot plots are switched on)
   - qvalue (Optional; field can be empty)
   - geneID (**Required**. This should be a "/" delimited list of gene IDs. The gene IDs ***must match*** those used in the genes of interest file (see next))
   - count (Required only when dot plots are switched on. This is the number of genes of interest annotated with the term. This should match the length of the list of genes given in the geneID column.)
