@@ -53,7 +53,7 @@ To run GeneFEAST you will need:
 - A file containing a list of genes of interest, one per line, each with their corresponding quantitative data (eg log2 fold change from an RNASeq analyses). Please note:
   - Genes of intersest ***must*** be listed using ***IDs that match those used in the FEA results file***.
   - There can be other columns in the file - these will be ignored.
-  - You will use the config file (see below) to tell GeneFEAST which column contains gene IDs, and which column contains quantitative data.
+  - You will use the [config file](config_template.yml) to tell GeneFEAST which column contains gene IDs, and which column contains quantitative data.
   - If you do not have quantitative data, you can just provide a dummy column with the same *numerical* value entered for each gene.
  
 - A YAML config file. You can create one using [this template](config_template.yml).
