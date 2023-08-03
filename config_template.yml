@@ -1,9 +1,6 @@
-QUANT_DATA_TYPE: log2 FC
-# This is the label for the colourmap legend in the split heatmaps
-
-DOTPLOTS: True
-# Set this to True if you want GeneFEAST to generate dot plots of your functional enrichment analysis (FEA) results.
-# IMPORTANT: If this is set to True then fields GeneRatio. BgRatio, p.adjust and count are required in the FEA results file
+# **************************************************************************************************************************
+# *** Parameters affecting how terms and communities are clustered into communities and meta communities, respectively ***
+# **************************************************************************************************************************
 
 MIN_NUM_GENES: 5
 # Number of genes of interest that a term must annotate in order to be included in the GeneFEAST report.
@@ -46,24 +43,63 @@ MIN_WEIGHT_SC_BC: 0.25
 
 MAX_CLUSTER_SIZE_THRESH: 15
 MAX_META_COMMUNITY_SIZE_THRESH: 15
+# In GeneFEAST, the size communities and meta communities is attenuated using an adaptive algorithm (see main paper for details).
+# These two values are parameters for the adaptive algorithm, which will ensure that community and meta-community sizes do
+# not exceed these thresholds.
 
 COMBINE_TERM_TYPES: False
+# If you are using GeneFEAST to summarize terms from multiple databases, such that the set of terms to be summarised contains more than one type,
+# then you can choose either to only allow clustering of terms when terms are from the same database/ share their type (COMBINE_TERM_TYPES: False),
+# or to allow the clustering of terms into communities comprised of terms from different databases (COMBINE_TERM_TYPES: True).
+
+
+
+
+# **************************************************************************************************************************
+# *** Parameters affecting display of heatmaps and dot plots ***
+# **************************************************************************************************************************
+
+QUANT_DATA_TYPE: log2 FC
+# This is the label for the colourmap legend in the split heatmaps
 
 HEATMAP_WIDTH_MIN: 10
 HEATMAP_HEIGHT_MIN: 5
+# These parameters control the size of the split heatmaps. These may need adjusting depending on the size of your display.
 
 HEATMAP_MIN: -4
 HEATMAP_MAX: 4
+# These parameters give the range of values expected for the provided quantitative data type, and will be used to set the scale
+# for the colourmap used in the split heatmap. You should adjust these to match your data. In the case that you do not have 
+# quantitative data for your genes of interest and have replaced this column with a singular, dummy, variable, you should set these
+# values so that your dummy value is in the range.
+
+DOTPLOTS: True
+# Set this to True if you want GeneFEAST to generate dot plots of your functional enrichment analysis (FEA) results.
+# IMPORTANT: If this is set to True then fields GeneRatio. BgRatio, p.adjust and count are required in the FEA results file
+
+
+
+
+# **************************************************************************************************************************
+# *** Extras ***
+# **************************************************************************************************************************
 
 SEARCH_WORDS:
 - search 1
 - search 2
 - search 3
+# This is a list of search terms, one per line, that you want to search for alongside your genes of interest.
+# This can include as many or as few terms as you need.
+# Leave blank if you do not need this functionality.
 
 GENE_INDEX: 7
 QD_INDEX: 2
+# 0-based column index of the gene ID and quantitative data columns given in the genes of interest file.
 
 MSIGDB_HTML:
 OBO_FILE:
+# GeneFEAST ships with a GO OBO file and with an MSIGDB HTML file containing an HTML tabular summary of each MSIGDB term.
+# However, if you want to provide more up-to-date versions of these yourself, you can provide paths to these files here.
 
 EA_FILE:
+# If you have an extra annotations (EA) file you can put a full path to it here. Otherwise, leave blank.
