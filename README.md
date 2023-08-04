@@ -44,7 +44,7 @@ To run GeneFEAST you will need:
   - Description (**Required**)
   - GeneRatio (Required only when dot plots are switched on)
   - BgRatio (Required only when dot plots are switched on)
-  - pvalue (Optional; field can be empty)
+  - pvalue (Optional; field can be empty) 
   - p.adjust (Required only when dot plots are switched on)
   - qvalue (Optional; field can be empty)
   - geneID (**Required**. This should be a "/" delimited list of gene IDs. The gene IDs ***must match*** those used in the genes of interest file (see next))
@@ -58,4 +58,13 @@ To run GeneFEAST you will need:
  
 - A YAML config file. You can create one using [this template](config_template.yml).
 
-  
+In addition, you can also provide GeneFEAST with:
+- Pre-made PNG images for significantly enriched/ over-represented terms. One example might be KEGG pathway images generated as part of the FEA analysis.
+- Extra annotations for genes.
+  - Sometimes, you may wish to keep track of an *a priori* set of interesting genes, for example those that are members of a particular biological signature, throughout the GeneFEAST report. To do this, you can provide GeneFEAST with an extra annotation (EA) file. The EA file is a headerless, comma delimited file with one extra annotation per row, and two columns: The first column is the extra annotation name, and the second column is a "/" delimited list of genes annotated with the extra annotation.
+  - Each extra annotation will be displayed as an additional row at the top of the term-gene heatmap panel in the split heatmap that is created for each community of terms (similarly for each meta-community of communities).
+  - In order for GeneFEAST to use the EA file, you need to provide a path to it in the  [config file](config_template.yml).
+- A GO OBO file
+  - GeneFEAST ships with a GO OBO file, but if you want to provide more up-to-date version of this yourself you can provide a path to this file in the [config file](config_template.yml).
+- MSIGDB HTML file.
+  - GeneFEAST ships with an MSIGDB HTML file containing an HTML tabular summary of each MSIGDB term, but if you want to provide a more up-to-date version of this yourself, you can provide a path to this file in the [config file](config_template.yml).
