@@ -59,7 +59,12 @@ To run GeneFEAST you will need:
 - A YAML config file. You can create one using [this template](config_template.yml).
 
 In addition, you can also provide GeneFEAST with:
-- Pre-made PNG images for significantly enriched/ over-represented terms. One example might be KEGG pathway images generated as part of the FEA analysis.
+- Pre-made PNG images for significantly enriched/ over-represented terms. One example might be KEGG pathway images generated as part of the FEA.
+  - For each FEA being summarised you have the option of providing a directory (folder) containing at most one image for each enriched/ over-represented term identified in that FEA.
+  - The path for this directory will be given along with the FEA results and genes of interest files (described above), when the main call to GeneFEAST is made. Note that these paths will be provided in a simple **Meta input** file which you will need to compose prior to running GeneFEAST. Instructions for writing this file are in the next section, below.
+  - > **IMPORTANT**
+    > - GeneFEAST automatically generates a GO heirarchy for all terms with a Type string starting "GO" (or "go", "Go", and "gO"; case is ignored). So if you provide a corresponding image for such a term, this will be ignored. The work around here is to change the Type field in the FEA file to be something other than a string starting with "GO" (or "go", "Go", and "gO").
+    > - Similarly, for MSIGDB terms, GeneFEAST will always try to include an HTML tabular description of the term, and any provided image will be ignored. As for GO terms, the work around here is to change the Type field in the FEA file to be something other than a string starting with "MSIGDB" (or any other case variant).
 - Extra annotations for genes.
   - Sometimes, you may wish to keep track of an *a priori* set of interesting genes, for example those that are members of a particular biological signature, throughout the GeneFEAST report. To do this, you can provide GeneFEAST with an extra annotation (EA) file. The EA file is a headerless, comma delimited file with one extra annotation per row, and two columns: The first column is the extra annotation name, and the second column is a "/" delimited list of genes annotated with the extra annotation.
   - Each extra annotation will be displayed as an additional row at the top of the term-gene heatmap panel in the split heatmap that is created for each community of terms (similarly for each meta-community of communities).
