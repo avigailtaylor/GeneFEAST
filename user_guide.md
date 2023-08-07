@@ -105,8 +105,8 @@ To use GeneFEAST to summarize results from multiple FEAs, type the following on 
 
 ```
     $ gf_multi META_INPUT_FILE \
-         OUTPUT_DIR \
-         YAML_CONFIG_FILE
+               OUTPUT_DIR \
+               YAML_CONFIG_FILE
 ```
 
 Alternatively, in Python:
