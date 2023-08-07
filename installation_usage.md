@@ -80,3 +80,37 @@ Once you have created and activated your virtual environment, you can install th
   - Path to additional images directory. (Optional. You can leave this field blank.)
 
 ---
+
+#### Running GeneFEAST. What you need to do:
+
+To use GeneFEAST to summarize results from a single FEA, type the following on the command line:
+
+```
+    $ gf META_INPUT_FILE \
+         OUTPUT_DIR \
+         YAML_CONFIG_FILE
+```
+
+Alternatively, in Python:
+
+```python
+from genefeast import gf
+
+gf.gf(META_INPUT_FILE, OUTPUT_DIR, YAML_CONFIG_FILE)
+```
+
+To use GeneFEAST to summarize results from multiple FEAs, type the following on the command line:
+
+```
+    $ gf_multi META_INPUT_FILE \
+         OUTPUT_DIR \
+         YAML_CONFIG_FILE
+```
+
+Alternatively, in Python:
+
+```python
+from genefeast import gf_multi
+
+gf_multi.gf_multi(META_INPUT_FILE, OUTPUT_DIR, YAML_CONFIG_FILE)
+```
