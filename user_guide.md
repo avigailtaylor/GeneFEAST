@@ -72,7 +72,7 @@ Once you have created and activated your virtual environment, you can install th
 - MSIGDB HTML file.
   - GeneFEAST ships with an MSIGDB HTML file containing an HTML tabular summary of each MSIGDB term, but if you want to provide a more up-to-date version of this yourself, you can provide a path to this file in the [config file](config_template.yml).
 
-#### Finally, before running GeneFEAST, create a meta input file
+#### Finally, before running GeneFEAST, create a meta input file:
 - Headerless, comma delimited file.
 - One row per FEA to be summarised.
 - Four fields per row:
