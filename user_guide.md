@@ -1,3 +1,5 @@
+# GeneFEAST - User Guide
+
 ## Installation
 
 We **strongly recommend** installing GeneFEAST in a **virtual environment** because the library has several requirements:
