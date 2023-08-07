@@ -37,8 +37,8 @@ Once you have created and activated your virtual environment, you can install th
 
 ## Usage
 
-To run GeneFEAST you will need:
-- A comma-delimited file containing the results of a functional enrichment analysis (FEA). GeneFEAST expects a file containing the following ten columns, in this order:
+#### To run GeneFEAST you will need:
+- **FEA results file**: A comma-delimited file containing the results of a functional enrichment analysis (FEA). GeneFEAST expects a file containing the following ten columns, in this order:
   - Type (**Required**. This refers to the the type of the term and can be, e.g., GO, KEGG, MSIGDB, etc.)
   - ID (**Required**)
   - Description (**Required**)
@@ -50,18 +50,18 @@ To run GeneFEAST you will need:
   - geneID (**Required**. This should be a "/" delimited list of gene IDs. The gene IDs ***must match*** those used in the genes of interest file (see next))
   - count (Required only when dot plots are switched on. This is the number of genes of interest annotated with the term. This should match the length of the list of genes given in the geneID column.)
     
-- A file containing a list of genes of interest, one per line, each with their corresponding quantitative data (eg log2 fold change from an RNASeq analyses). Please note:
+- **Genes of interest file**: A file containing a list of genes of interest, one per line, each with their corresponding quantitative data (eg log2 fold change from an RNASeq analyses). Please note:
   - Genes of intersest ***must*** be listed using ***IDs that match those used in the FEA results file***.
   - There can be other columns in the file - these will be ignored.
   - You will use the [config file](config_template.yml) to tell GeneFEAST which column contains gene IDs, and which column contains quantitative data.
   - If you do not have quantitative data, you can just provide a dummy column with the same *numerical* value entered for each gene.
  
-- A YAML config file. You can create one using [this template](config_template.yml).
+- **A YAML config file**. You can create one using [this template](config_template.yml).
 
-In addition, you can also provide GeneFEAST with:
+#### In addition, you can also provide GeneFEAST with:
 - Pre-made PNG images for significantly enriched/ over-represented terms. One example might be KEGG pathway images generated as part of the FEA.
   - For each FEA being summarised you have the option of providing a directory (folder) containing at most one image for each enriched/ over-represented term identified in that FEA.
-  - The path for this directory will be given along with the FEA results and genes of interest files (described above), when the main call to GeneFEAST is made. Note that these paths will be provided in a simple **Meta input** file which you will need to compose prior to running GeneFEAST. Instructions for writing this file are in the next section, below.
+  - The path for this directory will be given along with the FEA results and genes of interest files (described above), when the main call to GeneFEAST is made. Note that these paths will be provided in a simple **meta input** file which you will need to compose prior to running GeneFEAST. Instructions for writing this file are in the next section, below.
   - > **IMPORTANT**
     > - GeneFEAST automatically generates a GO heirarchy for all terms with a Type string starting "GO" (or "go", "Go", and "gO"; case is ignored). So if you provide a corresponding image for such a term, this will be ignored. The work around here is to change the Type field in the FEA file to be something other than a string starting with "GO" (or "go", "Go", and "gO").
     > - Similarly, for MSIGDB terms, GeneFEAST will always try to include an HTML tabular description of the term, and any provided image will be ignored. As for GO terms, the work around here is to change the Type field in the FEA file to be something other than a string starting with "MSIGDB" (or any other case variant).
@@ -73,3 +73,12 @@ In addition, you can also provide GeneFEAST with:
   - GeneFEAST ships with a GO OBO file, but if you want to provide more up-to-date version of this yourself you can provide a path to this file in the [config file](config_template.yml).
 - MSIGDB HTML file.
   - GeneFEAST ships with an MSIGDB HTML file containing an HTML tabular summary of each MSIGDB term, but if you want to provide a more up-to-date version of this yourself, you can provide a path to this file in the [config file](config_template.yml).
+
+#### Finally, before running GeneFEAST, create a meta input file:
+- Headerless, comma delimited file.
+- One row per FEA to be summarised.
+- Four fields per row:
+  - FEA name/ identifier. You choose this. Must be unique. (**Required**)
+  - Path to FEA results file. (**Required**)
+  - Path to Genes of interest file. (**Requried**)
+  - Path to additional images directory. (Optional. You can leave this field blank.)
