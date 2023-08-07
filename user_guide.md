@@ -1,4 +1,4 @@
-# GeneFEAST - User Guide
+# User Guide
 
 ## Installation
 
