@@ -137,6 +137,8 @@ To view a GeneFEAST multi FEA summary report, navigate to the output directory a
 ***
 #### Navigating the GeneFEAST report
 
+![GeneFEAST Report structure](https://avigailtaylor.github.io/GeneFEAST/report_structure.png)
+
 ***
 
 #### Additional GeneFEAST output
