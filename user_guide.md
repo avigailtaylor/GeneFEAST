@@ -65,7 +65,7 @@ Once you have created and activated your virtual environment, you can install th
     > - Similarly, for MSIGDB terms, GeneFEAST will always try to include an HTML tabular description of the term, and any provided image will be ignored. As for GO terms, the work around here is to change the Type field in the FEA file to be something other than a string starting with "MSIGDB" (or any other case variant).
 - Extra annotations for genes.
   - Sometimes, you may wish to keep track of an *a priori* set of interesting genes, for example those that are members of a particular biological signature, throughout the GeneFEAST report. To do this, you can provide GeneFEAST with an extra annotation (EA) file. The EA file is a headerless, comma delimited file with one extra annotation per row, and two columns: The first column is the extra annotation name, and the second column is a "/" delimited list of genes annotated with the extra annotation.
-  - Each extra annotation will be displayed as an additional row at the top of the term-gene heatmap panel in the split heatmap that is created for each community of terms (similarly for each meta-community of communities).
+  - Each extra annotation will be displayed as an additional row at the top of the term-gene heatmap panel in the [split heatmap](split_heatmaps.md) that is created for each community of terms (similarly for each meta-community of communities).
   - In order for GeneFEAST to use the EA file, you need to provide a path to it in the  [config file](config_template.yml).
 - A GO OBO file
   - GeneFEAST ships with a GO OBO file, but if you want to provide more up-to-date version of this yourself you can provide a path to this file in the [config file](config_template.yml).
@@ -148,15 +148,15 @@ For each community of enriched terms, GeneFEAST reports:
 - member terms;
 - a dot plot summary of member term’s FEA results; 
 - an upset plot (Lex, et al., 2014) of inter term gene set overlap;
-- split heatmaps of the term- and experiment-gene relationships, (including extra annotations, where supplied); 
+- [split heatmaps](split_heatmaps.md) of the term- and experiment-gene relationships, (including extra annotations, where supplied); 
 - further information about terms, such as GO hierarchies and KEGG pathway diagrams;
 - and external hyperlinks to literature searches for each gene of interest, via the National Center for Biotechnology Information's Gene and PubMed services (Sayers, et al., 2021), incorporating additional search terms if the user has supplied them.
 
 Where applicable, community frames have links back to their meta community and also to sibling communities in their meta community (red, solid arrows); separately, they also have a list of links to terms sharing some gene set overlap, but which is too weak for membership of the community (red, dashed arrows). 
 
-Term frames have similar, reduced content of community frames. In particular, they do not include upset plots and dot plots, and the term-gene heatmap element of their split heatmap is extended to highlight which genes, if any, contribute to enriched terms that have been clustered into a community; in this case the corresponding gene-community pair is depicted in the heatmap.
+Term frames have similar, reduced content of community frames. In particular, they do not include upset plots and dot plots, and the term-gene heatmap element of their [split heatmap](split_heatmaps.md) is extended to highlight which genes, if any, contribute to enriched terms that have been clustered into a community; in this case the corresponding gene-community pair is depicted in the heatmap.
 
-Meta community frames have: links to member communities (red, solid arrows); split heatmaps, wherein term annotation is replaced by gene community membership in the top heatmap; a literature search for each gene (as described above); and an upset plot showing community gene set overlaps.
+Meta community frames have: links to member communities (red, solid arrows); [split heatmaps](split_heatmaps.md), wherein term annotation is replaced by gene community membership in the top heatmap; a literature search for each gene (as described above); and an upset plot showing community gene set overlaps.
 
 ***
 
