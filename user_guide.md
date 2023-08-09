@@ -2,7 +2,7 @@
 
 ## Installation
 
-We **strongly recommend** installing GeneFEAST in a **virtual environment** because the library has several requirements:
+We **strongly recommend** installing GeneFEAST in a **virtual environment** because the library has several dependencies and requirements:
 
 - python == 3.7
 - matplotlib == 3.3.3
@@ -36,8 +36,8 @@ Once you have created and activated your virtual environment, you can install th
 ## Usage
 
 #### To run GeneFEAST you will need:
-- **FEA results file**: A comma-delimited file containing the results of a functional enrichment analysis (FEA). GeneFEAST expects a file containing the following ten columns, in this order:
-  - Type (**Required**. This refers to the the type of the term and can be, e.g., GO, KEGG, MSIGDB, etc.)
+- **FEA results file**: A comma-separated file containing the results of a functional enrichment analysis (FEA). GeneFEAST expects a file containing the following ten columns, in this order:
+  - Type (**Required**. This refers to the type of the term and can be, e.g., GO, KEGG, MSIGDB, etc.)
   - ID (**Required**)
   - Description (**Required**)
   - GeneRatio (Required only when dot plots are switched on)
@@ -45,11 +45,11 @@ Once you have created and activated your virtual environment, you can install th
   - pvalue (Optional; field can be empty) 
   - p.adjust (Required only when dot plots are switched on)
   - qvalue (Optional; field can be empty)
-  - geneID (**Required**. This should be a "/" delimited list of gene IDs. The gene IDs ***must match*** those used in the genes of interest file (see next))
+  - geneID (**Required**. This should be a list of gene IDs separated using the "/" symbol. The gene IDs ***must match*** those used in the genes of interest file (see next))
   - count (Required only when dot plots are switched on. This is the number of genes of interest annotated with the term. This should match the length of the list of genes given in the geneID column.)
     
-- **Genes of interest file**: A file containing a list of genes of interest, one per line, each with their corresponding quantitative data (eg log2 fold change from an RNASeq analyses). Please note:
-  - Genes of intersest ***must*** be listed using ***IDs that match those used in the FEA results file***.
+- **Genes of interest file**: A file containing a list of genes of interest, one per line, each with their corresponding quantitative data (e.g. log2 fold change from an RNA-Seq analyses). Please note:
+  - Genes of interest ***must*** be listed using ***IDs that match those used in the FEA results file***.
   - There can be other columns in the file - these will be ignored.
   - You will use the [config file](config_template.yml) to tell GeneFEAST which column contains gene IDs, and which column contains quantitative data.
   - If you do not have quantitative data, you can just provide a dummy column with the same *numerical* value entered for each gene.
@@ -59,26 +59,26 @@ Once you have created and activated your virtual environment, you can install th
 #### In addition, you can also provide GeneFEAST with:
 - Pre-made PNG images for significantly enriched/ over-represented terms. One example might be KEGG pathway images generated as part of the FEA.
   - For each FEA being summarised you have the option of providing a directory (folder) containing at most one image for each enriched/ over-represented term identified in that FEA.
-  - The path for this directory will be given along with the FEA results and genes of interest files (described above), when the main call to GeneFEAST is made. Note that these paths will be provided in a simple **meta input** file which you will need to compose prior to running GeneFEAST. Instructions for writing this file are in the next section, below.
+  - The path for this directory will be given along with the FEA results and genes of interest files (described above), when the main call to GeneFEAST is made. Note that these paths will be provided in a simple **meta-input** file which you will need to compose prior to running GeneFEAST. Instructions for writing this file are in the next section, below.
   - > **IMPORTANT**
-    > - GeneFEAST automatically generates a GO heirarchy for all terms with a Type string starting "GO" (or "go", "Go", and "gO"; case is ignored). So if you provide a corresponding image for such a term, this will be ignored. The work around here is to change the Type field in the FEA file to be something other than a string starting with "GO" (or "go", "Go", and "gO").
+    > - GeneFEAST automatically generates a GO hierarchy for all terms with a Type string starting "GO" (or "go", "Go", and "gO"; case is ignored). So, if you provide a corresponding image for such a term, this will be ignored. The work around here, should you wish to provide alternative images for GO terms, is to change their Type field in the FEA file to be something other than a string starting with "GO" (or "go", "Go", and "gO").
     > - Similarly, for MSIGDB terms, GeneFEAST will always try to include an HTML tabular description of the term, and any provided image will be ignored. As for GO terms, the work around here is to change the Type field in the FEA file to be something other than a string starting with "MSIGDB" (or any other case variant).
 - Extra annotations for genes.
-  - Sometimes, you may wish to keep track of an *a priori* set of interesting genes, for example those that are members of a particular biological signature, throughout the GeneFEAST report. To do this, you can provide GeneFEAST with an extra annotation (EA) file. The EA file is a headerless, comma delimited file with one extra annotation per row, and two columns: The first column is the extra annotation name, and the second column is a "/" delimited list of genes annotated with the extra annotation.
-  - Each extra annotation will be displayed as an additional row at the top of the term-gene heatmap panel in the [split heatmap](split_heatmaps.md) that is created for each community of terms (similarly for each meta-community of communities).
+  - Sometimes, you may wish to keep track of an *a priori* set of interesting genes, for example those that are members of a particular biological signature, throughout the GeneFEAST report. To do this, you can provide GeneFEAST with an extra annotation (EA) file. The EA file is a headerless, comma-separated file with one extra annotation per row, and two columns: The first column is the extra annotation name, and the second column is the list of genes to be labelled with the extra annotation. Note that this list must be delimited using the "/" symbol.
+  - Each extra annotation will be displayed as an additional row at the top of the term-gene heatmap panel in the [split heatmap](split_heatmaps.md) that is created for each community of terms (similarly for each meta community of communities).
   - In order for GeneFEAST to use the EA file, you need to provide a path to it in the  [config file](config_template.yml).
 - A GO OBO file
-  - GeneFEAST ships with a GO OBO file, but if you want to provide more up-to-date version of this yourself you can provide a path to this file in the [config file](config_template.yml).
+  - GeneFEAST ships with a GO OBO file, but if you want to provide a more recent version of this yourself, you can provide a path to this file in the [config file](config_template.yml).
 - MSIGDB HTML file.
-  - GeneFEAST ships with an MSIGDB HTML file containing an HTML tabular summary of each MSIGDB term, but if you want to provide a more up-to-date version of this yourself, you can provide a path to this file in the [config file](config_template.yml).
+  - GeneFEAST ships with an MSIGDB HTML file containing an HTML tabular summary of each MSIGDB term, but if you want to provide a more recent version of this yourself, you can provide a path to this file in the [config file](config_template.yml).
 
-#### Finally, before running GeneFEAST, create a meta input file:
-- Headerless, comma delimited file.
+#### Finally, before running GeneFEAST, create a meta-input file:
+- Headerless, comma-separated file.
 - One row per FEA to be summarised.
 - Four fields per row:
   - FEA name/ identifier. You choose this. Must be unique. (**Required**)
   - Path to FEA results file. (**Required**)
-  - Path to Genes of interest file. (**Requried**)
+  - Path to Genes of interest file. (**Required**)
   - Path to additional images directory. (Optional. You can leave this field blank.)
 
 ---
@@ -147,22 +147,22 @@ For each community of enriched terms, GeneFEAST reports:
 
 - member terms;
 - a dot plot summary of member term’s FEA results; 
-- an upset plot (Lex, et al., 2014) of inter term gene set overlap;
-- [split heatmaps](split_heatmaps.md) of the term- and experiment-gene relationships, (including extra annotations, where supplied); 
+- an upset plot (Lex, et al., 2014) showing the overlap between sets of genes annotated by the member terms;
+- [split heatmaps](split_heatmaps.md) of the term- and FEA-gene relationships, (including extra annotations, where supplied); 
 - further information about terms, such as GO hierarchies and KEGG pathway diagrams;
 - and external hyperlinks to literature searches for each gene of interest, via the National Center for Biotechnology Information's Gene and PubMed services (Sayers, et al., 2021), incorporating additional search terms if the user has supplied them.
 
-Where applicable, community frames have links back to their meta community and also to sibling communities in their meta community (red, solid arrows); separately, they also have a list of links to terms sharing some gene set overlap, but which is too weak for membership of the community (red, dashed arrows). 
+Where applicable, community frames have links back to their meta community and also to sibling communities in their meta community (red, solid arrows); separately, they also have a list of links to terms sharing some gene-set overlap, but which is too weak for membership of the community (red, dashed arrows). 
 
 Term frames have similar, reduced content of community frames. In particular, they do not include upset plots and dot plots, and the term-gene heatmap element of their [split heatmap](split_heatmaps.md) is extended to highlight which genes, if any, contribute to enriched terms that have been clustered into a community; in this case the corresponding gene-community pair is depicted in the heatmap.
 
-Meta community frames have: links to member communities (red, solid arrows); [split heatmaps](split_heatmaps.md), wherein term annotation is replaced by gene community membership in the top heatmap; a literature search for each gene (as described above); and an upset plot showing community gene set overlaps.
+Meta community frames have: links to member communities (red, solid arrows); [split heatmaps](split_heatmaps.md), wherein term annotation is replaced by gene-community membership in the top heatmap; a literature search for each gene (as described above); and an upset plot showing the overlap between sets of genes annotated by the member communities.
 
 ***
 
 #### Additional GeneFEAST output
 
-Term-community membership, term- and FEA-gene relationships are also output in comma separated value format, for input into downstream programs. The columns are:
+Term-community membership, term- and FEA-gene relationships are also output in comma-separated value format, for input into downstream programs. The columns are:
 
 - Community (will be empty if a term is not part of a community)
 - Meta community (will be empty if a community is not part of a meta community)
@@ -176,3 +176,4 @@ Term-community membership, term- and FEA-gene relationships are also output in c
 > - a gene of interest in the FEA,
 > - the term has been identified as significantly enriched in the FEA,
 > - and the gene is annotated by the term.
+
