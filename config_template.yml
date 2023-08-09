@@ -1,4 +1,12 @@
 # **************************************************************************************************************************
+# *** Parameters required for reading input in properly ***
+# **************************************************************************************************************************
+
+GENE_INDEX: 7
+QD_INDEX: 2
+# 0-based column index of the gene ID and quantitative data columns given in the genes of interest file.
+
+# **************************************************************************************************************************
 # *** Parameters affecting how terms and communities are clustered into communities and meta communities, respectively ***
 # **************************************************************************************************************************
 
@@ -17,6 +25,7 @@ TT_OVERLAP_MEASURE: OC
 # OC (Overlap Coefficient)
 # J (Jaccard Index)
 # We recommend using OC here.
+
 MIN_WEIGHT_TT_EDGE: 0.5
 # Minimum gene set overlap between terms (as measured using TT_OVERLAP_MEASURE) required for two terms to be
 # connected (i.e. to have an edge between them) in the term-term network that GeneFEAST constructs prior to finding
@@ -27,6 +36,7 @@ SC_BC_OVERLAP_MEASURE: OC
 # OC (Overlap Coefficient)
 # J (Jaccard Index)
 # We recommend using OC here.
+
 MIN_WEIGHT_SC_BC: 0.25
 # Minimum gene set overlap required between a term and a community of terms for that term to be considered weakly connected
 # to the community of terms (i.e. having some connectivtity to the community, but not enough to be considered part of that community).
@@ -36,6 +46,7 @@ MIN_WEIGHT_BC_BC: 0.1
 # Overlap measure to use when calculating the gene set overlap between two communities of terms. Two values are recognised:
 # OC (Overlap Coefficient)
 # J (Jaccard Index)
+
 MIN_WEIGHT_SC_BC: 0.25
 # Minimum gene set overlap required between two communities of terms for those two communities to be connected (i.e. to 
 # have an edge between them) in the community-community network that GeneFEAST constructs prior to finding
@@ -51,8 +62,6 @@ COMBINE_TERM_TYPES: False
 # If you are using GeneFEAST to summarize terms from multiple databases, such that the set of terms to be summarised contains more than one type,
 # then you can choose either to only allow clustering of terms when terms are from the same database/ share their type (COMBINE_TERM_TYPES: False),
 # or to allow the clustering of terms into communities comprised of terms from different databases (COMBINE_TERM_TYPES: True).
-
-
 
 
 # **************************************************************************************************************************
@@ -78,8 +87,6 @@ DOTPLOTS: True
 # IMPORTANT: If this is set to True then fields GeneRatio. BgRatio, p.adjust and count are required in the FEA results file
 
 
-
-
 # **************************************************************************************************************************
 # *** Extras ***
 # **************************************************************************************************************************
@@ -91,10 +98,6 @@ SEARCH_WORDS:
 # This is a list of search terms, one per line, that you want to search for alongside your genes of interest.
 # This can include as many or as few terms as you need.
 # Leave blank if you do not need this functionality.
-
-GENE_INDEX: 7
-QD_INDEX: 2
-# 0-based column index of the gene ID and quantitative data columns given in the genes of interest file.
 
 MSIGDB_HTML:
 OBO_FILE:
