@@ -48,7 +48,7 @@ Once you have created and activated your virtual environment, you can install th
   - geneID (**Required**. This should be a list of gene IDs separated using the "/" symbol. The gene IDs ***must match*** those used in the genes of interest file (see next))
   - count (Required only when dot plots are switched on. This is the number of genes of interest annotated with the term. This should match the length of the list of genes given in the geneID column.)
     
-- **Genes of interest file**: A file containing a list of genes of interest, one per line, each with their corresponding quantitative data (e.g. log2 fold change from an RNA-Seq analyses). Please note:
+- **Genes of interest file**: A file containing a list of genes of interest, one per line, each with their corresponding quantitative data (e.g. log2 fold change from an RNA-Seq experiment). Please note:
   - Genes of interest ***must*** be listed using ***IDs that match those used in the FEA results file***.
   - There can be other columns in the file - these will be ignored.
   - You will use the [config file](config_template.yml) to tell GeneFEAST which column contains gene IDs, and which column contains quantitative data.
