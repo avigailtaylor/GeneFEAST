@@ -4,7 +4,7 @@ GeneFEAST is underpinned by the split heatmap, a data visualisation that we deve
 
 (Back to [User Guide](user_guide.md))
 
-
+![Split heatmap](https://avigailtaylor.github.io/GeneFEAST/split_heatmap.png)
 
 **Split heatmap.** (A) A pair of heatmaps, sharing a common x-axis of genes, are drawn one on top of the other. In the top heatmap, genes (G1 to G20) are coloured yellow when they are annotated by a term (T1 to T5), otherwise grey. In the bottom heatmap, genes are coloured to depict gene-level quantitative data; in this case log2 fold change from two RNA-Seq experiments whose genes of interest, i.e. differentially expressed genes, were analysed using a FEA (FEA1 and FEA2). Grey genes were not identified as genes of interest in the underlying experiment. The genes are ordered based on hierarchical clustering of their quantitative data. (B) As for (A), but genes are ordered first by their annotation count, then by annotation pattern, and lastly by their quantitative data.
 
