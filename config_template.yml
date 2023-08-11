@@ -54,7 +54,7 @@ MIN_WEIGHT_SC_BC: 0.25
 
 MAX_COMMUNITY_SIZE_THRESH: 15
 MAX_META_COMMUNITY_SIZE_THRESH: 15
-# In GeneFEAST, the size communities and meta communities is attenuated using an adaptive algorithm (see main paper for details).
+# In GeneFEAST, the size of communities and meta communities is attenuated using an adaptive algorithm (see main paper for details).
 # These two values are parameters for the adaptive algorithm, which will ensure that community and meta-community sizes do
 # not exceed these thresholds.
 
