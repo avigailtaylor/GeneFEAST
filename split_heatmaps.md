@@ -4,7 +4,7 @@ GeneFEAST is underpinned by the split heatmap, a data visualisation that we deve
 
 ### Extra annotations
 
-Sometimes, you may wish to keep track of an *a priori* set of genes relevant to your study, for example those that are members of a particular biological signature, throughout the GeneFEAST report. In this case, extra annotation tracks will be added *post hoc* to all split heatmaps in the GeneFEAST report once communities (and meta communities) and their associated GoI have been identified. Within every split heatmap in the report, each extra annotation track will be displayed as an additional row at the top of the term-GoI heatmap panel, with GoI that have the extra annotation coloured in pink (Figure 2). 
+Sometimes, you may wish to keep track of an *a priori* set of genes relevant to your study, for example genes contributing to a particular biological signature, throughout the GeneFEAST report. In such cases, you can provide extra annotations to be added as rows to the term-GoI heatmap in all split heatmaps of the report (Figure 2). This is done *post hoc* once communities, and meta communities, and their associated GoI have been identified.
 
 (Back to [User Guide](user_guide.md))
 
@@ -16,6 +16,6 @@ Sometimes, you may wish to keep track of an *a priori* set of genes relevant to 
 
 ![Split heatmap](https://avigailtaylor.github.io/GeneFEAST/sh_EA.png)
 
-**Figure 2. Split heatmap with extra annotation track.** A split heatmap with an extra annotation track (EA1) added as a row on top of the existing term-GoI heatmap. GoI labelled with the extra annotation are coloured in pink, wih the remaining GoI coloured in grey.
+**Figure 2. Split heatmap with extra annotation.** A split heatmap with an extra annotation (EA1) added as a row on top of the existing term-GoI heatmap. GoI labelled with the extra annotation are coloured in pink, wih the remaining GoI coloured in grey.
 
 (Back to [User Guide](user_guide.md))
