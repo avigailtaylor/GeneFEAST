@@ -159,7 +159,7 @@ Term frames have similar, reduced content of community frames. In particular, th
 
 Meta community frames have: links to member communities (red, solid arrows); [split heatmaps](split_heatmaps.md), wherein term annotation is replaced by gene-community membership in the top heatmap; a literature search for each gene (as described above); and an upset plot showing the overlap between sets of genes annotated by the member communities.
 
-Reports summarising multiple FEAs start with a 'main' page showing an upset plot of the sets of terms identified as enriched in each of the analyses (left green box). We refer to the sets of terms found in two or more FEAs as *"FEA term-set intersections"*. On the right side panel of this main page is a list of links to separate reports for each intersection, each of which has the structure of a report summarising a single FEA, as described above.
+Reports summarising multiple FEAs start with a 'main' page showing an upset plot of the sets of terms identified as enriched in each of the analyses (left green box). We refer to the sets of terms found in two or more FEAs as *"FEA term-set intersections"*. On the right side panel of this main page (not shown here) is a list of links to separate reports for each intersection, each of which has the structure of a report summarising a single FEA, as described above.
 
 ***
 
