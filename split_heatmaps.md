@@ -16,6 +16,6 @@ Sometimes, you may wish to keep track of an *a priori* set of genes relevant t
 
 ![Split heatmap](https://avigailtaylor.github.io/GeneFEAST/sh_EA.png)
 
-**Figure 2. Split heatmap with extra annotation.** A split heatmap with an extra annotation (EA1) added as a row on top of the existing term-GoI heatmap. GoI labelled with the extra annotation are coloured in pink, wih the remaining GoI coloured in grey.
+**Figure 2. Split heatmap with extra annotation.** A split heatmap with an extra annotation (EA1) added as a row on top of the existing term-GoI heatmap. GoI labelled with the extra annotation are coloured in pink, with the remaining GoI coloured in grey.
 
 (Back to [User Guide](user_guide.md))
