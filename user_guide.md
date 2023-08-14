@@ -63,6 +63,8 @@ Once you have created and activated your virtual environment, you can install th
   - > **IMPORTANT**
     > - GeneFEAST automatically generates a GO hierarchy for all terms with a Type string starting "GO" (or "go", "Go", and "gO"; case is ignored). So, if you provide a corresponding image for such a term, this will be ignored. The work around here, should you wish to provide alternative images for GO terms, is to change their Type field in the FEA file to be something other than a string starting with "GO" (or "go", "Go", and "gO").
     > - Similarly, for MSIGDB terms, GeneFEAST will always try to include an HTML tabular description of the term, and any provided image will be ignored. As for GO terms, the work around here is to change the Type field in the FEA file to be something other than a string starting with "MSIGDB" (or any other case variant).
+- Search terms for to be searched for alongside your GoI.
+  - As part of the report generation process, GeneFEAST conducts a literature search for each GoI, via the National Center for Biotechnology Information's Gene and PubMed services (Sayers, et al., 2021). You can provide a list of search terms via the [config file](config_template.yml), and the literature search will incorporate them.
 - Extra annotations for genes.
   - Sometimes, you may wish to keep track of an *a priori* set of genes relevant to your study, for example those that are members of a particular biological signature, throughout the GeneFEAST report. To do this, you can provide GeneFEAST with an extra annotation (EA) file. The EA file is a headerless, comma-separated file with one extra annotation per row, and two columns: The first column is the extra annotation name, and the second column is the list of genes to be labelled with the extra annotation. Note that this list must be delimited using the "/" symbol.
   - Each extra annotation will be displayed as an additional row at the top of the term-GoI heatmap panel in the [split heatmap](split_heatmaps.md) created for each community of terms (similarly for each meta community of communities).
@@ -151,7 +153,7 @@ For each community of enriched terms, GeneFEAST reports:
 - an upset plot (Lex, et al., 2014) showing the overlap between sets of genes annotated by the member terms;
 - [split heatmaps](split_heatmaps.md) of the term- and experiment-GoI relationships, gene-level quantitative data and extra annotations, if supplied; 
 - further information about terms, such as GO hierarchies and KEGG pathway diagrams;
-- and external hyperlinks to literature searches for each gene of interest, via the National Center for Biotechnology Information's Gene and PubMed services (Sayers, et al., 2021), incorporating additional search terms if the user has supplied them.
+- and external hyperlinks to literature searches for each gene of interest, incorporating additional search terms if you have supplied them.
 
 Where applicable, community frames have links to their meta community and also to sibling communities in their meta community (red, solid arrows); separately, they also have a list of links to terms sharing some gene-set overlap, but which is too weak for membership of the community (red, dashed arrow). 
 
