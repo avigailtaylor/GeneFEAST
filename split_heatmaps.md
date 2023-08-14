@@ -10,7 +10,7 @@ Sometimes, you may wish to keep track of an *a priori* set of genes relevant t
 
 ![Split heatmap](https://avigailtaylor.github.io/GeneFEAST/sh.png)
 
-**Figure 1. Split heatmap.** (**A**) A pair of heatmaps, sharing a common x-axis of genes, are drawn one on top of the other. In the top heatmap, GoI (G1 to G20) are coloured yellow when they are annotated by a term (T1 to T5), otherwise grey. In the bottom heatmap, genes are coloured to depict gene-level quantitative data; in this case log2 fold change from two RNA-Seq experiments whose GoI, i.e. differentially expressed genes, were analysed using FEA (E1 and E2). Grey genes were not identified as GoI in the underlying experiment. The genes are ordered based on hierarchical clustering of their quantitative data. (**B**) As for (**A**), but genes are ordered first by their annotation count, then by annotation pattern, and lastly by their quantitative data.
+**Figure 1. Split heatmap.** (**A**) A pair of heatmaps, sharing a common x-axis of genes, are drawn one on top of the other. In the top heatmap, GoI (G1 to G20) are coloured yellow when they are annotated by a term (T1 to T5), otherwise grey. In the lower heatmap, genes are coloured to depict gene-level quantitative data, in this case log2 fold change from two RNA-Seq experiments whose GoI, i.e. differentially expressed genes, were analysed using FEA (E1 and E2). Grey genes were not identified as GoI in the underlying experiment. The genes are ordered based on hierarchical clustering of their quantitative data. (**B**) As for (**A**), but genes are ordered first by their annotation count, then by annotation pattern, and lastly by their quantitative data.
 
 ***
 
