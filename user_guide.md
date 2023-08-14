@@ -153,7 +153,7 @@ For each community of enriched terms, GeneFEAST reports:
 - further information about terms, such as GO hierarchies and KEGG pathway diagrams;
 - and external hyperlinks to literature searches for each gene of interest, via the National Center for Biotechnology Information's Gene and PubMed services (Sayers, et al., 2021), incorporating additional search terms if the user has supplied them.
 
-Where applicable, community frames have links back to their meta community and also to sibling communities in their meta community (red, solid arrows); separately, they also have a list of links to terms sharing some gene-set overlap, but which is too weak for membership of the community (red, dashed arrows). 
+Where applicable, community frames have links to their meta community and also to sibling communities in their meta community (red, solid arrows); separately, they also have a list of links to terms sharing some gene-set overlap, but which is too weak for membership of the community (red, dashed arrows). 
 
 Term frames have similar, reduced content of community frames. In particular, they do not include upset plots and dot plots, and the term-gene heatmap element of their [split heatmap](split_heatmaps.md) is extended to highlight which genes, if any, contribute to enriched terms that have been clustered into a community; in this case the corresponding gene-community pair is depicted in the heatmap.
 
