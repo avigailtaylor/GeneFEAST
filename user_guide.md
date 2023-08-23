@@ -2,6 +2,25 @@
 
 ## Installation
 
+### Option 1: Run through [docker](https://docs.docker.com/get-docker/)
+
+- To download the latest container from the [repository](https://github.com/avigailtaylor/GeneFEAST/pkgs/container/genefeast)
+  ```
+  docker pull ghcr.io/avigailtaylor/genefeast:latest
+  ```
+
+- To summarize results from single FEA:
+  ```
+  docker run --volume $HOME:$HOME --workdir $(pwd) ghcr.io/avigailtaylor/genefeast:latest gf <META_INPUT_FILE> <OUTPUT_DIR> <YAML_CONFIG_FILE>
+  ```
+
+- To summarize results from multiple FEAs:
+  ```
+  docker run --volume $HOME:$HOME --workdir $(pwd) ghcr.io/avigailtaylor/genefeast:latest gf_multi <META_INPUT_FILE> <OUTPUT_DIR> <YAML_CONFIG_FILE>
+  ```
+
+### Option 2:  Install the package and its dependencies locally via pip
+
 We **strongly recommend** installing GeneFEAST in a **virtual environment** because the library has several dependencies and requirements:
 
 - python == 3.7
