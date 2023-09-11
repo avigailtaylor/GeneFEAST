@@ -436,7 +436,7 @@ class heatmapDrawer:
         return( [self.etg.rel_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__A_heatmap.png" , 
                  self.etg.rel_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__B_heatmap.png",
                  self.etg.rel_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__C_heatmap.png"] , 
-                [new_w_A, new_w_B, new_w_C], ["Heat-map A of " + self.etg.name, "Heat-map B of " + self.etg.name, "Heat-map C of " + self.etg.name])
+                [new_w_A, new_w_B, new_w_C], ["Heatmap A of " + self.etg.name, "Heatmap B of " + self.etg.name, "Heatmap C of " + self.etg.name])
 
 class dotplotDrawer:
     def __init__ (self, community):
@@ -700,7 +700,7 @@ class bigBasicCommunityPrinter():
     def _print_html_griditem2(self, html_f):
         html_f.write('<div class="plotbox">\n')
         html_f.write('<div style="width: 1200px;">\n')
-        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.community.name + '_plotbox_title">UpSet plot</td></tr></table>\n')
+        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.community.name + '_plotbox_title">Upset plot</td></tr></table>\n')
         html_f.write('<img id="' + self.community.name + '_plotbox" src="' + self.community.upset_img_path + '" width="' + str(self.community.upset_img_width) + '" height="' + str(self.community.new_h) + '">\n')
         
         html_f.write('<div style="display:none;height:' + str(self.community.new_h + 3) + 'px;padding:0px;border:0px;margin:0px;" id="' +  self.community.name + '_plotbox_table_0">\n')
@@ -758,13 +758,13 @@ class bigBasicCommunityPrinter():
         
         html_f.write('<div class="plot_buttons">\n')
         
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.upset_img_path + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.upset_img_width) + '\' ,\'UpSet plot\',1)">UpSet plot</button>\n')
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.upset_img_path + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.upset_img_width) + '\' ,\'UpSet plot\',1)">Upset plot</button>\n')
         
         heatmap_img_paths_array_as_str = ','.join(self.community.heatmap_img_paths_list)
         heatmap_widths_array_as_str = ','.join(map(str, self.community.heatmap_img_widths_list))
         heatmap_img_titles_array_as_str = ','.join(self.community.heatmap_img_titles_list)
                         
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\'  , \'' + heatmap_img_paths_array_as_str + '\' ,' + str(self.community.new_h) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heat-maps</button>\n')
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\'  , \'' + heatmap_img_paths_array_as_str + '\' ,' + str(self.community.new_h) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heatmaps</button>\n')
         
         
         if(self.community.all_term_dotplot_dict):
@@ -1943,7 +1943,7 @@ class singletonCommunity( community ):
         heatmap_img_titles_array_as_str = ','.join( self.heatmap_img_titles_list )
         
         html_f.write('<div class="plot_buttons3">\n')
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + heatmap_img_paths_array_as_str + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heat-maps</button>\n' )
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + heatmap_img_paths_array_as_str + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heatmaps</button>\n' )
         html_f.write('<button class="view-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'heatmap\', true , \'Literature search\')">Literature search</button>\n' )
     
         if( len(self.exp_ids) > 1 and ( self.num_extra_images > 1 ) ):# only want a button to toggle through extra images if there is more than one such image... len(self.exp_ids) > 1
@@ -2181,14 +2181,14 @@ class metaGroup( community ):
         
         
         html_f.write('<div class="plot_buttons2">\n')
-        html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heat-maps</button>\n' )
+        html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heatmaps</button>\n' )
         html_f.write( '<button class="view-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'heatmap\', true , \'Literature search\')">Literature search</button>\n' )
         html_f.write('</div>\n')
         
         
         html_f.write('<div class="upset2">\n')
         html_f.write('<div style="width: 1200px;">\n')
-        html_f.write('<table><tr><td style="font-weight: bold;">UpSet plot</td></tr></table>\n')
+        html_f.write('<table><tr><td style="font-weight: bold;">Upset plot</td></tr></table>\n')
         html_f.write('<img src="' + self.upset_img_path + '" width="' + str( self.upset_img_width )  + '" height="' + str( self.new_h ) + '">\n')
         html_f.write('</div>\n')
         html_f.write('</div>\n')

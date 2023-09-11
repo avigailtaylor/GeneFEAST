@@ -152,6 +152,7 @@ def read_in_ora_data(ora_file_path, exp_id, min_level, max_dcnt, dotplots, GO_te
                 
                 
                 if((exp_id, term) in seen_exp_term_pairs):
+                    print("This term is repeated " + term)
                     status = 2
                     message = ('*** ERROR: Term repeated in ORA (or GSEA) file in '
                                ' experiment with ID: ' + exp_id + '. ***')
@@ -389,7 +390,7 @@ def build_terms_graph(terms_list, term_genes_dict, tt_overlap_measure, min_weigh
     return(terms_graph)
 
 
-def adaptive_big_community_find_aux( xl_terms , max_cluster_size_thresh , tt_overlap_measure , min_weight_tt_edge , term_genes_dict ):
+def adaptive_big_community_find_aux( xl_terms , max_community_size_thresh , tt_overlap_measure , min_weight_tt_edge , term_genes_dict ):
     xl_terms_graph = nx.Graph()
     xl_t_index = 0
 
@@ -418,14 +419,14 @@ def adaptive_big_community_find_aux( xl_terms , max_cluster_size_thresh , tt_ove
     if( len( xl_terms_graph.edges  )>0 ):
         community_term_sets = list( greedy_modularity_communities( xl_terms_graph ) )
 
-    big_community_term_sets_aux = [ community_term_set for community_term_set in community_term_sets if ( ( len( community_term_set ) > 1 ) and ( len( community_term_set ) <= max_cluster_size_thresh ) ) ]
+    big_community_term_sets_aux = [ community_term_set for community_term_set in community_term_sets if ( ( len( community_term_set ) > 1 ) and ( len( community_term_set ) <= max_community_size_thresh ) ) ]
         
-    XL_community_term_sets_aux = [ community_term_set for community_term_set in community_term_sets if len( community_term_set ) > max_cluster_size_thresh ]
+    XL_community_term_sets_aux = [ community_term_set for community_term_set in community_term_sets if len( community_term_set ) > max_community_size_thresh ]
     
     return( big_community_term_sets_aux , XL_community_term_sets_aux )
 
 
-def adaptive_big_community_find( xl , max_cluster_size_thresh , tt_overlap_measure , min_weight_tt_edge , max_dcnt , term_types_dict , GO_term_stats , term_genes_dict ):
+def adaptive_big_community_find( xl , max_community_size_thresh , tt_overlap_measure , min_weight_tt_edge , max_dcnt , term_types_dict , GO_term_stats , term_genes_dict ):
     # PRE-CONDITION: Function only called on sets of terms that are allowed to be clustered, 
     # so if COMBINE_TERM_TYPES is FALSE, we assume that only terms of one type have been passed
     # in a call to this function... We do not check the validity of this assumption here.
@@ -453,14 +454,14 @@ def adaptive_big_community_find( xl , max_cluster_size_thresh , tt_overlap_measu
                 if( xl_t_dcnt <= my_max_dcnt ):
                     my_xl_terms.append( xl_t )
          
-        ( big_community_term_sets_aux , my_xl ) = adaptive_big_community_find_aux( my_xl_terms , max_cluster_size_thresh , tt_overlap_measure , my_min_weight_tt_edge , term_genes_dict )
+        ( big_community_term_sets_aux , my_xl ) = adaptive_big_community_find_aux( my_xl_terms , max_community_size_thresh , tt_overlap_measure , my_min_weight_tt_edge , term_genes_dict )
          
         big_community_term_sets = big_community_term_sets + big_community_term_sets_aux
         
         if( len( my_xl ) > 0 ):
             my_xl_terms = [ term for xl_term_set in my_xl for term in xl_term_set ]
             my_min_weight_tt_edge = my_min_weight_tt_edge + 0.1
-            ( big_community_term_sets_aux , my_xl ) = adaptive_big_community_find_aux( my_xl_terms , max_cluster_size_thresh , tt_overlap_measure , my_min_weight_tt_edge , term_genes_dict )
+            ( big_community_term_sets_aux , my_xl ) = adaptive_big_community_find_aux( my_xl_terms , max_community_size_thresh , tt_overlap_measure , my_min_weight_tt_edge , term_genes_dict )
             
             big_community_term_sets = big_community_term_sets + big_community_term_sets_aux
             
@@ -468,7 +469,7 @@ def adaptive_big_community_find( xl , max_cluster_size_thresh , tt_overlap_measu
 
 
 
-def get_big_community_term_sets(terms_graph, max_cluster_size_thresh, tt_overlap_measure, min_weight_tt_edge, max_dcnt, term_types_dict, GO_term_stats, term_genes_dict):
+def get_big_community_term_sets(terms_graph, max_community_size_thresh, tt_overlap_measure, min_weight_tt_edge, max_dcnt, term_types_dict, GO_term_stats, term_genes_dict):
     community_term_sets = []
     big_community_term_sets_aux = []
     XL_community_term_sets = []
@@ -478,9 +479,9 @@ def get_big_community_term_sets(terms_graph, max_cluster_size_thresh, tt_overlap
     if( len( terms_graph.edges  )>0 ):
         community_term_sets = list( greedy_modularity_communities( terms_graph ) )
 
-    big_community_term_sets_aux = [ community_term_set for community_term_set in community_term_sets if ( ( len( community_term_set ) > 1 ) and ( len( community_term_set ) <= max_cluster_size_thresh ) ) ]
-    XL_community_term_sets = [ community_term_set for community_term_set in community_term_sets if len( community_term_set ) > max_cluster_size_thresh ]
-    adapted_big_community_term_sets = adaptive_big_community_find( XL_community_term_sets , max_cluster_size_thresh , tt_overlap_measure , min_weight_tt_edge , max_dcnt , term_types_dict , GO_term_stats , term_genes_dict )
+    big_community_term_sets_aux = [ community_term_set for community_term_set in community_term_sets if ( ( len( community_term_set ) > 1 ) and ( len( community_term_set ) <= max_community_size_thresh ) ) ]
+    XL_community_term_sets = [ community_term_set for community_term_set in community_term_sets if len( community_term_set ) > max_community_size_thresh ]
+    adapted_big_community_term_sets = adaptive_big_community_find( XL_community_term_sets , max_community_size_thresh , tt_overlap_measure , min_weight_tt_edge , max_dcnt , term_types_dict , GO_term_stats , term_genes_dict )
     big_community_term_sets = big_community_term_sets_aux + adapted_big_community_term_sets
     big_community_term_sets.sort( key=len , reverse=True )
     

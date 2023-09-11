@@ -93,7 +93,7 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     BC_BC_OVERLAP_MEASURE = cfg_yaml['BC_BC_OVERLAP_MEASURE']
     MIN_WEIGHT_BC_BC = cfg_yaml['MIN_WEIGHT_BC_BC']
     
-    MAX_CLUSTER_SIZE_THRESH = cfg_yaml['MAX_CLUSTER_SIZE_THRESH']
+    MAX_COMMUNITY_SIZE_THRESH = cfg_yaml['MAX_COMMUNITY_SIZE_THRESH']
     MAX_META_COMMUNITY_SIZE_THRESH = cfg_yaml['MAX_META_COMMUNITY_SIZE_THRESH']
     
     COMBINE_TERM_TYPES = cfg_yaml['COMBINE_TERM_TYPES']
@@ -171,7 +171,7 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     log_f.write("MIN_WEIGHT_SC_BC: " + str(MIN_WEIGHT_SC_BC) + "\n")
     log_f.write("BC_BC_OVERLAP_MEASURE: " + BC_BC_OVERLAP_MEASURE + "\n")
     log_f.write("MIN_WEIGHT_BC_BC: " + str(MIN_WEIGHT_BC_BC) + "\n")
-    log_f.write("MAX_CLUSTER_SIZE_THRESH: " + str(MAX_CLUSTER_SIZE_THRESH) + "\n")
+    log_f.write("MAX_COMMUNITY_SIZE_THRESH: " + str(MAX_COMMUNITY_SIZE_THRESH) + "\n")
     log_f.write("MAX_META_COMMUNITY_SIZE_THRESH: " + str(MAX_META_COMMUNITY_SIZE_THRESH) + "\n")
     log_f.write("COMBINE_TERM_TYPES: " + str(COMBINE_TERM_TYPES) + "\n")
     log_f.write("SEARCH_WORDS: " + str(SEARCH_WORDS))
@@ -243,7 +243,7 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     if(COMBINE_TERM_TYPES or len(type_2_term_dict.keys())==1):    
         terms_graph = gfb.build_terms_graph(terms_list, _term_genes_dict, TT_OVERLAP_MEASURE, MIN_WEIGHT_TT_EDGE)    
         # find 'big' communities of terms. Here 'big' just means not singleton ********
-        big_community_term_sets = gfb.get_big_community_term_sets(terms_graph, MAX_CLUSTER_SIZE_THRESH, TT_OVERLAP_MEASURE, MIN_WEIGHT_TT_EDGE, MAX_DCNT, _term_types_dict, _GO_term_stats, _term_genes_dict)
+        big_community_term_sets = gfb.get_big_community_term_sets(terms_graph, MAX_COMMUNITY_SIZE_THRESH, TT_OVERLAP_MEASURE, MIN_WEIGHT_TT_EDGE, MAX_DCNT, _term_types_dict, _GO_term_stats, _term_genes_dict)
     
     else:
         big_community_term_sets = []
@@ -255,7 +255,7 @@ def gf(mif_path, output_dir, cfg_yaml_path):
             sub_terms_graph = gfb.build_terms_graph(sub_terms_list, _term_genes_dict, TT_OVERLAP_MEASURE, MIN_WEIGHT_TT_EDGE)
             
             # find 'big' communities of terms. Here 'big' just means not singleton ********
-            sub_big_community_term_sets = gfb.get_big_community_term_sets(sub_terms_graph, MAX_CLUSTER_SIZE_THRESH, TT_OVERLAP_MEASURE, MIN_WEIGHT_TT_EDGE, MAX_DCNT, _term_types_dict, _GO_term_stats, _term_genes_dict)
+            sub_big_community_term_sets = gfb.get_big_community_term_sets(sub_terms_graph, MAX_COMMUNITY_SIZE_THRESH, TT_OVERLAP_MEASURE, MIN_WEIGHT_TT_EDGE, MAX_DCNT, _term_types_dict, _GO_term_stats, _term_genes_dict)
             big_community_term_sets = big_community_term_sets + sub_big_community_term_sets
     
     (big_communities, singleton_communities, meta_communities, singleton_meta_communities) = \
