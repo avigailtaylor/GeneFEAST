@@ -4,6 +4,7 @@ GeneFEAST, implemented in Python, is a gene-centric functional enrichment analys
 
 Please see the [User Guide](https://avigailtaylor.github.io/GeneFEAST/user_guide.html) for installation and usage instructions.
 
+---
 
 ### Citation
 
