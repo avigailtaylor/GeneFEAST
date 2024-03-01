@@ -142,7 +142,7 @@ def gf(mif_path, output_dir, cfg_yaml_path):
         
     print(MSIGDB_HTML)
         
-    msigdb_file = open(MSIGDB_HTML, "r")
+    msigdb_file = open(MSIGDB_HTML, "r", encoding='UTF8')
     msigdb_contents = msigdb_file.read()
     msigdb_html_soup = BeautifulSoup(msigdb_contents, features="lxml")
     
