@@ -21,19 +21,19 @@
 ---
 ### Now run GeneFEAST in one of the following three ways:
 
-If you are running GeneFEAST through its [docker](https://docs.docker.com/get-docker/) container:
+Through its [docker](https://docs.docker.com/get-docker/) container:
 ```
 docker run --volume $HOME:$HOME --workdir $(pwd) ghcr.io/avigailtaylor/genefeast:latest gf <full/path/to/meta_3h.txt> <OUTPUT_DIR> <full/path/to/mmc2_3h_config.yml>
 ```
 
-If you are running GeneFEAST through the command line:
+Through the command line:
 ```
     $ gf <full/path/to/meta_3h.txt> \
          <OUTPUT_DIR> \
          <full/path/to/mmc2_3h_config.yml>
 ```
 
-Alternatively, in Python:
+In Python:
 
 ```python
 from genefeast import gf
