@@ -1,5 +1,8 @@
 # User Guide
 
+> **IMPORTANT**
+> You can find example input data and output report [here](https://avigailtaylor.github.io/GeneFEAST/example_usage.md)
+
 ## Installation
 
 ### Option 1: Don't install! Instead, download the GeneFEAST ready-to-use [docker](https://docs.docker.com/get-docker/) container!
