@@ -40,7 +40,7 @@ from genefeast import gf
 
 gf.gf(<full/path/to/meta_3h.txt>, <OUTPUT_DIR>, <full/path/to/mmc2_3h_config.yml>)
 ```
-> In all three of these examples, <OUTPUT_DIR> can be whatever you want it to be, so long as it does not already exist.
+> In all three of these examples, `<OUTPUT_DIR>` can be whatever you want it to be, so long as it does not already exist.
 
 ---
 ### Comparing your output to the example output
@@ -48,8 +48,8 @@ gf.gf(<full/path/to/meta_3h.txt>, <OUTPUT_DIR>, <full/path/to/mmc2_3h_config.yml
 Once you have run GeneFEAST, you can download [this example output](https://avigailtaylor.github.io/GeneFEAST/mmc2_3h_output.zip), unzip it, and compare the output to your output.
 
 #### Viewing the GeneFEAST report
-To view the GeneFEAST HTML report, navigate to the output directory (specified by you in the <OUTPUT_DIR> parameter, above) and use a web browser to open
-file **mmc2_3h_communities_summary.html**.
+To view the GeneFEAST HTML report, navigate to the output directory (specified by you in the `<OUTPUT_DIR>` parameter, above) and use a web browser to open
+file `mmc2_3h_communities_summary.html`.
 
 > **IMPORTANT**
 > Viewing the HTML output report requires a web-browser with HTML5 and JavaScript 1.6 support.
