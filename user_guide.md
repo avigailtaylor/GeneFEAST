@@ -150,7 +150,7 @@ gf_multi.gf_multi(<META_INPUT_FILE>, <OUTPUT_DIR>, <YAML_CONFIG_FILE>)
 
 ##### Single FEA summary report
 To view a GeneFEAST single FEA summary report, navigate to the output directory (specified by you in the `<OUTPUT_DIR>` parameter, above) and use a web browser to open 
-file *<FEA_IDENTIFIER>_communities_summary.html*.
+file `<FEA_IDENTIFIER>_communities_summary.html`.
 
 ##### Multi FEA summary report
 
