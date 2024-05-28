@@ -1,4 +1,4 @@
-# Example input data and output reports
+# Example input data and output report
 
 > The gene expression data used in this example is from: 
 >
