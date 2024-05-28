@@ -116,9 +116,9 @@ If you have installed GeneFEAST, then you can either run it on the command line,
 To use GeneFEAST to summarize results from a single FEA, type the following on the command line:
 
 ```
-    $ gf META_INPUT_FILE \
-         OUTPUT_DIR \
-         YAML_CONFIG_FILE
+    $ gf <META_INPUT_FILE> \
+         <OUTPUT_DIR> \
+         <YAML_CONFIG_FILE>
 ```
 
 Alternatively, in Python:
@@ -126,15 +126,15 @@ Alternatively, in Python:
 ```python
 from genefeast import gf
 
-gf.gf(META_INPUT_FILE, OUTPUT_DIR, YAML_CONFIG_FILE)
+gf.gf(<META_INPUT_FILE>, <OUTPUT_DIR>, <YAML_CONFIG_FILE>)
 ```
 
 To use GeneFEAST to summarize results from multiple FEAs, type the following on the command line:
 
 ```
-    $ gf_multi META_INPUT_FILE \
-               OUTPUT_DIR \
-               YAML_CONFIG_FILE
+    $ gf_multi <META_INPUT_FILE> \
+               <OUTPUT_DIR> \
+               <YAML_CONFIG_FILE>
 ```
 
 Alternatively, in Python:
@@ -142,19 +142,19 @@ Alternatively, in Python:
 ```python
 from genefeast import gf_multi
 
-gf_multi.gf_multi(META_INPUT_FILE, OUTPUT_DIR, YAML_CONFIG_FILE)
+gf_multi.gf_multi(<META_INPUT_FILE>, <OUTPUT_DIR>, <YAML_CONFIG_FILE>)
 ```
 ***
 
 #### Viewing the GeneFEAST report
 
 ##### Single FEA summary report
-To view a GeneFEAST single FEA summary report, navigate to the output directory (specified by you in the OUTPUT_DIR parameter, above) and use a web browser to open 
+To view a GeneFEAST single FEA summary report, navigate to the output directory (specified by you in the `<OUTPUT_DIR>` parameter, above) and use a web browser to open 
 file *<FEA_IDENTIFIER>_communities_summary.html*.
 
 ##### Multi FEA summary report
 
-To view a GeneFEAST multi FEA summary report, navigate to the output directory and use a web browser to open file *<FEA_IDENTIFIERS>_main.html*.
+To view a GeneFEAST multi FEA summary report, navigate to the output directory and use a web browser to open file `<FEA_IDENTIFIERS>_main.html`.
 
 > **IMPORTANT**
 > Viewing the HTML output report requires a web-browser with HTML5 and JavaScript 1.6 support.
