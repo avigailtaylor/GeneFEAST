@@ -16,7 +16,7 @@
 
 - Example meta input file, [meta_3h.txt](https://avigailtaylor.github.io/GeneFEAST/meta_3h.txt)
 
-> !!! IMPORTANT !!! Open this file and put in the full path to your copies of GO_BP_3h_0.001_4GF.csv and mmc2_goi_3h.csv.
+> **IMPORTANT** Open this file and put in the full path to your copies of GO_BP_3h_0.001_4GF.csv and mmc2_goi_3h.csv.
 
 ---
 ### Now run GeneFEAST in one of the following three ways:
