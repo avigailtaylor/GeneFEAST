@@ -17,7 +17,7 @@ from PIL import Image
 from collections import OrderedDict
 from goatools import godag_plot
 from matplotlib import pyplot
-from matplotlib.tight_layout import get_renderer
+#from matplotlib.tight_layout import get_renderer
 from scipy.cluster.hierarchy import dendrogram, linkage
 from upsetplot import from_contents
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
@@ -73,7 +73,7 @@ class my_UpSet(up.UpSet):
             fig = pyplot.gcf()
 
         # Determine text size to determine figure size / spacing
-        r = get_renderer(fig)
+        r = fig.canvas.get_renderer()
         t = fig.text(0, 0, '\n'.join(self.totals.index.values))
         textw = t.get_window_extent(renderer=r).width
         t.remove()
@@ -229,8 +229,8 @@ class heatmapDrawer:
         #NOTE: The 'fm' in heatmap_fm stands for 'for masking'
         
         (s_rows, s_cols) = self.etg.rows_cols
-        cluster_genes = [self.etg.genes_sorted[i] for i in range(len(self.etg.genes_sorted)) if s_cols[i]]
-        cluster_genes_indices = [i for i in range(len(self.etg.genes_sorted)) if s_cols[i]]
+        cluster_genes = [self.etg.genes_sorted[i] for i in range(len(self.etg.genes_sorted)) if s_cols.iloc[i]]
+        cluster_genes_indices = [i for i in range(len(self.etg.genes_sorted)) if s_cols.iloc[i]]
         
         (gene_exp_heatmap_fm_subset_df, Z, leaves) = self.__get_lordered_gene_exp_heatmap_fm_subset_df(s_cols, cluster_genes)
         gene_term_heatmap_fm_subset_df = self.etg.gene_term_heatmap_fm_df.iloc[s_rows].loc[:, s_cols]
@@ -381,7 +381,7 @@ class heatmapDrawer:
         gene_term_heatmap_fm_subset_df = self.etg.gene_term_heatmap_fm_df.iloc[s_rows].loc[:, s_cols]
         
         ordered_cluster_genes = sorted(cluster_genes)
-        gene_term_heatmap_fm_subset_df = gene_term_heatmap_fm_subset_df.reindex(columns=ordered_cluster_genes)
+        gene_term_heatmap_fm_subset_df = gene_term_heatmap_fm_subset_df.reindex(columns=ordered_cluster_genes).infer_objects(copy=False)
         gene_term_heatmap_fm_subset_df.rename( index = self.trimmed_term_mapping_dict , inplace = True )
         gene_term_heatmap_fm_subset_df = self.__add_extra_annotations(gene_term_heatmap_fm_subset_df)
         
@@ -1452,10 +1452,10 @@ class bigCommunity(community):
                         
         self.etg_df = pd.DataFrame.from_records( _etg_data , columns = [ 'Experiment' , 'Term' , 'Gene' , 'QD' , 'Present' ] )
         
-        self.gene_term_heatmap_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot( 'Term' , 'Gene' , 'Present' ).fillna( 0 ).reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_term_heatmap_fm_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot( 'Term' , 'Gene' , 'Present' ).reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_exp_heatmap_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).fillna( 0 ).reindex( index=self.exp_ids, columns = self.genes_sorted )
-        self.gene_exp_heatmap_fm_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_term_heatmap_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present', fill_value=0).reindex( index=self.terms, columns = self.genes_sorted )
+        self.gene_term_heatmap_fm_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present').reindex( index=self.terms, columns = self.genes_sorted )
+        self.gene_exp_heatmap_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD', fill_value=0).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_exp_heatmap_fm_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD').reindex( index=self.exp_ids, columns = self.genes_sorted )
         
         self.rows_cols = ( [] , [] )
         if( len( self.genes ) > 25 and len( self.terms ) >= 4 ):
@@ -1472,7 +1472,7 @@ class bigCommunity(community):
         
         # Before drawing the rest of the plots, extract the gene list that's shown in the heatmap:
         ( _ , s_cols ) = self.rows_cols
-        self.included_genes = [ self.genes_sorted[ i ] for i in range( len( self.genes_sorted ) ) if s_cols[ i ] ]
+        self.included_genes = [ self.genes_sorted[ i ] for i in range( len( self.genes_sorted ) ) if s_cols.iloc[ i ] ]
         
         #*****************************************************************************************
         
@@ -1772,10 +1772,10 @@ class singletonCommunity( community ):
                         
         _etg_df = pd.DataFrame.from_records( _etg_data , columns = [ 'Experiment' , 'Term' , 'Gene' , 'QD' , 'Present' ] )
         
-        self.gene_term_heatmap_df = _etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot(  'Term' , 'Gene' , 'Present' ).fillna( 0 ).reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_term_heatmap_fm_df = _etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot(  'Term' , 'Gene' , 'Present' ).reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_exp_heatmap_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).fillna( 0 ).reindex( index=self.exp_ids, columns = self.genes_sorted )
-        self.gene_exp_heatmap_fm_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_term_heatmap_df = _etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present', fill_value=0).reindex( index=self.terms, columns = self.genes_sorted )
+        self.gene_term_heatmap_fm_df = _etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present').reindex( index=self.terms, columns = self.genes_sorted )
+        self.gene_exp_heatmap_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD', fill_value=0).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_exp_heatmap_fm_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD').reindex( index=self.exp_ids, columns = self.genes_sorted )
     
         self.rows_cols = ( ( range( len( self.terms ) ) , self.gene_term_heatmap_df.sum() > 0 ) )
             
@@ -1790,7 +1790,7 @@ class singletonCommunity( community ):
         
         # Before continuing with HTML printing, extract the gene list that's shown in the heatmap:
         ( _ , s_cols ) = self.rows_cols
-        self.included_genes = [ self.genes_sorted[ i ] for i in range( len( self.genes_sorted ) ) if s_cols[ i ] ]
+        self.included_genes = [ self.genes_sorted[ i ] for i in range( len( self.genes_sorted ) ) if s_cols.iloc[ i ]]
     
     
     def print_html ( self , html_f , summary_html , backlink = '' ):
@@ -2028,10 +2028,10 @@ class metaGroup( community ):
         _etg_df = pd.DataFrame.from_records( _etg_data , columns = [ 'Experiment' , 'Community' , 'Gene' , 'QD' , 'Present' ] )
         
         # Note, we call this a gene_term_heatmap_df here, rather than a gene_community_heatmap_df, because that is what heatmapDrawer is expecting.
-        self.gene_term_heatmap_df = _etg_df[ [ 'Community' , 'Gene' , 'Present' ] ].drop_duplicates().pivot(  'Community' , 'Gene' , 'Present' ).fillna( 0 ).reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_term_heatmap_fm_df = _etg_df[ [ 'Community' , 'Gene' , 'Present' ] ].drop_duplicates().pivot(  'Community' , 'Gene' , 'Present' ).reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_exp_heatmap_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).fillna( 0 ).reindex( index=self.exp_ids, columns = self.genes_sorted )
-        self.gene_exp_heatmap_fm_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_term_heatmap_df = _etg_df[ [ 'Community' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Community', columns='Gene', values='Present', fill_value=0).reindex( index=self.terms, columns = self.genes_sorted )
+        self.gene_term_heatmap_fm_df = _etg_df[ [ 'Community' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Community', columns='Gene', values='Present').reindex( index=self.terms, columns = self.genes_sorted )
+        self.gene_exp_heatmap_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD', fill_value=0).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_exp_heatmap_fm_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD').reindex( index=self.exp_ids, columns = self.genes_sorted )
     
         self.rows_cols = ( [] , [] )
         if( len( self.genes ) > 50 and len( self.communities ) >= 3 ):
@@ -2049,7 +2049,7 @@ class metaGroup( community ):
         
         # Now extract the gene list that's shown in the heatmap:
         ( _ , s_cols ) = self.rows_cols
-        self.included_genes = [ self.genes_sorted[ i ] for i in range( len( self.genes_sorted ) ) if s_cols[ i ] ]
+        self.included_genes = [ self.genes_sorted[ i ] for i in range( len( self.genes_sorted ) ) if s_cols.iloc[i]]
                         
 
     def __make_community_genes_dict( self ):
@@ -2624,10 +2624,10 @@ class heatmapDrawerUser:
                         
         self.etg_df = pd.DataFrame.from_records( _etg_data , columns = [ 'Experiment' , 'Term' , 'Gene' , 'QD' , 'Present' ] )
         
-        self.gene_term_heatmap_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot( 'Term' , 'Gene' , 'Present' ).fillna( 0 ).reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_term_heatmap_fm_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot( 'Term' , 'Gene' , 'Present' ).reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_exp_heatmap_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).fillna( 0 ).reindex( index=self.exp_ids, columns = self.genes_sorted )
-        self.gene_exp_heatmap_fm_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_term_heatmap_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present', fill_value=0).reindex( index=self.terms, columns = self.genes_sorted )
+        self.gene_term_heatmap_fm_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present').reindex( index=self.terms, columns = self.genes_sorted )
+        self.gene_exp_heatmap_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD', fill_value=0).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_exp_heatmap_fm_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD').reindex( index=self.exp_ids, columns = self.genes_sorted )
         
         self.rows_cols = ( [] , [] )
         

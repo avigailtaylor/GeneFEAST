@@ -34,8 +34,8 @@ def main():
 def gf(mif_path, output_dir, cfg_yaml_path):
     # MAIN PROGRAM ****************************************************************
     # 0. CHECK PYTHON VERSION *****************************************************
-    if(not(sys.version_info.major==3 and sys.version_info.minor==7)):
-        print('GeneFEAST requires Python 3.7. Please make sure you have a compliant version installed.')
+    if(not(sys.version_info.major==3 and sys.version_info.minor==12)):
+        print('GeneFEAST requires Python 3.12. Please make sure you have a compliant version installed.')
         sys.exit()
     
     # 1. SET UP I/O FILES AND DIRECTORIES *****************************************
@@ -142,7 +142,7 @@ def gf(mif_path, output_dir, cfg_yaml_path):
         
     print(MSIGDB_HTML)
         
-    msigdb_file = open(MSIGDB_HTML, "r")
+    msigdb_file = open(MSIGDB_HTML, "r", encoding='UTF8')
     msigdb_contents = msigdb_file.read()
     msigdb_html_soup = BeautifulSoup(msigdb_contents, features="lxml")
     
