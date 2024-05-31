@@ -1,4 +1,4 @@
-# Single FEA summary report: example input data and output report
+# Single FEA summary: example input data and output report
 
 > The gene expression data used in this example is from: 
 >
