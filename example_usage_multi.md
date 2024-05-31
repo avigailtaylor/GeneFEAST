@@ -6,9 +6,7 @@
 
 > **IMPORTANT**
 >
-> If you have already created a single FEA summary report using [this example data](https://avigailtaylor.github.io/GeneFEAST/example_usage.md), you still need to
-> **download all of the following files** for this multi FEA summary example. All but one of the files below are similarly named, but different to those provided for the 
-> [single FEA summary example](https://avigailtaylor.github.io/GeneFEAST/example_usage.md), with the only overlapping file being the [3 hour timepoint genes of interest file](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv)
+> If you have already created a single FEA summary report using [this example data](https://avigailtaylor.github.io/GeneFEAST/example_usage.html), you still need to **download all of the following files** for this multi FEA summary example. All but one of the files below are similarly named, but different to those provided for the [single FEA summary example](https://avigailtaylor.github.io/GeneFEAST/example_usage.html), with the only overlapping file being the [3 hour timepoint genes of interest file](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv)
 
 ---
 ### Download the following example input files:
