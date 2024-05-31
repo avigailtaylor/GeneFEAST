@@ -13,18 +13,18 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
 
 If you decide to install GeneFEAST, then we **strongly recommend** installing it in a **virtual environment** because the library has several dependencies and requirements:
 
-- python == 3.7
-- matplotlib == 3.3.3
-- numpy == 1.17.2
-- pandas == 0.25.2
-- upsetplot == 0.4.1
-- goatools == 1.0.14
-- scipy == 1.3.2
-- networkx == 2.5
-- lxml == 4.4.1
-- beautifulsoup4 == 4.8.0
-- pillow == 6.2.0
-- PyYAML == 5.1.2
+- python <= 3.7
+- matplotlib <= 3.3.3
+- numpy <= 1.17.2
+- pandas <= 0.25.2
+- upsetplot <= 0.4.1
+- goatools <= 1.0.14
+- scipy <= 1.3.2
+- networkx <= 2.5
+- lxml <= 4.4.1
+- beautifulsoup4 <= 4.8.0
+- pillow <= 6.2.0
+- PyYAML <= 5.1.2
 
 
 > Please follow the instructions at the top of **[this guide](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment)** to create and activate a virtual environment. Please only follow the instructions to the end of section **Activating a virtual environment** and then **come back here**.
@@ -187,6 +187,7 @@ Term frames have similar, reduced content of community frames. In particular, th
 Meta community frames contain: split heatmaps, wherein term annotation is replaced by gene-community membership in the top heatmap, a literature search for each gene (as described above), and an upset plot showing the overlap between sets of genes annotated by the member communities. Meta community frames have links to member communities (red, solid arrow)
 
 Reports summarising multiple FEAs start with a 'main' page showing an upset plot of the sets of terms identified as enriched in each of the analyses (left green box). We refer to each set of terms found in two or more FEAs as an *"FEA term-set intersection"*. The main page also has an additional side panel (on the right, not shown here) displaying a list of links to separate reports for each intersection. Each of the separate reports has the structure of a report summarising a single FEA, as described above.
+
 ***
 
 #### Additional GeneFEAST output
