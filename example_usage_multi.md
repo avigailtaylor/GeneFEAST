@@ -15,7 +15,7 @@
 - Example FEA results file (24 hour time point, p.adjust<0.0001): [GO_BP_24h_0.0001_4GF.csv](https://avigailtaylor.github.io/GeneFEAST/GO_BP_24h_0.0001_4GF.csv)
 - Example genes of interest file (3 hour time point): [mmc2_goi_3h.csv](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv)
 - Example genes of interest file (24 hour time point): [mmc2_goi_3h.csv](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_24h.csv)
-- Example extra annotation file: [mmc2_3h_24h_extra_annotations.txt](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_24h.csv)
+- Example extra annotation file: [mmc2_3h_24h_extra_annotations.txt](https://avigailtaylor.github.io/GeneFEAST/mmc2_3h_24h_extra_annotations.txt)
 - Example config file: [mmc2_3h_24h_config.yml](https://avigailtaylor.github.io/GeneFEAST/mmc2_3h_24h_config.yml)
 
 ---
