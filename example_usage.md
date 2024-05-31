@@ -6,19 +6,19 @@
 
 > **IMPORTANT**
 >
-> If you have already created a multi FEA summary report using [this example data](https://avigailtaylor.github.io/GeneFEAST/example_usage_multi.html), you still need to **download all of the following files** for this single FEA summary example. All but one of the files below are similarly named, but different to those provided for the [multi FEA summary example](https://avigailtaylor.github.io/GeneFEAST/example_usage_multi.html), with the only overlapping file being the [3 hour timepoint genes of interest file](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv).
+> If you have already created a multi FEA summary report using [this example data](https://avigailtaylor.github.io/GeneFEAST/example_usage_multi.html), you still need to **download all of the following files** for this single FEA summary example. All but one of the files below are similarly named, but different to those provided for the [multi FEA summary example](https://avigailtaylor.github.io/GeneFEAST/example_usage_multi.html), with the only overlapping file being the [3 hour time point genes of interest file](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv).
 
 ---
 ### Download the following example input files:
 
-- Example FEA results file: [GO_BP_3h_0.001_4GF.csv](https://avigailtaylor.github.io/GeneFEAST/GO_BP_3h_0.001_4GF.csv)
-- Example genes of interest file: [mmc2_goi_3h.csv](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv)
+- Example FEA results file (3 hour time point, p.adjust<0.001): [GO_BP_3h_0.001_4GF.csv](https://avigailtaylor.github.io/GeneFEAST/GO_BP_3h_0.001_4GF.csv)
+- Example genes of interest file (3 hour time point): [mmc2_goi_3h.csv](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv)
 - Example config file: [mmc2_3h_config.yml](https://avigailtaylor.github.io/GeneFEAST/mmc2_3h_config.yml)
 
 ---
 ### Download the following example meta-input file:
 
-- Example meta-input file: [meta_3h.txt](https://avigailtaylor.github.io/GeneFEAST/meta_3h.txt)
+- Example meta-input file for single FEA summary: [meta_3h.txt](https://avigailtaylor.github.io/GeneFEAST/meta_3h.txt)
 
 > **IMPORTANT** Open this file and put in the full path to your copies of GO_BP_3h_0.001_4GF.csv and mmc2_goi_3h.csv.
 

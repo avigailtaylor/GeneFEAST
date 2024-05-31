@@ -6,15 +6,15 @@
 
 > **IMPORTANT**
 >
-> If you have already created a single FEA summary report using [this example data](https://avigailtaylor.github.io/GeneFEAST/example_usage.html), you still need to **download all of the following files** for this multi FEA summary example. All but one of the files below are similarly named, but different to those provided for the [single FEA summary example](https://avigailtaylor.github.io/GeneFEAST/example_usage.html), with the only overlapping file being the [3 hour timepoint genes of interest file](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv)
+> If you have already created a single FEA summary report using [this example data](https://avigailtaylor.github.io/GeneFEAST/example_usage.html), you still need to **download all of the following files** for this multi FEA summary example. All but one of the files below are similarly named, but different to those provided for the [single FEA summary example](https://avigailtaylor.github.io/GeneFEAST/example_usage.html), with the only overlapping file being the [3 hour time point genes of interest file](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv).
 
 ---
 ### Download the following example input files:
 
-- Example FEA results file (3 hour timepoint): [GO_BP_3h_0.0001_4GF.csv](https://avigailtaylor.github.io/GeneFEAST/GO_BP_3h_0.0001_4GF.csv)
-- Example FEA results file (24 hour timepoint): [GO_BP_24h_0.0001_4GF.csv](https://avigailtaylor.github.io/GeneFEAST/GO_BP_24h_0.0001_4GF.csv)
-- Example genes of interest file (3 hour timepoint): [mmc2_goi_3h.csv](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv)
-- Example genes of interest file (24 hour timepoint): [mmc2_goi_3h.csv](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_24h.csv)
+- Example FEA results file (3 hour time point, p.adjust<0.0001): [GO_BP_3h_0.0001_4GF.csv](https://avigailtaylor.github.io/GeneFEAST/GO_BP_3h_0.0001_4GF.csv)
+- Example FEA results file (24 hour time point, p.adjust<0.0001): [GO_BP_24h_0.0001_4GF.csv](https://avigailtaylor.github.io/GeneFEAST/GO_BP_24h_0.0001_4GF.csv)
+- Example genes of interest file (3 hour time point): [mmc2_goi_3h.csv](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv)
+- Example genes of interest file (24 hour time point): [mmc2_goi_3h.csv](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_24h.csv)
 - Example extra annotation file: [mmc2_3h_24h_extra_annotations.txt](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_24h.csv)
 - Example config file: [mmc2_3h_24h_config.yml](https://avigailtaylor.github.io/GeneFEAST/mmc2_3h_24h_config.yml)
 
