@@ -13,7 +13,7 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
 
 If you decide to install GeneFEAST, then we **strongly recommend** installing it in a **virtual environment** because the library has several dependencies and requirements:
 
-- python <= 3.7
+- python == 3.7
 - matplotlib <= 3.3.3
 - numpy <= 1.17.2
 - pandas <= 0.25.2
