@@ -4,11 +4,17 @@
 >
 > Pinto SM, Subbannayya Y, Kim H, Hagen L, Górna MW, Nieminen AI, Bjørås M, Espevik T, Kainov D, Kandasamy RK. Multi-OMICs landscape of SARS-CoV-2-induced host responses in human lung epithelial cells. iScience. 2023 Jan 20;26(1):105895. doi: 10.1016/j.isci.2022.105895. Epub 2022 Dec 28. PMID: 36590899; PMCID: PMC9794516.
 
+> **IMPORTANT**
+>
+> If you have already created a multi FEA summary report using [this example data](https://avigailtaylor.github.io/GeneFEAST/example_usage_multi.md), you still need to      
+> **download all of the following files** for this single FEA summary example. All but one of the files below are similarly named, but different to those provided for the
+> [multi FEA summary example](https://avigailtaylor.github.io/GeneFEAST/example_usage_multi.md), with the only overlapping file being the [3 hour timepoint genes of interest file](https://avigailtayl$
+
 ---
 ### Download the following example input files:
 
 - Example FEA results file: [GO_BP_3h_0.001_4GF.csv](https://avigailtaylor.github.io/GeneFEAST/GO_BP_3h_0.001_4GF.csv)
-- Example Genes of interest file: [mmc2_goi_3h.csv](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv)
+- Example genes of interest file: [mmc2_goi_3h.csv](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv)
 - Example config file: [mmc2_3h_config.yml](https://avigailtaylor.github.io/GeneFEAST/mmc2_3h_config.yml)
 
 ---
