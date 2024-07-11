@@ -8,19 +8,24 @@
 
 from pathlib import Path
 
+import collections
 import matplotlib as mp
 import numpy as np
 import pandas as pd
+import pycircos
 import seaborn as sns
 import upsetplot as up
 from PIL import Image
 from collections import OrderedDict
 from goatools import godag_plot
+from itertools import combinations
 from matplotlib import pyplot
 from matplotlib.tight_layout import get_renderer
 from scipy.cluster.hierarchy import dendrogram, linkage
 from upsetplot import from_contents
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+Garc = pycircos.Garc
+Gcircle = pycircos.Gcircle
 
 # GLOBAL FUNCTIONS ************************************************************
 def trim_term(term):
@@ -184,6 +189,147 @@ class upsetDrawer_app2: # an upsetDrawer for my_app_3... Requirements are quite 
         
         return (self.rel_images_dir + self.name.replace(' ', '') + "_" + self.sets_of + "_upset.png", new_w)
 
+
+class circosDrawer:
+    def __init__ (self, etg, rows_cols, trim_terms=True, metaGroupCircosDrawer = False):
+        self.etg = etg
+        self.rows_cols = rows_cols
+        self.trim_terms = trim_terms
+        self.trimmed_term_mapping_dict = self.__build_trimmed_term_mapping_dict()
+        self.metaGroupCircosDrawer = metaGroupCircosDrawer
+        self.metaGroup_barplot_dict = self.__build_metaGroup_barplot_dict()
+        print(self.metaGroup_barplot_dict)
+        
+    def __get_lordered_gene_exp_heatmap_fm_subset_df(self, s_cols, cluster_genes):
+        
+        heatmap_df = self.etg.gene_exp_heatmap_df.loc[:, s_cols]
+        heatmap_fm_df = self.etg.gene_exp_heatmap_fm_df.loc[:, s_cols]
+        
+        
+        if(len(cluster_genes) > 1):
+            Z = linkage(heatmap_df.values.T, 'ward', optimal_ordering=True)# MIGHT NEED TO REMOVE optimal_ordering=True
+            dn = dendrogram(Z, no_plot=True)
+            heatmap_fm_df = heatmap_fm_df.reindex(columns=[cluster_genes[gi] for gi in dn['leaves']])
+            return (heatmap_fm_df, Z, dn['leaves'])
+        else:
+            return (heatmap_fm_df, [[]], [0])
+        
+    
+    def __build_trimmed_term_mapping_dict(self):
+        if(self.trim_terms):
+            trimmed_terms = [trim_term(term) for term in self.etg.terms]
+            annotated_trimmed_terms = annotate_trimmed_terms(trimmed_terms)
+            return dict(zip(self.etg.terms,annotated_trimmed_terms))
+        else:
+            return dict(zip(self.etg.terms,self.etg.terms))
+        
+    
+    def __build_metaGroup_barplot_dict(self):
+        
+        metaGroup_barplot_dict = dict()
+        if(self.metaGroupCircosDrawer):
+            for community in self.etg.communities:
+                metaGroup_barplot_dict[self.trimmed_term_mapping_dict[community.name]] = community.term_genes_dict.values()
+        return metaGroup_barplot_dict
+        
+    def draw_circos(self):
+               
+        # We want to draw the circos plot to reflect the order of genes in heatmap B. So we need to do the work to build the 
+        # dataframe for that heatmap first...
+        (s_rows, s_cols) = self.rows_cols
+        cluster_genes = [self.etg.genes_sorted[i] for i in range(len(self.etg.genes_sorted)) if s_cols[i]]
+        cluster_genes_indices = [i for i in range(len(self.etg.genes_sorted)) if s_cols[i]]
+        
+        gene_term_heatmap_fm_subset_df = self.etg.gene_term_heatmap_fm_df.iloc[s_rows].loc[:, s_cols]    
+        (rows_t, cols_g) = gene_term_heatmap_fm_subset_df.values.shape
+        
+        gene_term_heatmap_fm_subset_df_COPY = gene_term_heatmap_fm_subset_df.copy()
+        for exponent in range(rows_t):
+            gene_term_heatmap_fm_subset_df_COPY.iloc[exponent] = gene_term_heatmap_fm_subset_df.iloc[exponent] * (2**exponent)
+        gene_binary_sums = gene_term_heatmap_fm_subset_df_COPY.sum().values
+        
+        gene_counts = gene_term_heatmap_fm_subset_df.sum().values 
+        
+        ordered_cluster_genes = []
+        for (gc, gbs) in list(OrderedDict.fromkeys(sorted(list(zip(gene_counts, gene_binary_sums)), key=lambda x: (-x[0], -x[1])))):
+            
+            subset_cluster_genes = [gene for (gene, count, binary_sum) in list(zip(cluster_genes, gene_counts, gene_binary_sums)) if (count==gc and binary_sum==gbs)]
+            subset_cluster_gene_indices = [gene_index for (gene_index, count, binary_sum) in list(zip(cluster_genes_indices, gene_counts, gene_binary_sums)) if (count==gc and binary_sum==gbs)]
+            subset_cluster_gene_cols = [(i in subset_cluster_gene_indices) for i in range(len(s_cols))]
+
+            if(len(subset_cluster_genes) > 1):
+                (_, _, subset_leaves) = self.__get_lordered_gene_exp_heatmap_fm_subset_df(subset_cluster_gene_cols, subset_cluster_genes)
+            else:
+                subset_leaves = [0]
+            
+            ordered_cluster_genes = ordered_cluster_genes + [subset_cluster_genes[gi] for gi in subset_leaves]
+        
+        gene_term_heatmap_fm_subset_df = gene_term_heatmap_fm_subset_df.reindex(columns=ordered_cluster_genes)
+        
+        gene_term_heatmap_fm_subset_df.rename(index=self.trimmed_term_mapping_dict, inplace=True)       #print(gene_term_heatmap_fm_subset_df.index)
+       
+        
+        # Now that we have the correct heatmap df, we can make the circos plot in the same order...
+        circle = Gcircle()
+        circos_dict = {}
+        for gtheatmap_index, gtheatmap_row in gene_term_heatmap_fm_subset_df.iterrows():
+            row_values = gtheatmap_row.values
+            if(not(self.metaGroupCircosDrawer)):
+                circos_dict_values  = [ np.nan if np.isnan(row_values[x]) else (gtheatmap_index, int(row_values[x] + np.nansum(row_values[0:x]) -1) , int(row_values[x] + np.nansum(row_values[0:x])), 900) for x in range(0,len(row_values))]
+            else:
+                circos_dict_values  = [ np.nan if np.isnan(row_values[x]) else (gtheatmap_index, int(row_values[x] + np.nansum(row_values[0:x]) -1) , int(row_values[x] + np.nansum(row_values[0:x])), 750) for x in range(0,len(row_values))]
+            circos_dict[gtheatmap_index] = circos_dict_values
+            
+            arc = Garc(arc_id=gtheatmap_index, size=np.nansum(row_values), interspace = 1, raxis_range=(950,1000), labelposition=60, label_visible=True)
+            circle.add_garc(arc)
+        
+        circle.set_garcs()
+        
+        
+        if(self.metaGroupCircosDrawer):
+            values_all = []
+            arcdata_dict = collections.defaultdict(dict)
+            for gtheatmap_index, gtheatmap_row in gene_term_heatmap_fm_subset_df.iterrows():
+                row_values = gtheatmap_row.values
+                
+                arcdata_dict[gtheatmap_index]["positions"] = range(int(np.nansum(row_values)))
+                arcdata_dict[gtheatmap_index]["widths"] = [1 for x in range(int(np.nansum(row_values)))]
+                arcdata_dict[gtheatmap_index]["values"] = [sum([ordered_cluster_genes[x] in v for v in self.metaGroup_barplot_dict[gtheatmap_index]]) 
+                                                            for x in range(0,len(row_values)) if not(np.isnan(row_values[x]))]
+                values_all.append(arcdata_dict[gtheatmap_index]["values"])
+            
+            #print(values_all)
+            #print(min(values_all))
+            #print(max(values_all))
+            vmin,vmax = min([value for values in values_all for value in values]), max([value for values in values_all for value in values])
+            for key in arcdata_dict:
+                circle.barplot(key, data=arcdata_dict[key]["values"], positions=arcdata_dict[key]["positions"],
+                               width=arcdata_dict[key]["widths"], base_value=0.0, rlim=[vmin-0.05*abs(vmin), vmax+0.05*abs(vmax)],
+                               raxis_range=[800,900], facecolor="b", spine=True)
+                
+            
+        
+        
+        circos_df = pd.DataFrame(circos_dict).transpose()
+        num_circos_segments = circos_df.shape[0]
+        circos_pair_indices = list(combinations(range(num_circos_segments),2))
+        
+        circos_df_columns = list(circos_df)
+        
+        circos_chords = [ [(circos_df[c][x], circos_df[c][y]) for (x,y) in circos_pair_indices if 
+                               (isinstance(circos_df[c][x],tuple) and
+                                isinstance(circos_df[c][y],tuple)) ] for c in circos_df_columns ]
+        
+        circos_chords_flat = [ chord_tuple for col_tuples in circos_chords for chord_tuple in col_tuples]
+        
+        for (chord_start, chord_end) in circos_chords_flat:
+            circle.chord_plot(chord_start, chord_end)
+        
+        circle.figure
+        pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__circos.svg", bbox_inches="tight")
+        pyplot.close()
+
+
 class heatmapDrawer:
     def __init__ (self, etg, trim_terms=True):
         self.etg = etg
@@ -298,7 +444,7 @@ class heatmapDrawer:
         
         #******************************************************************
         
-        gene_term_heatmap_fm_subset_df = self.etg.gene_term_heatmap_fm_df.iloc[s_rows].loc[:, s_cols]
+        gene_term_heatmap_fm_subset_df = self.etg.gene_term_heatmap_fm_df.iloc[s_rows].loc[:, s_cols]    
         
         gene_counts = gene_term_heatmap_fm_subset_df.sum().values
         
@@ -324,7 +470,9 @@ class heatmapDrawer:
             ordered_cluster_genes = ordered_cluster_genes + [subset_cluster_genes[gi] for gi in subset_leaves]
         
         gene_term_heatmap_fm_subset_df = gene_term_heatmap_fm_subset_df.reindex(columns=ordered_cluster_genes)
+        
         gene_term_heatmap_fm_subset_df.rename(index=self.trimmed_term_mapping_dict, inplace=True)
+        
         gene_term_heatmap_fm_subset_df = self.__add_extra_annotations(gene_term_heatmap_fm_subset_df)
         
         gene_exp_heatmap_fm_subset_df = self.etg.gene_exp_heatmap_fm_df.loc[:, s_cols]
@@ -642,7 +790,7 @@ class bigBasicCommunityPrinter():
     
     def _print_html_title(self, html_f, summary_html, backlink=''):
         
-        html_f.write('<table id="' + self.community.name + '">\n')
+        html_f.write('<button type="button" class="collapsible"><table id="' + self.community.name + '">\n')
         html_f.write('<tr><td></td></tr>\n')
         html_f.write('<tr>\n')
         
@@ -657,7 +805,7 @@ class bigBasicCommunityPrinter():
             html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + backlink + '\'">Main page</button></td>\n')
         
         html_f.write('</tr>\n')
-        html_f.write('</table>\n')
+        html_f.write('</table></button>\n')
     
     def _print_html_griditem1(self, html_f):
         html_f.write('<div class="terms">\n')
@@ -901,9 +1049,9 @@ class bigBasicCommunityPrinter():
         
         html_f.write('</div>\n')
         html_f.write('<hr>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
 
 class bigOneExtraImgCommunityPrinter(bigBasicCommunityPrinter):
     def __init__ (self, community):
@@ -937,9 +1085,9 @@ class bigOneExtraImgCommunityPrinter(bigBasicCommunityPrinter):
         
         html_f.write('</div>\n')
         html_f.write('<hr>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
 
 
 class bigOneDescTableCommunityPrinter(bigBasicCommunityPrinter):
@@ -973,9 +1121,9 @@ class bigOneDescTableCommunityPrinter(bigBasicCommunityPrinter):
         
         html_f.write('</div>\n')
         html_f.write('<hr>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
 
 
 class bigManyDescTableCommunityPrinter( bigBasicCommunityPrinter ):
@@ -1070,9 +1218,9 @@ class bigManyDescTableCommunityPrinter( bigBasicCommunityPrinter ):
         
         html_f.write('</div>\n')
         html_f.write('<hr>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
 
       
 class bigManyExtraImgCommunityPrinter(bigBasicCommunityPrinter):
@@ -1180,9 +1328,9 @@ class bigManyExtraImgCommunityPrinter(bigBasicCommunityPrinter):
         
         html_f.write('</div>\n')
         html_f.write('<hr>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
     
 
 class bigMixCommunityPrinter(bigBasicCommunityPrinter):
@@ -1313,9 +1461,9 @@ class bigMixCommunityPrinter(bigBasicCommunityPrinter):
         
         html_f.write('</div>\n')
         html_f.write('<hr>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
 
 
 # Community classes
@@ -1473,6 +1621,14 @@ class bigCommunity(community):
         # Before drawing the rest of the plots, extract the gene list that's shown in the heatmap:
         ( _ , s_cols ) = self.rows_cols
         self.included_genes = [ self.genes_sorted[ i ] for i in range( len( self.genes_sorted ) ) if s_cols[ i ] ]
+        
+        
+        #*****************************************************************************************
+        # Now draw the Circos plot. This will sit with UpSet plot, but is created here because needs information from heatmap generation
+        
+        # Draw Circos plot
+        my_circosDrawer = circosDrawer(self, rows_cols = (( range( len( self.terms ) ) , self.gene_term_heatmap_df.sum() > 0 )))
+        my_circosDrawer.draw_circos()
         
         #*****************************************************************************************
         
@@ -1798,6 +1954,11 @@ class singletonCommunity( community ):
         self.pre_print()
         
         # gather some important data and make heatmap...
+        if(self.all_term_dotplot_dict):
+            html_f.write('<button type="button" class="collapsible3b">\n')
+        else:
+            html_f.write('<button type="button" class="collapsible3a">\n')
+            
         html_f.write('<table id="' + self.name + '">\n')
         html_f.write('<tr><td></td></tr>\n')
         html_f.write('<tr>\n')
@@ -1812,10 +1973,10 @@ class singletonCommunity( community ):
             html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + backlink + '\'">Main page</button></td>\n' )
         
         html_f.write('</tr>\n')
-        html_f.write('</table>\n')
+        html_f.write('</table></button>\n')
         
         if( self.all_term_dotplot_dict ):
-            html_f.write('<table style="font-size:small;white-space: nowrap;">\n')
+            html_f.write('<table class="content" style="font-size:small;white-space: nowrap;">\n')
             if( len(self.exp_ids) == 1 ):
                 gr,nlog10p,c,gr_string,bg_string = self.all_term_dotplot_dict[ (self.exp_ids[0], self.term) ]
                 html_f.write('<tr><td>' + 'gene ratio: ' + gr_string + ', Bg ratio: ' +  bg_string + ', -log10(padj): ' + str( nlog10p ) + '</td></tr>')
@@ -1981,9 +2142,9 @@ class singletonCommunity( community ):
         
         html_f.write('</div>\n')
         html_f.write('<hr>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
 
         
 class metaGroup( community ):
@@ -2050,7 +2211,16 @@ class metaGroup( community ):
         # Now extract the gene list that's shown in the heatmap:
         ( _ , s_cols ) = self.rows_cols
         self.included_genes = [ self.genes_sorted[ i ] for i in range( len( self.genes_sorted ) ) if s_cols[ i ] ]
-                        
+
+
+        #*****************************************************************************************
+        # Now draw the Circos plot. This will sit with UpSet plot, but is created here because needs information from heatmap generation
+        
+        # Draw Circos plot
+        my_circosDrawer = circosDrawer(self, rows_cols = (( range( len( self.communities ) ) , self.gene_term_heatmap_df.sum() > 0 )), metaGroupCircosDrawer = True)
+        my_circosDrawer.draw_circos()
+        
+        #*****************************************************************************************                        
 
     def __make_community_genes_dict( self ):
         my_community_genes_dict = {}
@@ -2061,7 +2231,7 @@ class metaGroup( community ):
         
     def print_html( self , html_f , summary_html , backlink = '' ):     
         
-        html_f.write('<table id="' + self.name + '">\n')
+        html_f.write('<button type="button" class="collapsible2"><table id="' + self.name + '">\n')
         html_f.write('<tr><td></td></tr>\n')
         html_f.write('<tr>\n')
         html_f.write('<td><h5 class="title">' + self.name + ' ' + self.info_string + '</h5></td>\n')
@@ -2069,7 +2239,7 @@ class metaGroup( community ):
         if( backlink ):
             html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + backlink + '\'">Main page</button></td>\n' )
         html_f.write('</tr>\n')
-        html_f.write('</table>\n')
+        html_f.write('</table></button>\n')
         
         html_f.write('<div class="grid-container2">\n')
         
@@ -2196,9 +2366,9 @@ class metaGroup( community ):
         html_f.write('</div>\n')
         
         html_f.write('<hr>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
 
 class etgContainer:
     def __init__( self , etg_name , etg_text_details , key_i_str ,  output_dir , relative_main_html , meta_communities , singleton_meta_communities , singleton_communities , new_h ):
@@ -2277,7 +2447,7 @@ class etgContainer:
         html_f.write("}\n")
         
         html_f.write(".grid-container {\n")
-        html_f.write("  display: grid;\n")
+        html_f.write("  display: none;\n")
         html_f.write("  grid-template-areas:\n")
         html_f.write("    'terms plotbox plotbox plotbox plotbox plotbox'\n")
         html_f.write("    'spacer plot_buttons plot_buttons plot_buttons plot_buttons plot_buttons'\n")
@@ -2304,12 +2474,28 @@ class etgContainer:
         html_f.write("  text-align: left;\n")
         html_f.write("  padding: 15px;\n")
         html_f.write("  font-size: small;\n")
+        html_f.write("}\n")
+        
+        html_f.write(".collapsible {\n")
+        html_f.write("  background-color: rgba(33, 150, 243, 0.8);\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  cursor: pointer;\n")
+        html_f.write("  padding: 5px;\n")
+        html_f.write("  width: 100%;\n")
+        html_f.write("  border: none;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  font-size: 15px;\n")
+        html_f.write("}\n")
+        
+        html_f.write(".active, .collapsible:hover {\n")
+        html_f.write("  background-color: #2196F3;\n")
         html_f.write("}\n\n")
         
         #***********************************
         
         html_f.write(".grid-container2 {\n")
-        html_f.write("  display: grid;\n")
+        html_f.write("  display: none;\n")
         html_f.write("  grid-template-areas:\n")
         html_f.write("    'members2 heatmap2 heatmap2 heatmap2 heatmap2 heatmap2'\n")
         html_f.write("    'spacer2a plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2'\n")
@@ -2336,12 +2522,28 @@ class etgContainer:
         html_f.write("  text-align: left;\n")
         html_f.write("  padding: 15px;\n")
         html_f.write("  font-size: small;\n")
+        html_f.write("}\n")
+        
+        html_f.write(".collapsible2 {\n")
+        html_f.write("  background-color: rgba(220, 20, 60, 0.8);\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  cursor: pointer;\n")
+        html_f.write("  padding: 5px;\n")
+        html_f.write("  width: 100%;\n")
+        html_f.write("  border: none;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  font-size: 15px;\n")
+        html_f.write("}\n")
+        
+        html_f.write(".active, .collapsible2:hover {\n")
+        html_f.write("  background-color: #DC143C;\n")
         html_f.write("}\n\n")
         
         #***********************************
         
         html_f.write(".grid-container3 {\n")
-        html_f.write("  display: grid;\n")
+        html_f.write("  display: none;\n")
         html_f.write("  grid-template-areas:\n")
         html_f.write("    'overlaps3 heatmap3 heatmap3 heatmap3 heatmap3 heatmap3'\n")
         html_f.write("    'spacer3a plot_buttons3 plot_buttons3 plot_buttons3 plot_buttons3 plot_buttons3'\n")
@@ -2368,7 +2570,43 @@ class etgContainer:
         html_f.write("  text-align: left;\n")
         html_f.write("  padding: 15px;\n")
         html_f.write("  font-size: small;\n")
+        html_f.write("}\n")
+        
+        html_f.write(".collapsible3a {\n")
+        html_f.write("  background-color: rgba(255, 215, 0, 0.8);\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  cursor: pointer;\n")
+        html_f.write("  padding: 5px;\n")
+        html_f.write("  width: 100%;\n")
+        html_f.write("  border: none;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  font-size: 15px;\n")
+        html_f.write("}\n")
+        
+        html_f.write(".active, .collapsible3a:hover {\n")
+        html_f.write("  background-color: #FFD700;\n")
         html_f.write("}\n\n")
+            
+        html_f.write(".collapsible3b {\n")
+        html_f.write("  background-color: rgba(255, 215, 0, 0.8);\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  cursor: pointer;\n")
+        html_f.write("  padding: 5px;\n")
+        html_f.write("  width: 100%;\n")
+        html_f.write("  border: none;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  font-size: 15px;\n")
+        html_f.write("}\n")
+        
+        html_f.write(".active, .collapsible3b:hover {\n")
+        html_f.write("  background-color: #FFD700;\n")
+        html_f.write("}\n\n")
+            
+        html_f.write(".content {\n")
+        html_f.write("display: none;\n")
+        html_f.write("}\n")
         
         html_f.write("</style>\n")
         html_f.write("</head>\n")
@@ -2388,6 +2626,8 @@ class etgContainer:
         for sc in self.singleton_communities:
             sc.print_html( html_f , self.summary_hyperlink , backlink = self.relative_main_html )
 
+
+        jSPrinter.print_html_for_event_listeners( html_f )
         html_f.write("</body>\n")
         html_f.write("</html>\n")
         html_f.close()
@@ -2581,6 +2821,71 @@ class javaScriptPrinter:
         html_f.write("  }\n")
         html_f.write("}\n")
         html_f.write("</script>\n")
+        
+    def print_html_for_event_listeners( self , html_f ):
+        html_f.write("<script>\n")
+        html_f.write('var coll = document.getElementsByClassName("collapsible");\n')
+        html_f.write('var i;\n')
+        html_f.write('for (i = 0; i < coll.length; i++) {\n')
+        html_f.write('  coll[i].addEventListener("click", function() {\n')
+        html_f.write('    var content = this.nextElementSibling;\n')
+        html_f.write('    if (content.style.display === "grid") {\n')
+        html_f.write('      content.style.display = "none";\n')
+        html_f.write('    } else {\n')
+        html_f.write('      content.style.display = "grid";\n')
+        html_f.write('    }\n')
+        html_f.write(' });\n')
+        html_f.write('}\n')
+        html_f.write("</script>\n")
+        
+        html_f.write("<script>\n")
+        html_f.write('var coll = document.getElementsByClassName("collapsible2");\n')
+        html_f.write('var i;\n')
+        html_f.write('for (i = 0; i < coll.length; i++) {\n')
+        html_f.write('  coll[i].addEventListener("click", function() {\n')
+        html_f.write('    var content = this.nextElementSibling;\n')
+        html_f.write('    if (content.style.display === "grid") {\n')
+        html_f.write('      content.style.display = "none";\n')
+        html_f.write('    } else {\n')
+        html_f.write('      content.style.display = "grid";\n')
+        html_f.write('    }\n')
+        html_f.write(' });\n')
+        html_f.write('}\n')
+        html_f.write("</script>\n")
+        
+        html_f.write("<script>\n")
+        html_f.write('var coll = document.getElementsByClassName("collapsible3a");\n')
+        html_f.write('var i;\n')
+        html_f.write('for (i = 0; i < coll.length; i++) {\n')
+        html_f.write('  coll[i].addEventListener("click", function() {\n')
+        html_f.write('    var content = this.nextElementSibling;\n')
+        html_f.write('    if (content.style.display === "grid") {\n')
+        html_f.write('      content.style.display = "none";\n')
+        html_f.write('    } else {\n')
+        html_f.write('      content.style.display = "grid";\n')
+        html_f.write('    }\n')
+        html_f.write(' });\n')
+        html_f.write('}\n')
+        html_f.write("</script>\n")
+        
+        html_f.write("<script>\n")
+        html_f.write('var coll = document.getElementsByClassName("collapsible3b");\n')
+        html_f.write('var i;\n')
+        html_f.write('for (i = 0; i < coll.length; i++) {\n')
+        html_f.write('  coll[i].addEventListener("click", function() {\n')
+        html_f.write('    var content = this.nextElementSibling.nextElementSibling;\n')
+        html_f.write('    if (content.style.display === "grid") {\n')
+        html_f.write('      content.style.display = "none";\n')
+        html_f.write('      content.nextElementSibling.style.display = "none";\n')
+        html_f.write('    } else {\n')
+        html_f.write('      content.style.display = "grid";\n')
+        html_f.write('      content.nextElementSibling.style.display = "grid";\n')
+        html_f.write('    }\n')
+        html_f.write(' });\n')
+        html_f.write('}\n')
+        html_f.write("</script>\n")
+        
+
 
 # END CLASSES *****************************************************************
 

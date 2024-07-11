@@ -14,11 +14,14 @@ import argparse
 import networkx as nx
 import numpy as np
 import pandas as pd
+import seaborn as sns
 import yaml
 from bs4 import BeautifulSoup
 from goatools import obo_parser
 from goatools.gosubdag.gosubdag import GoSubDag
+from matplotlib import pyplot
 from networkx.algorithms.community import greedy_modularity_communities
+from sklearn.metrics import silhouette_samples, silhouette_score
 from upsetplot import from_contents
 
 from genefeast import gf_base as gfb
@@ -337,6 +340,120 @@ def gf_multi(mif_path, output_dir, cfg_yaml_path):
                                           _etg_info_string, msigdb_html_soup, GO_DAG, 
                                           _exp_img_dir_paths_dict, _exp_img_extension_dict, 
                                           new_h_singleton_adjustment=NEW_H_SINGLETON_ADJUSTMENT)
+        
+        
+        # TODO: Add preconditions for silhoutte coefficient to work... Will need to make sure that an empty figure is created when
+        # conditions are not met, as front page will need to be printed either way
+        # Trim and annotate community names - DONE
+        # Add to gf.py
+        
+        _term_community_pairs = gfb.get_big_community_labels_for_terms(_big_communities)
+        
+        if((len(_big_communities) >= 2) & (len(_big_communities) <= (len(_term_community_pairs)-1))):
+            _terms_distance_matrix = gfb.build_terms_distance_matrix(_term_community_pairs, _term_genes_dict, TT_OVERLAP_MEASURE)
+            gfb.make_silhouette_plot(_terms_distance_matrix, np.array([c for (t,c) in _term_community_pairs]), _big_communities, _term_genes_dict, _abs_images_dir)
+
+        # Now run analysis to plot out how clustering looks when varying two thresholds: MIN_WEIGHT_TT_EDGE and MAX_COMMUNITY_SIZE_THRESH
+        # TODO: check this works when multiple FEA databases are used and database agglomeration is off!
+        
+        min_weight_tt_edge_trials = sorted(set([x/10 for x in list(range(2,9,2))] + [MIN_WEIGHT_TT_EDGE]))
+        max_community_size_thresh_trials = sorted(set([10,15,20,MAX_COMMUNITY_SIZE_THRESH]))
+        
+        fig, axes = pyplot.subplots(len(min_weight_tt_edge_trials), len(max_community_size_thresh_trials), figsize=(16, 10))
+        #fig.tight_layout()
+        
+        #for min_weight_tt_edge_try in min_weight_tt_edge_trials:
+        for min_weight_tt_edge_try_i in range(len(min_weight_tt_edge_trials)):
+            
+            min_weight_tt_edge_try = min_weight_tt_edge_trials[min_weight_tt_edge_try_i]
+            
+            sub_terms_graphs_try = []
+            if(COMBINE_TERM_TYPES or len(type_2_term_dict.keys())==1):
+                sub_terms_graphs_try.append(gfb.build_terms_graph(etg_terms, _term_genes_dict, TT_OVERLAP_MEASURE, min_weight_tt_edge_try))
+            else:
+                type_2_term_dict_keys = list(type_2_term_dict.keys())
+                type_2_term_dict_keys.sort()
+                for type_2_term_dict_key in type_2_term_dict_keys:
+                    sub_terms_list = type_2_term_dict[type_2_term_dict_key]
+                    sub_terms_graphs_try.append(gfb.build_terms_graph(sub_terms_list, _term_genes_dict, TT_OVERLAP_MEASURE, min_weight_tt_edge_try))
+                
+            #for max_community_size_thresh_try in max_community_size_thresh_trials:
+            for max_community_size_thresh_try_i in range(len(max_community_size_thresh_trials)):
+                
+                max_community_size_thresh_try = max_community_size_thresh_trials[max_community_size_thresh_try_i]
+                print(min_weight_tt_edge_try)
+                print(max_community_size_thresh_try)
+                big_community_term_sets_try = []
+                for sub_terms_graph_try in sub_terms_graphs_try:
+                    big_community_term_sets_try = big_community_term_sets_try + gfb.get_big_community_term_sets(sub_terms_graph_try, max_community_size_thresh_try,
+                                                                                                                TT_OVERLAP_MEASURE, min_weight_tt_edge_try, 
+                                                                                                                MAX_DCNT, _term_types_dict, _GO_term_stats, 
+                                                                                                                _term_genes_dict)
+                    
+                num_big_communities_try = len(big_community_term_sets_try)
+                
+                term_community_pairs_try = gfb.get_big_community_labels_for_terms_from_term_sets(big_community_term_sets_try)
+                term_community_labels_try = np.array([c for (t,c) in term_community_pairs_try])
+                prop_try = gfb.calc_prop_terms_in_big_communities(term_community_labels_try, _term_genes_dict)
+                
+                if((num_big_communities_try >= 2) & (num_big_communities_try <= (len(term_community_pairs_try)-1))):
+                    if((min_weight_tt_edge_try == MIN_WEIGHT_TT_EDGE) & (max_community_size_thresh_try==MAX_COMMUNITY_SIZE_THRESH)):
+                        axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_facecolor("yellow")
+                    
+                    terms_distance_matrix_try = gfb.build_terms_distance_matrix(term_community_pairs_try, _term_genes_dict, TT_OVERLAP_MEASURE)
+                    silhouette_avg_try = silhouette_score(terms_distance_matrix_try, term_community_labels_try, metric="precomputed")
+                    sample_silhouette_values_try = silhouette_samples(terms_distance_matrix_try, term_community_labels_try, metric="precomputed")
+                    
+                    sample_silhouette_values_try_data = {'Community': term_community_labels_try,
+                                                         'Silhouette Score': sample_silhouette_values_try} 
+                    
+                    sample_silhouette_values_try_df = pd.DataFrame(sample_silhouette_values_try_data)
+                    
+        
+#                    _color_palette = sns.color_palette("Greens")
+#                    _color_index = int(prop_try * (len(_color_palette)-1))
+                    
+#                    sns.violinplot(ax=axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i], data=sample_silhouette_values_try_df,
+#                                                                                                       y='Score', x='Community',
+#                                                                                                       color=_color_palette[_color_index],
+#                                                                                                       saturation=1, inner=None, cut=0)
+#                    axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_xticklabels([])
+#                    axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_ylim([-1,1])
+                    
+                    
+                    community_cum_prop_of_total_df = sample_silhouette_values_try_df.groupby('Community').size().cumsum().reset_index()
+                    community_cum_prop_of_total_df['cum prop of total terms'] = [(x/len(_term_genes_dict))*100 for x in sample_silhouette_values_try_df.groupby('Community').size().cumsum()]
+                
+                    ax_twin = axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].twinx()
+                    ax_twin.bar(community_cum_prop_of_total_df['Community'], community_cum_prop_of_total_df['cum prop of total terms'], alpha=0.25)
+                    ax_twin.set_ylim([0,100])
+                    if(max_community_size_thresh_try_i == (len(max_community_size_thresh_trials)-1)):
+                        ax_twin.yaxis.tick_right()
+                        ax_twin.set_ylabel("Cum. % terms")
+                    
+                    
+                    sns.violinplot(ax=axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i], data=sample_silhouette_values_try_df,
+                                                                                                       y='Silhouette Score', x='Community',
+                                                                                                       color="red",inner=None, cut=0)
+                    
+                    axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].axhline(y = 0, color = 'k', linestyle = '-')
+                    axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].axhline(y = 0.5, color = 'darkgrey', linestyle = '--')
+                    axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].axhline(y = silhouette_avg_try, color = 'r', linestyle = ':')
+                    
+                    
+                    #axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_xticklabels([]])
+                    axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_ylim([-1.1,1.1])
+                    
+                    if(max_community_size_thresh_try_i > 0 ):
+                        axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_ylabel("")
+                    if(min_weight_tt_edge_try_i < (len(min_weight_tt_edge_trials)-1)):
+                        axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_xlabel("")
+                        
+                    axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_title(str(min_weight_tt_edge_try) + ", " + str(max_community_size_thresh_try))
+                   
+        pyplot.subplots_adjust(hspace=0.7)            
+        pyplot.savefig(_abs_images_dir + "sil_ violinplots.svg", bbox_inches="tight")
+        pyplot.close()
     
         # ***************************************************************************** 
         relative_main_html = _info_string + '_main.html'

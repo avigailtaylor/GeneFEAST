@@ -9,10 +9,13 @@ import os
 import collections
 import csv
 import math
-from fractions import Fraction
-
 import networkx as nx
+import numpy as np
+
+from fractions import Fraction
 from networkx.algorithms.community import greedy_modularity_communities
+from matplotlib import pyplot
+from sklearn.metrics import silhouette_samples, silhouette_score
 from upsetplot import from_contents
 
 from genefeast import gf_classes as gfc
@@ -522,7 +525,6 @@ def build_big_communities_list(big_community_term_sets, big_community_stub,
         bc_index += 1
     return big_communities
 
-
 def build_singleton_communities_list(terms_list, big_community_term_sets,
                                 quant_data_type, exp_gene_qd, exp_ids, 
                                 term_types_dict, term_defs_dict, 
@@ -560,7 +562,124 @@ def build_singleton_communities_list(terms_list, big_community_term_sets,
     return singleton_communities
         
 
+def get_big_community_labels_for_terms(big_communities):
+    term_community_pairs = []
+    for bc in big_communities:
+        term_community_pairs = term_community_pairs + [(term, bc.name) for term in bc.terms]
 
+    return term_community_pairs
+
+def get_big_community_labels_for_terms_from_term_sets(big_community_term_sets):
+    term_community_pairs = []
+    for bc_index in range(len(big_community_term_sets)):
+        term_community_pairs = term_community_pairs + [(term, str(bc_index+1)) for term in big_community_term_sets[bc_index]]
+
+    return term_community_pairs
+
+
+def build_terms_distance_matrix(term_community_pairs, term_genes_dict, tt_overlap_measure):
+    
+    terms_ordered_by_community = [t for (t,c) in term_community_pairs]
+    terms_distance_matrix = np.zeros((len(terms_ordered_by_community), len(terms_ordered_by_community))) 
+    
+    for t_index in range(len(terms_ordered_by_community)-1):
+        
+        t1 = terms_ordered_by_community[t_index]
+        t1_genes = term_genes_dict[ t1 ] 
+        
+        for t_index2 in range(t_index+1, len(terms_ordered_by_community)):
+            
+            t2 = terms_ordered_by_community[t_index2]
+            t2_genes = term_genes_dict[ t2 ]
+    
+            similarity = 0
+            if( tt_overlap_measure == 'OC' ):
+                similarity = len( set.intersection( t1_genes , t2_genes ) )/ min( len( t1_genes ) , len( t2_genes ) )
+            if( tt_overlap_measure == 'J' ):
+                similarity = len( set.intersection( t1_genes , t2_genes ) )/ len( set.union( t1_genes , t2_genes ) )
+                
+            distance = 1 - similarity
+            terms_distance_matrix[t_index,t_index2] = distance
+            terms_distance_matrix[t_index2,t_index] = distance
+    
+    return(terms_distance_matrix)
+    
+def calc_prop_terms_in_big_communities(term_community_labels, term_genes_dict):
+    return(len(term_community_labels)/len(term_genes_dict))    
+    
+def make_silhouette_plot(terms_distance_matrix, term_community_labels, big_communities, term_genes_dict, abs_images_dir):
+    
+    silhouette_avg = silhouette_score(terms_distance_matrix, term_community_labels, metric="precomputed")
+    sample_silhouette_values = silhouette_samples(terms_distance_matrix, term_community_labels, metric="precomputed")
+    prop_terms_in_big_communities = calc_prop_terms_in_big_communities(term_community_labels, term_genes_dict)
+    num_big_communities = len(big_communities)
+    
+    fig, ax = pyplot.subplots()
+    
+    ax.set_xlim([min(0,min(sample_silhouette_values))-0.1, 1])
+    ax.set_ylim([0, len(terms_distance_matrix) + (num_big_communities + 2) * 10])
+    
+    
+    print(terms_distance_matrix)
+    print(term_community_labels)
+    print(silhouette_avg)
+    print(sample_silhouette_values)
+    
+    ax.fill_betweenx(
+            np.arange(10,12),
+            0,
+            [prop_terms_in_big_communities, prop_terms_in_big_communities],
+            facecolor='g',
+            edgecolor='g',
+            alpha=0.7
+    )
+    
+    ax.text(-0.05, 11, "proportion terms in big communities")
+    ax.axhspan(0, 20, facecolor='0.5', alpha=0.25)
+    
+    y_lower = 22
+    
+    for i in range(num_big_communities-1,-1,-1):
+    
+        # Aggregate the silhouette scores for samples belonging to
+        # cluster i, and sort them
+        ith_cluster_silhouette_values = sample_silhouette_values[term_community_labels == big_communities[i].name]
+
+        ith_cluster_silhouette_values.sort()
+
+        size_cluster_i = ith_cluster_silhouette_values.shape[0]
+        y_upper = y_lower + size_cluster_i
+
+        #color = pyplot.cm.nipy_spectral(float(i) / num_big_communities)
+        color = pyplot.cm.cool(float(i) / num_big_communities)
+        ax.fill_betweenx(
+            np.arange(y_lower, y_upper),
+            0,
+            ith_cluster_silhouette_values,
+            facecolor=color,
+            edgecolor=color,
+            alpha=0.7,
+        )
+
+        # Label the silhouette plots with their cluster numbers at the middle
+        ax.text(-0.05, y_lower + 0.5 * size_cluster_i, gfc.trim_term(big_communities[i].name))
+
+        # Compute the new y_lower for next plot
+        y_lower = y_upper + 10  # 10 for the 0 samples
+
+    # add blank text to stretch the plot vertically
+    ax.set_title("Silhouette plot for communities")
+    ax.set_xlabel("silhouette coefficient")
+    
+
+    # The vertical line for average silhouette score of all the values
+    ax.axvline(x=silhouette_avg, color="red", linestyle="--")
+
+    ax.set_yticks([])  # Clear the yaxis labels / ticks
+    #ax.set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])
+    pyplot.savefig(abs_images_dir + "sil_plot.svg", bbox_inches="tight")
+    pyplot.close()
+    
 def build_big_communities_tracker_and_graph(big_communities, bc_bc_overlap_measure, min_weight_bc_bc):
     big_communities_tracker_dict = {}
     big_communities_graph = nx.Graph()
