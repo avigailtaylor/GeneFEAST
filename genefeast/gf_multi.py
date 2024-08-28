@@ -282,7 +282,8 @@ def gf_multi(mif_path, output_dir, cfg_yaml_path):
             
         _etg_name = "ETSI " + _key_i_str # (ETSI stands for Experiment term-set intersection)
         _etg_info_string = '__' + '__'.join(_etg_exp_ids) + '__'
-        _etg_text_details = ', '.join(_etg_exp_ids)
+        #_etg_text_details = ', '.join(_etg_exp_ids) ', '.join(_etg_exp_ids[0:-1]) + ' and ' + _etg_exp_ids[-1]
+        _etg_text_details = ', '.join(_etg_exp_ids[0:-1]) + ' and ' + _etg_exp_ids[-1]
        
         _term_genes_dict = {}
         for etg_eid in _etg_exp_ids:
@@ -457,7 +458,7 @@ def gf_multi(mif_path, output_dir, cfg_yaml_path):
     
         # ***************************************************************************** 
         relative_main_html = _info_string + '_main.html'
-        etgContainers.append( gfc.etgContainer( _etg_name , _etg_text_details , _key_i_str , output_dir , relative_main_html  , _meta_communities , _singleton_meta_communities , _singleton_communities , NEW_H ) )
+        etgContainers.append( gfc.etgContainer( _etg_name , _etg_text_details , _key_i_str , output_dir , relative_main_html  , _rel_images_dir, _meta_communities , _singleton_meta_communities , _singleton_communities , NEW_H ) )
         
     
     # 8. GENERATE HTML REPORT *****************************************************
@@ -529,12 +530,12 @@ def gf_multi(mif_path, output_dir, cfg_yaml_path):
     html_f.write("  text-decoration: none;\n")
     html_f.write("}\n")
 
-    html_f.write("li a:hover:not(.navactive) {\n")
-    html_f.write("  color: black;\n")
-    html_f.write("}\n")
+    #html_f.write("li a:hover:not(.navactive) {\n")
+    #html_f.write("  color: black;\n")
+    #html_f.write("}\n")
 
     html_f.write(".navactive {\n")
-    html_f.write("  color: yellow;\n")
+    html_f.write("   text-decoration:underline;\n")
     html_f.write("}\n")
 
     html_f.write(".logo {\n")
@@ -581,7 +582,8 @@ def gf_multi(mif_path, output_dir, cfg_yaml_path):
     html_f.write("  font-size: 16px;\n")  
     html_f.write("  border: none;\n")
     html_f.write("  outline: none;\n")
-    html_f.write("  color: yellow;\n")
+    html_f.write("  color: white;\n")
+    html_f.write("  text-decoration:underline;\n")
     html_f.write("  font-weight: bold;\n")
     html_f.write("  padding: 14px 16px;\n")
     html_f.write("  background-color: inherit;\n")
@@ -589,29 +591,30 @@ def gf_multi(mif_path, output_dir, cfg_yaml_path):
     html_f.write("  margin: 0;\n")
     html_f.write("}\n")
     
-    html_f.write(".navbar a:hover, .dropdown:hover .dropbtn {\n")
-    html_f.write("  color: black;\n")
-    html_f.write("}\n")
+    #html_f.write(".navbar a:hover, .dropdown:hover .dropbtn {\n")
+    #html_f.write("  color: black;\n")
+    #html_f.write("}\n")
     
     html_f.write(".dropdown-content {\n")
     html_f.write("  display: none;\n")
     html_f.write("  position: absolute;\n")
-    html_f.write("  background-color: #f9f9f9;\n")
+    html_f.write("  background-color: #0aa8a8;\n")
     html_f.write("  min-width: 160px;\n")
     html_f.write("  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n")
     html_f.write("}\n")
     
     html_f.write(".dropdown-content a {\n")
     html_f.write("  float: none;\n")
-    html_f.write("  color: black;\n")
+    html_f.write("  color: white;\n")
     html_f.write("  padding: 12px 16px;\n")
     html_f.write("  text-decoration: none;\n")
     html_f.write("  display: block;\n")
     html_f.write("  text-align: left;\n")
+    html_f.write("  font-size: small;\n")
     html_f.write("}\n")
     
     html_f.write(".dropdown-content a:hover {\n")
-    html_f.write("  background-color: #ddd;\n")
+    html_f.write("  background-color: #088F8F;\n")
     html_f.write("}\n")
     
     html_f.write(".dropdown:hover .dropdown-content {\n")
@@ -635,7 +638,7 @@ def gf_multi(mif_path, output_dir, cfg_yaml_path):
     html_f.write("</head>\n")
     
     
-    html_f.write('<body style="background-color:#0aa8a8">\n')
+    html_f.write('<body style="background-color:#0aa8a8; font-family: arial, sans-serif;">\n')
     
     html_f.write('<div class="navgrid-container">\n')
     html_f.write('<div>\n')
@@ -674,7 +677,7 @@ def gf_multi(mif_path, output_dir, cfg_yaml_path):
     html_f.close()
     
     for etgContainer in etgContainers:
-        etgContainer.print_html()
+        etgContainer.print_html( etgContainers )
     
     for etgContainer in etgContainers:
         etgContainer.print_csv()

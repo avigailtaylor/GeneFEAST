@@ -278,8 +278,10 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     # *****************************************************************************
     
     # 7. GENERATE HTML REPORT *****************************************************
-    my_summaryPrinter = gfc.summaryPrinter(summary_id, summary_id, output_dir, info_string + '_report.html', meta_communities, singleton_meta_communities, singleton_communities)
+    my_summaryPrinter = gfc.summaryPrinter(summary_id, summary_id, output_dir, info_string + '_report.html', rel_images_dir, meta_communities, singleton_meta_communities, singleton_communities)
     my_summaryPrinter.print_html()
+    my_summaryPrinter.print_html('communities_silhouette')
+    my_summaryPrinter.print_html('communities_paramcomparison')
     
     html_f = open(output_dir + '/' + info_string + '_report.html', 'w')
     html_f.write("<!DOCTYPE html>\n")
@@ -297,28 +299,28 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     html_f.write("}\n")
     
     html_f.write(".view-button {\n")
-    html_f.write("  padding: 5;\n")
+    html_f.write("  background-color: inherit;\n")
+    html_f.write("  float: left;\n")
     html_f.write("  border: none;\n")
-    html_f.write("  font: inherit;\n")
-    html_f.write("  color: white;\n")
+    html_f.write("  outline: none;\n")
     html_f.write("  cursor: pointer;\n")
-    html_f.write("  background-color: dodgerblue;\n")
-    html_f.write("  border-radius: 20px;\n")
-    html_f.write("  transition-duration: 0.1s;\n")
+    html_f.write("  padding: 4px 6px;\n")
+    html_f.write("  transition: 0.1s;\n")
+    html_f.write("  font-size: 16pxs;\n")
     html_f.write("}\n")
         
     html_f.write(".view-button:hover {\n")
-    html_f.write("  background-color: crimson;\n")
+    html_f.write("  background-color: #0aa8a8;\n")
     html_f.write("  color: white;\n")
     html_f.write("}\n")
     
     html_f.write(".disabled-view-button {\n")
-    html_f.write("  padding: 5;\n")
+    html_f.write("  background-color: inherit;\n")
+    html_f.write("  float: left;\n")
     html_f.write("  border: none;\n")
-    html_f.write("  font: inherit;\n")
-    html_f.write("  color: white;\n")
-    html_f.write("  background-color: dodgerblue;\n")
-    html_f.write("  border-radius: 20px;\n")
+    html_f.write("  outline: none;\n")
+    html_f.write("  padding: 4px 6px;\n")
+    html_f.write("  font-size: 16pxs;\n")
     html_f.write("  opacity: 0.3;\n")
     html_f.write("}\n")
     
@@ -350,6 +352,22 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     html_f.write("  text-align: left;\n")
     html_f.write("  padding: 15px;\n")
     html_f.write("  font-size: small;\n")
+    html_f.write("}\n\n")
+        
+    html_f.write(".collapsible {\n")
+    html_f.write("  background-color: rgba(33, 150, 243, 0.8);\n")
+    html_f.write("  color: white;\n")
+    html_f.write("  cursor: pointer;\n")
+    html_f.write("  padding: 5px;\n")
+    html_f.write("  width: 100%;\n")
+    html_f.write("  border: none;\n")
+    html_f.write("  text-align: left;\n")
+    html_f.write("  outline: none;\n")
+    html_f.write("  font-size: 15px;\n")
+    html_f.write("}\n")
+        
+    html_f.write(".active, .collapsible:hover {\n")
+    html_f.write("  background-color: #2196F3;\n")
     html_f.write("}\n\n")
     
     #***********************************
@@ -383,6 +401,22 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     html_f.write("  padding: 15px;\n")
     html_f.write("  font-size: small;\n")
     html_f.write("}\n\n")
+        
+    html_f.write(".collapsible2 {\n")
+    html_f.write("  background-color: rgba(220, 20, 60, 0.8);\n")
+    html_f.write("  color: white;\n")
+    html_f.write("  cursor: pointer;\n")
+    html_f.write("  padding: 5px;\n")
+    html_f.write("  width: 100%;\n")
+    html_f.write("  border: none;\n")
+    html_f.write("  text-align: left;\n")
+    html_f.write("  outline: none;\n")
+    html_f.write("  font-size: 15px;\n")
+    html_f.write("}\n")
+        
+    html_f.write(".active, .collapsible2:hover {\n")
+    html_f.write("  background-color: #DC143C;\n")
+    html_f.write("}\n\n")
     
     #***********************************
     
@@ -415,24 +449,372 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     html_f.write("  padding: 15px;\n")
     html_f.write("  font-size: small;\n")
     html_f.write("}\n\n")
+        
+    html_f.write(".collapsible3a {\n")
+    html_f.write("  background-color: rgba(255, 215, 0, 0.8);\n")
+    html_f.write("  color: white;\n")
+    html_f.write("  cursor: pointer;\n")
+    html_f.write("  padding: 5px;\n")
+    html_f.write("  width: 100%;\n")
+    html_f.write("  border: none;\n")
+    html_f.write("  text-align: left;\n")
+    html_f.write("  outline: none;\n")
+    html_f.write("  font-size: 15px;\n")
+    html_f.write("}\n")
+        
+    html_f.write(".active, .collapsible3a:hover {\n")
+    html_f.write("  background-color: #FFD700;\n")
+    html_f.write("}\n\n")
+            
+    html_f.write(".collapsible3b {\n")
+    html_f.write("  background-color: rgba(255, 215, 0, 0.8);\n")
+    html_f.write("  color: white;\n")
+    html_f.write("  cursor: pointer;\n")
+    html_f.write("  padding: 5px;\n")
+    html_f.write("  width: 100%;\n")
+    html_f.write("  border: none;\n")
+    html_f.write("  text-align: left;\n")
+    html_f.write("  outline: none;\n")
+    html_f.write("  font-size: 15px;\n")
+    html_f.write("}\n")
+        
+    html_f.write(".active, .collapsible3b:hover {\n")
+    html_f.write("  background-color: #FFD700;\n")
+    html_f.write("}\n\n")
+            
+    html_f.write(".content {\n")
+    html_f.write("display: none;\n")
+    html_f.write("}\n")
+    
+    html_f.write(".navgrid-container {\n")
+    html_f.write("display: grid;\n")
+    html_f.write("grid-template-columns: auto;\n")
+    html_f.write("position: fixed; top: 0; left: 0; width:100%; height: 55px; z-index:1;\n")
+    html_f.write("}\n")
+
+    html_f.write("ul {\n")
+    html_f.write("list-style-type: none;\n")
+    html_f.write("margin: 0;\n")
+    html_f.write("padding: 0;\n")
+    html_f.write("background-color: #088F8F;\n")
+    html_f.write("top: 0; left: 0; width: 100%; height: 55px; z-index:1;\n")
+    html_f.write("}\n")
+
+    html_f.write("li {\n")
+    html_f.write("  float: left;\n")
+    html_f.write("}\n")
+
+
+    html_f.write("li a {\n")
+    html_f.write("  display: block;\n")
+    html_f.write("  color: white;\n")
+    html_f.write("  font-weight: bold;\n")
+    html_f.write("  text-align: center;\n")
+    html_f.write("  padding: 14px 16px;\n")
+    html_f.write("  text-decoration: none;\n")
+    html_f.write("}\n")
+
+    #html_f.write("li a:hover:not(.navactive) {\n")
+    #html_f.write("  color: black;\n")
+    #html_f.write("}\n")
+
+    html_f.write(".navactive {\n")
+    html_f.write("  text-decoration:underline;\n")
+    html_f.write("}\n")
+
+    html_f.write(".logo {\n")
+    html_f.write("  display: block;\n")
+    html_f.write("  color: yellow;\n")
+    html_f.write("  text-align: center;\n")
+    html_f.write("  text-decoration: none;\n")
+    html_f.write("  padding: 9px 16px;\n")
+    html_f.write("  padding-right: 75px;\n")
+    html_f.write("  font-family: arial black, sans-serif;\n") 
+    html_f.write("  font-size: 18px;\n")
+    html_f.write("}\n")
+
+    html_f.write(".rightlink {\n")
+    html_f.write("  float: right;\n")
+    html_f.write("}\n")
+    
+    html_f.write(".subnav {\n")
+    html_f.write("  list-style-type: none;\n")
+    html_f.write("  margin: 0;\n")
+    html_f.write("  padding: 0;\n")
+    html_f.write("  overflow: hidden;\n")
+    html_f.write("  background-color: #0aa8a8;\n")
+    html_f.write("}\n")
+    
+    html_f.write(".dropdown {\n")
+    html_f.write("  float: left;\n")
+    html_f.write("  overflow: hidden;\n")
+    html_f.write("}\n")
+    
+    html_f.write(".dropdown .dropbtn {\n")
+    html_f.write("  font-size: 16px;\n")  
+    html_f.write("  border: none;\n")
+    html_f.write("  outline: none;\n")
+    html_f.write("  color: white;\n")
+    html_f.write("  font-weight: bold;\n")
+    html_f.write("  padding: 14px 16px;\n")
+    html_f.write("  background-color: inherit;\n")
+    html_f.write("  font-family: inherit;\n")
+    html_f.write("  margin: 0;\n")
+    html_f.write("}\n")
+    
+    html_f.write(".dropbtnactive {\n")
+    html_f.write("  font-size: 16px;\n")  
+    html_f.write("  border: none;\n")
+    html_f.write("  outline: none;\n")
+    html_f.write("  color: white;\n")
+    html_f.write("  text-decoration:underline;\n")
+    html_f.write("  font-weight: bold;\n")
+    html_f.write("  padding: 14px 16px;\n")
+    html_f.write("  background-color: inherit;\n")
+    html_f.write("  font-family: inherit;\n")
+    html_f.write("  margin: 0;\n")
+    html_f.write("}\n")
+
+    #html_f.write(".navbar a:hover, .dropdown:hover .dropbtn {\n")
+    #html_f.write("  color: black;\n")
+    #html_f.write("}\n")
+
+    html_f.write(".dropdown-content {\n")
+    html_f.write("  display: none;\n")
+    html_f.write("  position: absolute;\n")
+    html_f.write("  background-color: #0aa8a8;\n")
+    html_f.write("  min-width: 160px;\n")
+    html_f.write("  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n")
+    html_f.write("}\n")
+
+    html_f.write(".dropdown-content a {\n")
+    html_f.write("  float: none;\n")
+    html_f.write("  color: white;\n")
+    html_f.write("  padding: 12px 16px;\n")
+    html_f.write("  text-decoration: none;\n")
+    html_f.write("  display: block;\n")
+    html_f.write("  text-align: left;\n")
+    html_f.write("  font-size: small;\n")
+    html_f.write("}\n")
+
+    html_f.write(".dropdown-content a:hover {\n")
+    html_f.write("  background-color: #088F8F;\n")
+    html_f.write("}\n")
+        
+    html_f.write(".dropdown:hover .dropdown-content {\n")
+    html_f.write("  display: block;\n")
+    html_f.write("  position:fixed;\n")
+    html_f.write("  z-index: 9999;\n")
+    html_f.write("}\n")
+    html_f.write("\n")
+
+    html_f.write(".dropdownsub {\n")
+    html_f.write("  float: left;\n")
+    html_f.write("  overflow: hidden;\n")
+    html_f.write("}\n")
+    html_f.write("\n")
+
+    html_f.write(".dropdown-content .dropdownsub {\n")
+    html_f.write("  float: none;\n")
+    html_f.write("  text-decoration: none;\n")
+    html_f.write("  display: block;\n")
+    html_f.write("  text-align: left;\n")
+    html_f.write("}\n")
+    html_f.write("\n")
+
+
+    html_f.write(".dropdownsub-content{\n")
+    html_f.write("  display: none;\n")
+    html_f.write("  position: absolute;\n")
+    html_f.write("  background-color: #0aa8a8;\n")
+    html_f.write("  min-width: 160px;\n")
+    html_f.write("  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n")
+    html_f.write("}\n")
+    html_f.write("\n")
+
+
+    html_f.write(".dropdownsub-content a {\n")
+    html_f.write("  float: none;\n")
+    html_f.write("  color: white;\n")
+    html_f.write("  padding: 12px 16px;\n")
+    html_f.write("  text-decoration: none;\n")
+    html_f.write("  display: block;\n")
+    html_f.write("  text-align: left;\n")
+    html_f.write("  font-size: small;\n")
+    html_f.write("}\n")
+    html_f.write("\n")
+
+
+    html_f.write(".dropdownsub:hover .dropdownsub-content {\n")
+    html_f.write("  display: block;\n")
+    html_f.write("  position:absolute;\n")
+    html_f.write("  z-index: 9999;\n")
+    html_f.write("  left: 50%;\n")
+    html_f.write("}\n")
+    html_f.write("\n")
+
+
+    html_f.write(".dropdownsubsub {\n")
+    html_f.write("  float: left;\n")
+    html_f.write("  overflow: hidden;\n")
+    html_f.write("}\n")
+    html_f.write("\n")
+
+    html_f.write(".dropdownsub-content .dropdownsubsub {\n")
+    html_f.write("  float: none;\n")
+    html_f.write("  text-decoration: none;\n")
+    html_f.write("  display: block;\n")
+    html_f.write("  text-align: left;\n")
+    html_f.write("}\n")
+    html_f.write("\n")
+
+
+    html_f.write(".dropdownsubsub-content{\n")
+    html_f.write("  display: none;\n")
+    html_f.write("  position: absolute;\n")
+    html_f.write("  background-color: #0aa8a8;\n")
+    html_f.write("  min-width: 160px;\n")
+    html_f.write("  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n")
+    html_f.write("}\n")
+    html_f.write("\n")
+
+
+    html_f.write(".dropdownsubsub-content a {\n")
+    html_f.write("  float: none;\n")
+    html_f.write("  color: white;\n")
+    html_f.write("  padding: 12px 16px;\n")
+    html_f.write("  text-decoration: none;\n")
+    html_f.write("  display: block;\n")
+    html_f.write("  text-align: left;\n")
+    html_f.write("  font-size: small;\n")
+    html_f.write("}\n")
+    html_f.write("\n")
+
+
+    html_f.write(".dropdownsubsub:hover .dropdownsubsub-content {\n")
+    html_f.write("  display: block;\n")
+    html_f.write("  position:absolute;\n")
+    html_f.write("  z-index: 9999;\n")
+    html_f.write("  left: 50%;\n")
+    html_f.write("}\n")
+    html_f.write("\n")
+
+
+    html_f.write(".subtitlebanner {\n")
+    html_f.write("  list-style-type: none;\n")
+    html_f.write("  margin: 0;\n")
+    html_f.write("  padding: 0;\n")
+    html_f.write("  overflow: hidden;\n")
+    html_f.write("  background-color: #0aa8a8;\n")
+    html_f.write("  margin-top:110px;\n")
+    html_f.write("  z-index:1\n")
+    html_f.write("}\n\n")
     
     html_f.write("</style>\n")
     html_f.write("</head>\n")
     
     
-    html_f.write("<body>\n")
+    html_f.write('<body style="background-color:#0aa8a8; font-family: arial, sans-serif;">\n')
+        
+        
+    html_f.write('<div class="navgrid-container">\n')
+    html_f.write('<div>\n')
+    html_f.write('<ul>\n')
+    html_f.write('<li class="logo">GeneFEAST</li>\n')
+    html_f.write('</ul>\n')
+    html_f.write('</div>\n')
+        
+    html_f.write('<div>\n')
+    html_f.write('<ul class="subnav">\n')
+    html_f.write('<li class="dropdown">\n')
+    html_f.write('<button class="dropbtn" onclick="document.location=\'' + summary_id + '_communities_summary.html\'">Communities overview</button>\n')
+    html_f.write('<div class="dropdown-content">\n')
+    html_f.write('<a href="' + summary_id + '_communities_summary.html">List of communities</a>\n')
+    html_f.write('<a href="' + summary_id + '_communities_silhouette.html">Silhouette plot</a>\n')
+    html_f.write('<a href="' + summary_id + '_communities_paramcomparison.html">Community detection parameters: comparison</a>\n')
+    html_f.write('</div>\n')
+    html_f.write('</li> \n')   
+        
+        
+    html_f.write('<li class="dropdown">\n')
+    html_f.write('<button class="dropbtnactive" onclick="document.location=\'' + info_string + '_report.html' + '\'">Full report</button>\n')
+    html_f.write('<div class="dropdown-content">\n')    
+        
     
+    if(len(meta_communities)==0):
+        html_f.write('<a href="#">Meta communities</a>\n')
+    else:
+        html_f.write('<div class="dropdownsub" style="width:300px">\n')
+        html_f.write('<a href="' + info_string + '_report.html' + '#' + meta_communities[0].name + '">Meta communities</a>\n')
+        html_f.write('<div class="dropdownsub-content">\n')
+                     
+        for mg in meta_communities:
+            html_f.write('<div class="dropdownsubsub" style="width:300px">\n')
+            html_f.write('<a href="' + info_string + '_report.html' + '#' + mg.name + '">' + mg.name + '</a>\n' )
+            
+            html_f.write('<div class="dropdownsubsub-content" style="width:300px">\n')
+            for bc in mg.communities:
+                html_f.write('<a href="' + info_string + '_report.html' + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
+            
+            html_f.write('</div>\n')
+                
+            html_f.write('</div>\n')
+        
+        html_f.write('</div>\n')
+        html_f.write('</div>\n')
+    
+    
+    if(len(singleton_meta_communities)==0):
+        html_f.write('<a href="#">Communities</a>\n')
+    else:
+        html_f.write('<div class="dropdownsub" style="width:300px">\n')
+        html_f.write('<a href="' + info_string + '_report.html' + '#' + meta_communities[0].name + '">Communities</a>\n')
+        html_f.write('<div class="dropdownsub-content" style="width:300px">\n')
+        for bc in singleton_meta_communities:
+            html_f.write('<a href="' + info_string + '_report.html' + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
+        
+        html_f.write('</div>\n')
+        html_f.write('</div>\n')         
+    
+    if(len(singleton_communities)==0):
+        html_f.write('<a href="#">Terms</a>\n')
+    else:
+        html_f.write('<div class="dropdownsub" style="width:300px">\n')
+        html_f.write('<a href="' + info_string + '_report.html' + '#' + singleton_communities[0].name + '">Terms</a>\n')
+        html_f.write('<div class="dropdownsub-content" style="width:300px">\n')
+        for sc in singleton_communities:
+            if( sc.name == sc.all_term_defs_dict[ sc.name ] ):
+                html_f.write('<a href="' + info_string + '_report.html' + '#' + sc.name + '">' + sc.name + '</a>\n' )
+            else:
+                html_f.write('<a href="' + info_string + '_report.html' + '#' + sc.name + '">' + sc.name + ' - ' + sc.all_term_defs_dict[ sc.name ]  + '</a>\n' )
+        html_f.write('</div>\n')
+        html_f.write('</div>\n')  
+    
+    html_f.write('</div>\n')
+    html_f.write('</li>\n')
+    
+        
+    html_f.write('<li class="rightlink"><a style="color:white;">' + summary_id + '</a></li>\n')
+    html_f.write('</ul>\n')
+    html_f.write('</div>\n')
+    html_f.write('</div>\n')    
+        
+    
+    first_print = True
     for mc in meta_communities:
-        mc.print_html(html_f, summary_id + '_communities_summary.html')
+        mc.print_html(html_f, summary_id + '_communities_summary.html', first_print)
+        first_print = False
         
         for bc in mc.communities:
-            bc.print_html(html_f, summary_id + '_communities_summary.html')
+            bc.print_html(html_f, summary_id + '_communities_summary.html', first_print)
             
     for bc in singleton_meta_communities:
-        bc.print_html(html_f, summary_id + '_communities_summary.html')
+        bc.print_html(html_f, summary_id + '_communities_summary.html', first_print)
+        first_print = False
         
     for sc in singleton_communities:
-        sc.print_html(html_f, summary_id + '_communities_summary.html')
+        sc.print_html(html_f, summary_id + '_communities_summary.html', first_print)
+        first_print = False
        
     
     html_f.write("</body>\n")

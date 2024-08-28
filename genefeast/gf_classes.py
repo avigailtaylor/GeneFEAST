@@ -788,21 +788,29 @@ class bigBasicCommunityPrinter():
     def __init__ (self, community):
         self.community = community
     
-    def _print_html_title(self, html_f, summary_html, backlink=''):
+    def _print_html_title(self, html_f, summary_html, first_print, backlink='' ):
         
-        html_f.write('<button type="button" class="collapsible"><table id="' + self.community.name + '">\n')
+        if(first_print):
+            html_f.write('<div style="height:110px" id="' + self.community.name +'"></div>')
+        else:
+            html_f.write('<div style="height:100px" id="' + self.community.name +'"></div>')
+            html_f.write('<hr>\n')
+            
+        html_f.write('<button type="button" class="collapsible"><table>\n')
         html_f.write('<tr><td></td></tr>\n')
         html_f.write('<tr>\n')
         
         if(self.community.meta_community_name):
-            html_f.write('<td><h5 class="title">' + self.community.name + ' ' + self.community.info_string + '   *** ' + self.community.meta_community_name + ' ***</h5></td>\n')
+            #html_f.write('<td><h5 class="title">' + self.community.name + ' ' + self.community.info_string + '   *** ' + self.community.meta_community_name + ' ***</h5></td>\n')
+            html_f.write('<td><h5 class="title">' + self.community.name + ' // Member of ' + self.community.meta_community_name + '</h5></td>\n')
         else:
-            html_f.write('<td><h5 class="title">' + self.community.name + ' ' + self.community.info_string + '</h5></td>\n')
+            #html_f.write('<td><h5 class="title">' + self.community.name + ' ' + self.community.info_string + '</h5></td>\n')
+            html_f.write('<td><h5 class="title">' + self.community.name + '</h5></td>\n')
         
-        html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + summary_html + '\'">Communities summary</button></td>\n')
+        #html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + summary_html + '\'">Communities summary</button></td>\n')
         
-        if( backlink ):
-            html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + backlink + '\'">Main page</button></td>\n')
+        #if( backlink ):
+        #    html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + backlink + '\'">Main page</button></td>\n')
         
         html_f.write('</tr>\n')
         html_f.write('</table></button>\n')
@@ -848,7 +856,7 @@ class bigBasicCommunityPrinter():
     def _print_html_griditem2(self, html_f):
         html_f.write('<div class="plotbox">\n')
         html_f.write('<div style="width: 1200px;">\n')
-        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.community.name + '_plotbox_title">Upset plot</td></tr></table>\n')
+        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.community.name + '_plotbox_title">UpSet plot</td></tr></table>\n')
         html_f.write('<img id="' + self.community.name + '_plotbox" src="' + self.community.upset_img_path + '" width="' + str(self.community.upset_img_width) + '" height="' + str(self.community.new_h) + '">\n')
         
         html_f.write('<div style="display:none;height:' + str(self.community.new_h + 3) + 'px;padding:0px;border:0px;margin:0px;" id="' +  self.community.name + '_plotbox_table_0">\n')
@@ -1033,9 +1041,9 @@ class bigBasicCommunityPrinter():
         html_f.write('</div>\n')  
     
     
-    def print_html (self, html_f, summary_html, backlink=''):
+    def print_html (self, html_f, summary_html, first_print, backlink='' ):
         
-        self._print_html_title(html_f, summary_html, backlink)
+        self._print_html_title(html_f, summary_html, first_print, backlink)
                 
         html_f.write('<div class="grid-container">\n')
         
@@ -1048,7 +1056,7 @@ class bigBasicCommunityPrinter():
         self._print_html_griditem4(html_f)
         
         html_f.write('</div>\n')
-        html_f.write('<hr>\n')
+        #html_f.write('<hr>\n')
         #html_f.write('<br>\n')
         #html_f.write('<br>\n')
         #html_f.write('<br>\n')
@@ -1070,8 +1078,8 @@ class bigOneExtraImgCommunityPrinter(bigBasicCommunityPrinter):
         html_f.write('</div>\n')
         html_f.write('</div>\n')
     
-    def print_html (self, html_f, summary_html, backlink=''):     
-        super()._print_html_title(html_f, summary_html, backlink)
+    def print_html (self, html_f, summary_html, first_print, backlink=''):     
+        super()._print_html_title(html_f, summary_html, first_print, backlink )
         
         html_f.write('<div class="grid-container">\n')
         
@@ -1084,7 +1092,7 @@ class bigOneExtraImgCommunityPrinter(bigBasicCommunityPrinter):
         super()._print_html_griditem4(html_f)
         
         html_f.write('</div>\n')
-        html_f.write('<hr>\n')
+        #html_f.write('<hr>\n')
         #html_f.write('<br>\n')
         #html_f.write('<br>\n')
         #html_f.write('<br>\n')
@@ -1106,8 +1114,8 @@ class bigOneDescTableCommunityPrinter(bigBasicCommunityPrinter):
         html_f.write('</div>\n')
         html_f.write('</div>\n')
     
-    def print_html (self, html_f, summary_html, backlink=''):
-        super()._print_html_title(html_f, summary_html, backlink)
+    def print_html (self, html_f, summary_html, first_print, backlink=''):
+        super()._print_html_title(html_f, summary_html, first_print, backlink)
         
         html_f.write('<div class="grid-container">\n')
         
@@ -1120,7 +1128,7 @@ class bigOneDescTableCommunityPrinter(bigBasicCommunityPrinter):
         super()._print_html_griditem4(html_f)
         
         html_f.write('</div>\n')
-        html_f.write('<hr>\n')
+        #html_f.write('<hr>\n')
         #html_f.write('<br>\n')
         #html_f.write('<br>\n')
         #html_f.write('<br>\n')
@@ -1203,8 +1211,8 @@ class bigManyDescTableCommunityPrinter( bigBasicCommunityPrinter ):
         html_f.write('</div>\n')
         html_f.write('</div>\n')
     
-    def print_html (self, html_f, summary_html, backlink=''):      
-        super()._print_html_title(html_f, summary_html, backlink)
+    def print_html (self, html_f, summary_html, first_print, backlink=''):      
+        super()._print_html_title(html_f, summary_html, first_print, backlink)
         
         html_f.write('<div class="grid-container">\n')
         
@@ -1217,7 +1225,7 @@ class bigManyDescTableCommunityPrinter( bigBasicCommunityPrinter ):
         super()._print_html_griditem4(html_f)
         
         html_f.write('</div>\n')
-        html_f.write('<hr>\n')
+        #html_f.write('<hr>\n')
         #html_f.write('<br>\n')
         #html_f.write('<br>\n')
         #html_f.write('<br>\n')
@@ -1313,8 +1321,8 @@ class bigManyExtraImgCommunityPrinter(bigBasicCommunityPrinter):
         html_f.write('</div>\n')
         html_f.write('</div>\n')
     
-    def print_html (self, html_f, summary_html, backlink=''):        
-        super()._print_html_title(html_f, summary_html, backlink)
+    def print_html (self, html_f, summary_html, first_print, backlink=''):        
+        super()._print_html_title(html_f, summary_html, first_print, backlink)
         
         html_f.write('<div class="grid-container">\n')
         
@@ -1327,7 +1335,7 @@ class bigManyExtraImgCommunityPrinter(bigBasicCommunityPrinter):
         super()._print_html_griditem4(html_f)
         
         html_f.write('</div>\n')
-        html_f.write('<hr>\n')
+        #html_f.write('<hr>\n')
         #html_f.write('<br>\n')
         #html_f.write('<br>\n')
         #html_f.write('<br>\n')
@@ -1445,9 +1453,9 @@ class bigMixCommunityPrinter(bigBasicCommunityPrinter):
         html_f.write('</div>\n')
         html_f.write('</div>\n')
     
-    def print_html (self, html_f, summary_html, backlink=''):
+    def print_html (self, html_f, summary_html, first_print, backlink='' ):
 
-        super()._print_html_title(html_f, summary_html, backlink)
+        super()._print_html_title(html_f, summary_html, first_print, backlink )
         
         html_f.write('<div class="grid-container">\n')
         
@@ -1460,7 +1468,7 @@ class bigMixCommunityPrinter(bigBasicCommunityPrinter):
         super()._print_html_griditem4(html_f)
         
         html_f.write('</div>\n')
-        html_f.write('<hr>\n')
+        #html_f.write('<hr>\n')
         #html_f.write('<br>\n')
         #html_f.write('<br>\n')
         #html_f.write('<br>\n')
@@ -1763,8 +1771,8 @@ class bigCommunity(community):
         my_community_csv_printer = communityCsvPrinter(self)
         my_community_csv_printer.print_csv(csv_f)
     
-    def print_html ( self , html_f , summary_html , backlink = '' ):
-        self.bcprinter.print_html( html_f , summary_html , backlink )
+    def print_html ( self , html_f , summary_html , first_print, backlink = '' ):
+        self.bcprinter.print_html( html_f , summary_html , first_print, backlink )
           
     def set_meta_community_name ( self , meta_community_name ):
         self.meta_community_name = meta_community_name
@@ -1949,9 +1957,15 @@ class singletonCommunity( community ):
         self.included_genes = [ self.genes_sorted[ i ] for i in range( len( self.genes_sorted ) ) if s_cols[ i ] ]
     
     
-    def print_html ( self , html_f , summary_html , backlink = '' ):
+    def print_html ( self , html_f , summary_html , first_print, backlink = '' ):
         # get ready for printing...
         self.pre_print()
+        
+        if(first_print):
+            html_f.write('<div style="height:110px" id="' + self.name +'"></div>\n')
+        else:
+            html_f.write('<div style="height:100px" id="' + self.name +'"></div>\n')
+            html_f.write('<hr>\n')
         
         # gather some important data and make heatmap...
         if(self.all_term_dotplot_dict):
@@ -1959,18 +1973,20 @@ class singletonCommunity( community ):
         else:
             html_f.write('<button type="button" class="collapsible3a">\n')
             
-        html_f.write('<table id="' + self.name + '">\n')
+        html_f.write('<table>\n')
         html_f.write('<tr><td></td></tr>\n')
         html_f.write('<tr>\n')
         if( self.name == self.all_term_defs_dict[ self.name ] ):
-            html_f.write('<td><h5 class="title">' + self.name + ' ' + self.info_string + '</h5></td>\n')
+            html_f.write('<td><h5 class="title">' + self.name + '</h5></td>\n')
+            #html_f.write('<td><h5 class="title">' + self.name + ' ' + self.info_string + '</h5></td>\n')
         else:
-            html_f.write('<td><h5 class="title">' + self.name + ' ' + self.all_term_defs_dict[ self.name ] + ' ' + self.info_string + '</h5></td>\n')
+            html_f.write('<td><h5 class="title">' + self.name + ' ' + self.all_term_defs_dict[ self.name ] + '</h5></td>\n')
+            #html_f.write('<td><h5 class="title">' + self.name + ' ' + self.all_term_defs_dict[ self.name ] + ' ' + self.info_string + '</h5></td>\n')
         
-        html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + summary_html + '\'">Communities summary</button></td>\n' )
+        #html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + summary_html + '\'">Communities summary</button></td>\n' )
         
-        if( backlink ):
-            html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + backlink + '\'">Main page</button></td>\n' )
+        #if( backlink ):
+        #    html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + backlink + '\'">Main page</button></td>\n' )
         
         html_f.write('</tr>\n')
         html_f.write('</table></button>\n')
@@ -2141,7 +2157,7 @@ class singletonCommunity( community ):
         html_f.write('</div>\n')
         
         html_f.write('</div>\n')
-        html_f.write('<hr>\n')
+        #html_f.write('<hr>\n')
         #html_f.write('<br>\n')
         #html_f.write('<br>\n')
         #html_f.write('<br>\n')
@@ -2229,15 +2245,22 @@ class metaGroup( community ):
         return my_community_genes_dict
 
         
-    def print_html( self , html_f , summary_html , backlink = '' ):     
+    def print_html( self , html_f , summary_html , first_print, backlink = '' ):
         
-        html_f.write('<button type="button" class="collapsible2"><table id="' + self.name + '">\n')
+        if(first_print):
+            html_f.write('<div style="height:110px" id="' + self.name +'"></div>')
+        else:
+            html_f.write('<div style="height:100px" id="' + self.name +'"></div>')
+            html_f.write('<hr>\n')
+            
+        html_f.write('<button type="button" class="collapsible2"><table>\n')
         html_f.write('<tr><td></td></tr>\n')
         html_f.write('<tr>\n')
-        html_f.write('<td><h5 class="title">' + self.name + ' ' + self.info_string + '</h5></td>\n')
-        html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + summary_html + '\'">Communities summary</button></td>\n' )
-        if( backlink ):
-            html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + backlink + '\'">Main page</button></td>\n' )
+        html_f.write('<td><h5 class="title">' + self.name + '</h5></td>\n')
+        #html_f.write('<td><h5 class="title">' + self.name + ' ' + self.info_string + '</h5></td>\n')
+        #html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + summary_html + '\'">Communities summary</button></td>\n' )
+        #if( backlink ):
+        #    html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + backlink + '\'">Main page</button></td>\n' )
         html_f.write('</tr>\n')
         html_f.write('</table></button>\n')
         
@@ -2358,20 +2381,20 @@ class metaGroup( community ):
         
         html_f.write('<div class="upset2">\n')
         html_f.write('<div style="width: 1200px;">\n')
-        html_f.write('<table><tr><td style="font-weight: bold;">Upset plot</td></tr></table>\n')
+        html_f.write('<table><tr><td style="font-weight: bold;">UpSet plot</td></tr></table>\n')
         html_f.write('<img src="' + self.upset_img_path + '" width="' + str( self.upset_img_width )  + '" height="' + str( self.new_h ) + '">\n')
         html_f.write('</div>\n')
         html_f.write('</div>\n')
         
         html_f.write('</div>\n')
         
-        html_f.write('<hr>\n')
+        #html_f.write('<hr>\n')
         #html_f.write('<br>\n')
         #html_f.write('<br>\n')
         #html_f.write('<br>\n')
 
 class etgContainer:
-    def __init__( self , etg_name , etg_text_details , key_i_str ,  output_dir , relative_main_html , meta_communities , singleton_meta_communities , singleton_communities , new_h ):
+    def __init__( self , etg_name , etg_text_details , key_i_str ,  output_dir , relative_main_html , rel_images_dir, meta_communities , singleton_meta_communities , singleton_communities , new_h ):
         self.name = etg_name
         self.text_details = etg_text_details
         self.key_i_str = key_i_str
@@ -2380,6 +2403,7 @@ class etgContainer:
         self.csv_filename = key_i_str + '_report.csv'
         self.output_dir = output_dir
         self.relative_main_html = relative_main_html
+        self.rel_images_dir = rel_images_dir
         self.meta_communities = meta_communities
         self.singleton_meta_communities = singleton_meta_communities
         self.singleton_communities = singleton_communities
@@ -2401,10 +2425,13 @@ class etgContainer:
     
     def get_summary_hyperlink( self ):
         return self.summary_hyperlink # used by external code
+    
 
-    def print_html( self ):
-        my_summaryPrinter = summaryPrinter( self.key_i_str , self.name + ' - ' + self.text_details , self.output_dir , self.hyperlink , self.meta_communities , self.singleton_meta_communities , self.singleton_communities , self.relative_main_html )
+    def print_html( self, etgContainers ):
+        my_summaryPrinter = summaryPrinter( self.key_i_str , self.name + ': ' + self.text_details , self.output_dir , self.hyperlink , self.rel_images_dir, self.meta_communities , self.singleton_meta_communities , self.singleton_communities , self.relative_main_html , etgContainers )
         my_summaryPrinter.print_html()
+        my_summaryPrinter.print_html('communities_silhouette')
+        my_summaryPrinter.print_html('communities_paramcomparison')
         
         html_f = open( self.output_dir + '/' + self.hyperlink , 'w' )
         html_f.write("<!DOCTYPE html>\n")
@@ -2421,33 +2448,33 @@ class etgContainer:
         html_f.write("}\n")
         
         html_f.write(".view-button {\n")
-        html_f.write("  padding: 5;\n")
+        html_f.write("  background-color: inherit;\n")
+        html_f.write("  float: left;\n")
         html_f.write("  border: none;\n")
-        html_f.write("  font: inherit;\n")
-        html_f.write("  color: white;\n")
+        html_f.write("  outline: none;\n")
         html_f.write("  cursor: pointer;\n")
-        html_f.write("  background-color: dodgerblue;\n")
-        html_f.write("  border-radius: 20px;\n")
-        html_f.write("  transition-duration: 0.1s;\n")
+        html_f.write("  padding: 4px 6px;\n")
+        html_f.write("  transition: 0.1s;\n")
+        html_f.write("  font-size: 16pxs;\n")
         html_f.write("}\n")
             
         html_f.write(".view-button:hover {\n")
-        html_f.write("  background-color: crimson;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
         html_f.write("  color: white;\n")
         html_f.write("}\n")
         
         html_f.write(".disabled-view-button {\n")
-        html_f.write("  padding: 5;\n")
+        html_f.write("  background-color: inherit;\n")
+        html_f.write("  float: left;\n")
         html_f.write("  border: none;\n")
-        html_f.write("  font: inherit;\n")
-        html_f.write("  color: white;\n")
-        html_f.write("  background-color: dodgerblue;\n")
-        html_f.write("  border-radius: 20px;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  padding: 4px 6px;\n")
+        html_f.write("  font-size: 16pxs;\n")
         html_f.write("  opacity: 0.3;\n")
         html_f.write("}\n")
         
         html_f.write(".grid-container {\n")
-        html_f.write("  display: none;\n")
+        html_f.write("  display: grid;\n")
         html_f.write("  grid-template-areas:\n")
         html_f.write("    'terms plotbox plotbox plotbox plotbox plotbox'\n")
         html_f.write("    'spacer plot_buttons plot_buttons plot_buttons plot_buttons plot_buttons'\n")
@@ -2495,7 +2522,7 @@ class etgContainer:
         #***********************************
         
         html_f.write(".grid-container2 {\n")
-        html_f.write("  display: none;\n")
+        html_f.write("  display: grid;\n")
         html_f.write("  grid-template-areas:\n")
         html_f.write("    'members2 heatmap2 heatmap2 heatmap2 heatmap2 heatmap2'\n")
         html_f.write("    'spacer2a plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2'\n")
@@ -2543,7 +2570,7 @@ class etgContainer:
         #***********************************
         
         html_f.write(".grid-container3 {\n")
-        html_f.write("  display: none;\n")
+        html_f.write("  display: grid;\n")
         html_f.write("  grid-template-areas:\n")
         html_f.write("    'overlaps3 heatmap3 heatmap3 heatmap3 heatmap3 heatmap3'\n")
         html_f.write("    'spacer3a plot_buttons3 plot_buttons3 plot_buttons3 plot_buttons3 plot_buttons3'\n")
@@ -2608,24 +2635,346 @@ class etgContainer:
         html_f.write("display: none;\n")
         html_f.write("}\n")
         
+        html_f.write(".navgrid-container {\n")
+        html_f.write("display: grid;\n")
+        html_f.write("grid-template-columns: auto;\n")
+        html_f.write("position: fixed; top: 0; left: 0; width:100%; height: 55px; z-index:1;\n")
+        html_f.write("}\n")
+
+        html_f.write("ul {\n")
+        html_f.write("list-style-type: none;\n")
+        html_f.write("margin: 0;\n")
+        html_f.write("padding: 0;\n")
+        html_f.write("background-color: #088F8F;\n")
+        html_f.write("top: 0; left: 0; width: 100%; height: 55px; z-index:1;\n")
+        html_f.write("}\n")
+
+        html_f.write("li {\n")
+        html_f.write("  float: left;\n")
+        html_f.write("}\n")
+
+
+        html_f.write("li a {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  font-weight: bold;\n")
+        html_f.write("  text-align: center;\n")
+        html_f.write("  padding: 14px 16px;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("}\n")
+
+        #html_f.write("li a:hover:not(.navactive) {\n")
+        #html_f.write("  color: black;\n")
+        #html_f.write("}\n")
+
+        html_f.write(".navactive {\n")
+        html_f.write("  text-decoration:underline;\n")
+        html_f.write("}\n")
+
+        html_f.write(".logo {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  color: yellow;\n")
+        html_f.write("  text-align: center;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  padding: 9px 16px;\n")
+        html_f.write("  padding-right: 75px;\n")
+        html_f.write("  font-family: arial black, sans-serif;\n") 
+        html_f.write("  font-size: 18px;\n")
+        html_f.write("}\n")
+
+        html_f.write(".rightlink {\n")
+        html_f.write("  float: right;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".subnav {\n")
+        html_f.write("  list-style-type: none;\n")
+        html_f.write("  margin: 0;\n")
+        html_f.write("  padding: 0;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropdown {\n")
+        html_f.write("  float: left;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropdown .dropbtn {\n")
+        html_f.write("  font-size: 16px;\n")  
+        html_f.write("  border: none;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  font-weight: bold;\n")
+        html_f.write("  padding: 14px 16px;\n")
+        html_f.write("  background-color: inherit;\n")
+        html_f.write("  font-family: inherit;\n")
+        html_f.write("  margin: 0;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropbtnactive {\n")
+        html_f.write("  font-size: 16px;\n")  
+        html_f.write("  border: none;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  text-decoration:underline;\n")
+        html_f.write("  font-weight: bold;\n")
+        html_f.write("  padding: 14px 16px;\n")
+        html_f.write("  background-color: inherit;\n")
+        html_f.write("  font-family: inherit;\n")
+        html_f.write("  margin: 0;\n")
+        html_f.write("}\n")
+    
+        #html_f.write(".navbar a:hover, .dropdown:hover .dropbtn {\n")
+        #html_f.write("  color: black;\n")
+        #html_f.write("}\n")
+    
+        html_f.write(".dropdown-content {\n")
+        html_f.write("  display: none;\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("  min-width: 160px;\n")
+        html_f.write("  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropdown-content a {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  padding: 12px 16px;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  font-size: small;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropdown-content a:hover {\n")
+        html_f.write("  background-color: #088F8F;\n")
+        html_f.write("}\n")
+            
+        html_f.write(".dropdown:hover .dropdown-content {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  position:fixed;\n")
+        html_f.write("  z-index: 9999;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+        html_f.write(".dropdownsub {\n")
+        html_f.write("  float: left;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+        html_f.write(".dropdown-content .dropdownsub {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsub-content{\n")
+        html_f.write("  display: none;\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("  min-width: 160px;\n")
+        html_f.write("  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsub-content a {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  padding: 12px 16px;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  font-size: small;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsub:hover .dropdownsub-content {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  position:absolute;\n")
+        html_f.write("  z-index: 9999;\n")
+        html_f.write("  left: 50%;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsubsub {\n")
+        html_f.write("  float: left;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+        html_f.write(".dropdownsub-content .dropdownsubsub {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsubsub-content{\n")
+        html_f.write("  display: none;\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("  min-width: 160px;\n")
+        html_f.write("  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsubsub-content a {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  padding: 12px 16px;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  font-size: small;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsubsub:hover .dropdownsubsub-content {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  position:absolute;\n")
+        html_f.write("  z-index: 9999;\n")
+        html_f.write("  left: 50%;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+    
+        html_f.write(".subtitlebanner {\n")
+        html_f.write("  list-style-type: none;\n")
+        html_f.write("  margin: 0;\n")
+        html_f.write("  padding: 0;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("  margin-top:110px;\n")
+        html_f.write("  z-index:1\n")
+        html_f.write("}\n\n")
+        
         html_f.write("</style>\n")
         html_f.write("</head>\n")
 
 
-        html_f.write("<body>\n")
+        html_f.write('<body style="background-color:#0aa8a8; font-family: arial, sans-serif;">\n')
         
+            
+        html_f.write('<div class="navgrid-container">\n')
+        html_f.write('<div>\n')
+        html_f.write('<ul>\n')
+        html_f.write('<li class="logo">GeneFEAST</li>\n')
+        
+        html_f.write('<li><a href="' + self.relative_main_html + '">Experiment term-set intersections</a></li>\n')
+        html_f.write('<li class="dropdown">\n')
+        html_f.write('<button class="dropbtnactive">Reports\n')
+        html_f.write('</button>\n')
+        html_f.write('<div class="dropdown-content">\n')
+        for etgContainer in etgContainers:
+            html_f.write('<a href="' + etgContainer.get_summary_hyperlink() + '">' + etgContainer.name + ': ' + etgContainer.text_details + '</a>\n')
+            html_f.write('</div>\n')
+            html_f.write('</li>\n')
+                
+        html_f.write('</ul>\n')
+        html_f.write('</div>\n')
+    
+    
+        html_f.write('<div>\n')
+        html_f.write('<ul class="subnav">\n')
+        html_f.write('<li class="dropdown">\n')
+        html_f.write('<button class="dropbtn" onclick="document.location=\'' + self.key_i_str + '_communities_summary.html\'">Communities overview</button>\n')
+        html_f.write('<div class="dropdown-content">\n')
+        html_f.write('<a href="' + self.key_i_str + '_communities_summary.html">List of communities</a>\n')
+        html_f.write('<a href="' + self.key_i_str + '_communities_silhouette.html">Silhouette plot</a>\n')
+        html_f.write('<a href="' + self.key_i_str + '_communities_paramcomparison.html">Community detection parameters: comparison</a>\n')
+        html_f.write('</div>\n')
+        html_f.write('</li> \n')
+        
+        
+        html_f.write('<li class="dropdown">\n')
+        html_f.write('<button class="dropbtnactive" onclick="document.location=\'' + self.hyperlink + '\'">Full report</button>\n')
+        html_f.write('<div class="dropdown-content">\n')
+        
+        if(len(self.meta_communities)==0):
+            html_f.write('<a href="#">Meta communities</a>\n')
+        else:
+            html_f.write('<div class="dropdownsub" style="width:300px">\n')
+            html_f.write('<a href="' + self.hyperlink + '#' + self.meta_communities[0].name + '">Meta communities</a>\n')
+            html_f.write('<div class="dropdownsub-content">\n')
+                         
+            for mg in self.meta_communities:
+                html_f.write('<div class="dropdownsubsub" style="width:300px">\n')
+                html_f.write('<a href="' + self.hyperlink + '#' + mg.name + '">' + mg.name + '</a>\n' )
+                
+                html_f.write('<div class="dropdownsubsub-content" style="width:300px">\n')
+                for bc in mg.communities:
+                    html_f.write('<a href="' + self.hyperlink + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
+                
+                html_f.write('</div>\n')
+                    
+                html_f.write('</div>\n')
+            
+            html_f.write('</div>\n')
+            html_f.write('</div>\n')
+        
+        
+        if(len(self.singleton_meta_communities)==0):
+            html_f.write('<a href="#">Communities</a>\n')
+        else:
+            html_f.write('<div class="dropdownsub" style="width:300px">\n')
+            html_f.write('<a href="' + self.hyperlink + '#' + self.meta_communities[0].name + '">Communities</a>\n')
+            html_f.write('<div class="dropdownsub-content" style="width:300px">\n')
+            for bc in self.singleton_meta_communities:
+                html_f.write('<a href="' + self.hyperlink + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
+            
+            html_f.write('</div>\n')
+            html_f.write('</div>\n')         
+        
+        if(len(self.singleton_communities)==0):
+            html_f.write('<a href="#">Terms</a>\n')
+        else:
+            html_f.write('<div class="dropdownsub" style="width:300px">\n')
+            html_f.write('<a href="' + self.hyperlink + '#' + self.singleton_communities[0].name + '">Terms</a>\n')
+            html_f.write('<div class="dropdownsub-content" style="width:300px">\n')
+            for sc in self.singleton_communities:
+                if( sc.name == sc.all_term_defs_dict[ sc.name ] ):
+                    html_f.write('<a href="' + self.hyperlink + '#' + sc.name + '">' + sc.name + '</a>\n' )
+                else:
+                    html_f.write('<a href="' + self.hyperlink + '#' + sc.name + '">' + sc.name + ' - ' + sc.all_term_defs_dict[ sc.name ]  + '</a>\n' )
+            html_f.write('</div>\n')
+            html_f.write('</div>\n')  
+        
+        html_f.write('</div>\n')
+        html_f.write('</li>\n')
+        
+        
+        html_f.write('<li class="rightlink"><a style="color:white;">' + self.name + ': ' + self.text_details + '</a></li>\n')
+        html_f.write('</ul>\n')
+        html_f.write('</div>\n')
+        html_f.write('</div>\n')
+            
+        
+        first_print = True
         for mc in self.meta_communities:
-            mc.print_html( html_f , self.summary_hyperlink , backlink = self.relative_main_html )
+            mc.print_html( html_f , self.summary_hyperlink , first_print, backlink = self.relative_main_html )
+            first_print = False
             
             for bc in mc.communities:
-                bc.print_html( html_f , self.summary_hyperlink , backlink = self.relative_main_html )
+                bc.print_html( html_f , self.summary_hyperlink , first_print, backlink = self.relative_main_html )
                 
         for bc in self.singleton_meta_communities:
-            bc.print_html( html_f , self.summary_hyperlink , backlink = self.relative_main_html )
+            bc.print_html( html_f , self.summary_hyperlink , first_print, backlink = self.relative_main_html )
+            first_print = False
             
         for sc in self.singleton_communities:
-            sc.print_html( html_f , self.summary_hyperlink , backlink = self.relative_main_html )
-
+            sc.print_html( html_f , self.summary_hyperlink , first_print, backlink = self.relative_main_html )
+            first_print = False
 
         jSPrinter.print_html_for_event_listeners( html_f )
         html_f.write("</body>\n")
@@ -2634,19 +2983,21 @@ class etgContainer:
 
 
 class summaryPrinter:
-    def __init__( self , summary_id , summary_title , output_dir , report_html , meta_communities , singleton_meta_communities , singleton_communities , backlink = '' ):
+    def __init__( self , summary_id , summary_title , output_dir , report_html , rel_images_dir, meta_communities , singleton_meta_communities , singleton_communities , backlink = '' , etgContainers = [] ):
         self.summary_id = summary_id
         self.summary_title = summary_title
         self.output_dir = output_dir
         self.report_html = report_html
+        self.rel_images_dir = rel_images_dir
         self.meta_communities = meta_communities
         self.singleton_meta_communities = singleton_meta_communities
         self.singleton_communities = singleton_communities
         self.backlink = backlink
+        self.etgContainers = etgContainers
         
     
-    def print_html( self ):
-        html_f = open( self.output_dir + '/' + self.summary_id + '_communities_summary.html', 'w' )
+    def print_html( self , summary_type="communities_summary" ):
+        html_f = open( self.output_dir + '/' + self.summary_id + '_' + summary_type + '.html', 'w' )
         html_f.write("<!DOCTYPE html>\n")
         html_f.write("<html>\n")
 
@@ -2676,7 +3027,7 @@ class summaryPrinter:
         html_f.write("    'singleton_meta_communities'\n")
         html_f.write("    'singleton_communities';\n")
         html_f.write("  grid-gap: 10px;\n")
-        html_f.write("  background-color: #04B404;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
         html_f.write("  padding: 10px;\n")
         html_f.write("}\n")
         
@@ -2695,61 +3046,398 @@ class summaryPrinter:
         html_f.write("  text-align: left;\n")
         html_f.write("  padding: 15px;\n")
         html_f.write("  font-size: small;\n")
+        html_f.write("  margin:0;\n")
         html_f.write("}\n")
+        
+        html_f.write(".navgrid-container {\n")
+        html_f.write("display: grid;\n")
+        html_f.write("grid-template-columns: auto;\n")
+        html_f.write("position: fixed; top: 0; left: 0; width:100%; height: 55px; z-index:1;\n")
+        html_f.write("}\n")
+
+        html_f.write("ul {\n")
+        html_f.write("list-style-type: none;\n")
+        html_f.write("margin: 0;\n")
+        html_f.write("padding: 0;\n")
+        html_f.write("background-color: #088F8F;\n")
+        html_f.write("top: 0; left: 0; width: 100%; height: 55px; z-index:1;\n")
+        html_f.write("}\n")
+
+        html_f.write("li {\n")
+        html_f.write("  float: left;\n")
+        html_f.write("}\n")
+
+
+        html_f.write("li a {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  font-weight: bold;\n")
+        html_f.write("  text-align: center;\n")
+        html_f.write("  padding: 14px 16px;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("}\n")
+
+        #html_f.write("li a:hover:not(.navactive) {\n")
+        #html_f.write("  color: black;\n")
+        #html_f.write("}\n")
+
+        html_f.write(".navactive {\n")
+        html_f.write("  text-decoration:underline;\n")
+        html_f.write("}\n")
+
+        html_f.write(".logo {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  color: yellow;\n")
+        html_f.write("  text-align: center;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  padding: 9px 16px;\n")
+        html_f.write("  padding-right: 75px;\n")
+        html_f.write("  font-family: arial black, sans-serif;\n") 
+        html_f.write("  font-size: 18px;\n")
+        html_f.write("}\n")
+
+        html_f.write(".rightlink {\n")
+        html_f.write("  float: right;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".subnav {\n")
+        html_f.write("  list-style-type: none;\n")
+        html_f.write("  margin: 0;\n")
+        html_f.write("  padding: 0;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropdown {\n")
+        html_f.write("  float: left;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropdown .dropbtn {\n")
+        html_f.write("  font-size: 16px;\n")  
+        html_f.write("  border: none;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  font-weight: bold;\n")
+        html_f.write("  padding: 14px 16px;\n")
+        html_f.write("  background-color: inherit;\n")
+        html_f.write("  font-family: inherit;\n")
+        html_f.write("  margin: 0;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropbtnactive {\n")
+        html_f.write("  font-size: 16px;\n")  
+        html_f.write("  border: none;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  text-decoration:underline;\n")
+        html_f.write("  font-weight: bold;\n")
+        html_f.write("  padding: 14px 16px;\n")
+        html_f.write("  background-color: inherit;\n")
+        html_f.write("  font-family: inherit;\n")
+        html_f.write("  margin: 0;\n")
+        html_f.write("}\n")
+    
+        #html_f.write(".navbar a:hover, .dropdown:hover .dropbtn {\n")
+        #html_f.write("  color: black;\n")
+        #html_f.write("}\n")
+    
+        html_f.write(".dropdown-content {\n")
+        html_f.write("  display: none;\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("  min-width: 160px;\n")
+        html_f.write("  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropdown-content a {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  padding: 12px 16px;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  font-size: small;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropdown-content a:hover {\n")
+        html_f.write("  background-color: #088F8F;\n")
+        html_f.write("}\n")
+            
+        html_f.write(".dropdown:hover .dropdown-content {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  position:fixed;\n")
+        html_f.write("  z-index: 9999;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+        html_f.write(".dropdownsub {\n")
+        html_f.write("  float: left;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+        html_f.write(".dropdown-content .dropdownsub {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsub-content{\n")
+        html_f.write("  display: none;\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("  min-width: 160px;\n")
+        html_f.write("  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsub-content a {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  padding: 12px 16px;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  font-size: small;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsub:hover .dropdownsub-content {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  position:absolute;\n")
+        html_f.write("  z-index: 9999;\n")
+        html_f.write("  left: 50%;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsubsub {\n")
+        html_f.write("  float: left;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+        html_f.write(".dropdownsub-content .dropdownsubsub {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsubsub-content{\n")
+        html_f.write("  display: none;\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("  min-width: 160px;\n")
+        html_f.write("  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsubsub-content a {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  padding: 12px 16px;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  font-size: small;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsubsub:hover .dropdownsubsub-content {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  position:absolute;\n")
+        html_f.write("  z-index: 9999;\n")
+        html_f.write("  left: 50%;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+    
+        html_f.write(".subtitlebanner {\n")
+        html_f.write("  list-style-type: none;\n")
+        html_f.write("  margin: 0;\n")
+        html_f.write("  padding: 0;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("  margin-top:110px;\n")
+        html_f.write("  z-index:1\n")
+        html_f.write("}\n\n")
+        
+        
         html_f.write("</style>\n")
         
         html_f.write("</head>\n")
 
 
-        html_f.write("<body>\n")
-        html_f.write('<div class="grid-container">\n')
-        
-        html_f.write('<div class="report_title" style="max-height: 30px;">\n')
-        html_f.write('<table>\n')
-        html_f.write('<tr>\n')
-        html_f.write('<td><h3 class="title" >Communities summary: ' + self.summary_title + '</h3></td>\n')
-        if( self.backlink ):
-            html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + self.backlink + '\'">Main page</button></td>\n' )
-        html_f.write('</tr>\n')
-        html_f.write('</table>\n')
+        html_f.write('<body style="background-color:#0aa8a8; font-family: arial, sans-serif;">\n')
+        html_f.write('<div class="navgrid-container">\n')
+        html_f.write('<div>\n')
+        html_f.write('<ul>\n')
+        html_f.write('<li class="logo">GeneFEAST</li>\n')
+        if(not(self.backlink=='')):
+            html_f.write('<li><a href="' + self.backlink + '">Experiment term-set intersections</a></li>\n')
+            html_f.write('<li class="dropdown">\n')
+            html_f.write('<button class="dropbtnactive">Reports\n')
+            html_f.write('</button>\n')
+            html_f.write('<div class="dropdown-content">\n')
+            for etgContainer in self.etgContainers:
+                html_f.write('<a href="' + etgContainer.get_summary_hyperlink() + '">' + etgContainer.name + ': ' + etgContainer.text_details + '</a>\n')
+                html_f.write('</div>\n')
+                html_f.write('</li>\n')
+        html_f.write('</ul>\n')
         html_f.write('</div>\n')
+    
+    
+        html_f.write('<div>\n')
+        html_f.write('<ul class="subnav">\n')
+        html_f.write('<li class="dropdown">\n')
+        html_f.write('<button class="dropbtnactive" onclick="document.location=\'' + self.summary_id + '_communities_summary.html\'">Communities overview</button>\n')
+        html_f.write('<div class="dropdown-content">\n')
+        html_f.write('<a href="' + self.summary_id + '_communities_summary.html">List of communities</a>\n')
+        html_f.write('<a href="' + self.summary_id + '_communities_silhouette.html">Silhouette plot</a>\n')
+        html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison.html">Community detection parameters: comparison</a>\n')
+        html_f.write('</div>\n')
+        html_f.write('</li> \n')
         
-        html_f.write('<div class="meta_communities">\n')
-        html_f.write('<table>\n')
-        html_f.write('<tr><td><b>Meta communities</b></td><td></td><td></td></tr>\n' )
-        for mg in self.meta_communities:
-            html_f.write('<tr><td><a href="' + self.report_html + '#' + mg.name + '">' + mg.name + '</a></td><td><a href="' + self.report_html + '#' + mg.communities[0].name + '">' + mg.communities[0].name + '</a></td><td>' + mg.communities[0].top_term + '</td></tr>\n' )
+        
+        html_f.write('<li class="dropdown">\n')
+        html_f.write('<button class="dropbtn" onclick="document.location=\'' + self.report_html + '\'">Full report</button>\n')
+        html_f.write('<div class="dropdown-content">\n')
+        
+        if(len(self.meta_communities)==0):
+            html_f.write('<a href="#">Meta communities</a>\n')
+        else:
+            html_f.write('<div class="dropdownsub" style="width:300px">\n')
+            html_f.write('<a href="' + self.report_html + '#' + self.meta_communities[0].name + '">Meta communities</a>\n')
+            html_f.write('<div class="dropdownsub-content">\n')
+                         
+            for mg in self.meta_communities:
+                html_f.write('<div class="dropdownsubsub" style="width:300px">\n')
+                html_f.write('<a href="' + self.report_html + '#' + mg.name + '">' + mg.name + '</a>\n' )
+                
+                html_f.write('<div class="dropdownsubsub-content" style="width:300px">\n')
+                for bc in mg.communities:
+                    html_f.write('<a href="' + self.report_html + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
+                
+                html_f.write('</div>\n')
+                    
+                html_f.write('</div>\n')
             
-            for bc in mg.communities[ 1 : len(mg.communities) ]:
-                html_f.write('<tr><td></td><td><a href="' + self.report_html + '#' + bc.name + '">' + bc.name + '</a></td><td>' + bc.top_term + '</td></tr>\n' )
-            html_f.write('<tr><td></td><td></td><td></td></tr>\n' )
+            html_f.write('</div>\n')
+            html_f.write('</div>\n')
+        
+        
+        if(len(self.singleton_meta_communities)==0):
+            html_f.write('<a href="#">Communities</a>\n')
+        else:
+            html_f.write('<div class="dropdownsub" style="width:300px">\n')
+            html_f.write('<a href="' + self.report_html + '#' + self.meta_communities[0].name + '">Communities</a>\n')
+            html_f.write('<div class="dropdownsub-content" style="width:300px">\n')
+            for bc in self.singleton_meta_communities:
+                html_f.write('<a href="' + self.report_html + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
             
-        html_f.write('</table>\n')
-        html_f.write('</div>\n')
+            html_f.write('</div>\n')
+            html_f.write('</div>\n')         
         
-        html_f.write('<div class="singleton_meta_communities">\n')
-        html_f.write('<table>\n')
-        html_f.write('<tr><td><b>Communities</b></td><td></td></tr>\n' )
-        for bc in self.singleton_meta_communities:
-            html_f.write('<tr><td><a href="' + self.report_html + '#' + bc.name + '">' + bc.name + '</a></td><td>' + bc.top_term + '</td></tr>\n' )
-            html_f.write('<tr><td></td><td></td></tr>\n' )
-        
-        html_f.write('</table>\n')    
-        html_f.write('</div>\n')
-        
-        html_f.write('<div class="singleton_communities">\n')
-        html_f.write('<table>\n')
-        html_f.write('<tr><td><b>Terms</b></td></tr>\n' )
-        for sc in self.singleton_communities:
-            if( sc.name == sc.all_term_defs_dict[ sc.name ] ):
-                html_f.write('<tr><td><a href="' + self.report_html + '#' + sc.name + '">' + sc.name + '</a></td></tr>\n' )
-            else:
-                html_f.write('<tr><td><a href="' + self.report_html + '#' + sc.name + '">' + sc.name + ' - ' + sc.all_term_defs_dict[ sc.name ]  + '</a></td></tr>\n' )
-            html_f.write('<tr><td></td></tr>\n' )
-        html_f.write('</table>\n')
-        html_f.write('</div>\n')
+        if(len(self.singleton_communities)==0):
+            html_f.write('<a href="#">Terms</a>\n')
+        else:
+            html_f.write('<div class="dropdownsub" style="width:300px">\n')
+            html_f.write('<a href="' + self.report_html + '#' + self.singleton_communities[0].name + '">Terms</a>\n')
+            html_f.write('<div class="dropdownsub-content" style="width:300px">\n')
+            for sc in self.singleton_communities:
+                if( sc.name == sc.all_term_defs_dict[ sc.name ] ):
+                    html_f.write('<a href="' + self.report_html + '#' + sc.name + '">' + sc.name + '</a>\n' )
+                else:
+                    html_f.write('<a href="' + self.report_html + '#' + sc.name + '">' + sc.name + ' - ' + sc.all_term_defs_dict[ sc.name ]  + '</a>\n' )
+            html_f.write('</div>\n')
+            html_f.write('</div>\n')  
         
         html_f.write('</div>\n')
+        html_f.write('</li>\n')
+        
+        
+        html_f.write('<li class="rightlink"><a style="color:white;">' + self.summary_title + '</a></li>\n')
+        html_f.write('</ul>\n')
+        html_f.write('</div>\n')
+        html_f.write('</div>\n')
+        
+        
+        if(summary_type == "communities_summary"):
+            html_f.write('<div class="subtitlebanner">\n')
+            html_f.write('<li><a style="color:black;">List of communities</a></li>\n')
+            html_f.write('</div>\n')
+            html_f.write('<div class="grid-container">\n')
+            
+            
+            html_f.write('<div class="meta_communities">\n')
+            html_f.write('<table>\n')
+            html_f.write('<tr><td><b>Meta communities</b></td><td></td><td></td></tr>\n' )
+            for mg in self.meta_communities:
+                html_f.write('<tr><td><a href="' + self.report_html + '#' + mg.name + '">' + mg.name + '</a></td><td><a href="' + self.report_html + '#' + mg.communities[0].name + '">' + mg.communities[0].name + '</a></td><td>' + mg.communities[0].top_term + '</td></tr>\n' )
+                
+                for bc in mg.communities[ 1 : len(mg.communities) ]:
+                    html_f.write('<tr><td></td><td><a href="' + self.report_html + '#' + bc.name + '">' + bc.name + '</a></td><td>' + bc.top_term + '</td></tr>\n' )
+                html_f.write('<tr><td></td><td></td><td></td></tr>\n' )
+                
+            html_f.write('</table>\n')
+            html_f.write('</div>\n')
+            
+            html_f.write('<div class="singleton_meta_communities">\n')
+            html_f.write('<table>\n')
+            html_f.write('<tr><td><b>Communities</b></td><td></td></tr>\n' )
+            for bc in self.singleton_meta_communities:
+                html_f.write('<tr><td><a href="' + self.report_html + '#' + bc.name + '">' + bc.name + '</a></td><td>' + bc.top_term + '</td></tr>\n' )
+                html_f.write('<tr><td></td><td></td></tr>\n' )
+            
+            html_f.write('</table>\n')    
+            html_f.write('</div>\n')
+            
+            html_f.write('<div class="singleton_communities">\n')
+            html_f.write('<table>\n')
+            html_f.write('<tr><td><b>Terms</b></td></tr>\n' )
+            for sc in self.singleton_communities:
+                if( sc.name == sc.all_term_defs_dict[ sc.name ] ):
+                    html_f.write('<tr><td><a href="' + self.report_html + '#' + sc.name + '">' + sc.name + '</a></td></tr>\n' )
+                else:
+                    html_f.write('<tr><td><a href="' + self.report_html + '#' + sc.name + '">' + sc.name + ' - ' + sc.all_term_defs_dict[ sc.name ]  + '</a></td></tr>\n' )
+                html_f.write('<tr><td></td></tr>\n' )
+            html_f.write('</table>\n')
+            html_f.write('</div>\n')
+            
+            html_f.write('</div>\n')
+            
+        elif(summary_type == "communities_paramcomparison"):
+            html_f.write('<div class="subtitlebanner">\n')
+            html_f.write('<li><a style="color:black;">Community detection parameters: comparison</a></li>\n')
+            html_f.write('</div>\n')
+            html_f.write('<div class="grid-container">\n')
+            html_f.write('<div class="figure">\n')
+            html_f.write('<img src="' + self.rel_images_dir + 'sil_ violinplots.svg">\n')
+            html_f.write('</div>\n')
+            html_f.write('</div>\n')
+            
+        elif(summary_type == "communities_silhouette"):
+            html_f.write('<div class="subtitlebanner">\n')
+            html_f.write('<li><a style="color:black;">Silhouette plot</a></li>\n')
+            html_f.write('</div>\n')
+            html_f.write('<div class="grid-container">\n')
+            html_f.write('<div class="figure">\n')
+            html_f.write('<img src="' + self.rel_images_dir + 'sil_plot.svg">\n')
+            html_f.write('</div>\n')
+            html_f.write('</div>\n')
+        
+        
         html_f.write("</body>\n")
         html_f.write("</html>\n")
         html_f.close()
@@ -2829,10 +3517,12 @@ class javaScriptPrinter:
         html_f.write('for (i = 0; i < coll.length; i++) {\n')
         html_f.write('  coll[i].addEventListener("click", function() {\n')
         html_f.write('    var content = this.nextElementSibling;\n')
-        html_f.write('    if (content.style.display === "grid") {\n')
+        html_f.write('    if (content.style.display == "grid" || content.style.display == "") {\n')
         html_f.write('      content.style.display = "none";\n')
+        html_f.write('      content.nextElementSibling.style.display = "none";\n')
         html_f.write('    } else {\n')
         html_f.write('      content.style.display = "grid";\n')
+        html_f.write('      content.nextElementSibling.style.display = "grid";\n')
         html_f.write('    }\n')
         html_f.write(' });\n')
         html_f.write('}\n')
@@ -2844,10 +3534,12 @@ class javaScriptPrinter:
         html_f.write('for (i = 0; i < coll.length; i++) {\n')
         html_f.write('  coll[i].addEventListener("click", function() {\n')
         html_f.write('    var content = this.nextElementSibling;\n')
-        html_f.write('    if (content.style.display === "grid") {\n')
+        html_f.write('    if (content.style.display == "grid" || content.style.display == "") {\n')
         html_f.write('      content.style.display = "none";\n')
+        html_f.write('      content.nextElementSibling.style.display = "none";\n')
         html_f.write('    } else {\n')
         html_f.write('      content.style.display = "grid";\n')
+        html_f.write('      content.nextElementSibling.style.display = "grid";\n')
         html_f.write('    }\n')
         html_f.write(' });\n')
         html_f.write('}\n')
@@ -2859,10 +3551,12 @@ class javaScriptPrinter:
         html_f.write('for (i = 0; i < coll.length; i++) {\n')
         html_f.write('  coll[i].addEventListener("click", function() {\n')
         html_f.write('    var content = this.nextElementSibling;\n')
-        html_f.write('    if (content.style.display === "grid") {\n')
+        html_f.write('    if (content.style.display == "grid" || content.style.display == "") {\n')
         html_f.write('      content.style.display = "none";\n')
+        html_f.write('      content.nextElementSibling.style.display = "none";\n')
         html_f.write('    } else {\n')
         html_f.write('      content.style.display = "grid";\n')
+        html_f.write('      content.nextElementSibling.style.display = "grid";\n')
         html_f.write('    }\n')
         html_f.write(' });\n')
         html_f.write('}\n')
@@ -2874,12 +3568,14 @@ class javaScriptPrinter:
         html_f.write('for (i = 0; i < coll.length; i++) {\n')
         html_f.write('  coll[i].addEventListener("click", function() {\n')
         html_f.write('    var content = this.nextElementSibling.nextElementSibling;\n')
-        html_f.write('    if (content.style.display === "grid") {\n')
+        html_f.write('    if (content.style.display == "grid" || content.style.display == "") {\n')
         html_f.write('      content.style.display = "none";\n')
         html_f.write('      content.nextElementSibling.style.display = "none";\n')
+        html_f.write('      content.nextElementSibling.nextElementSibling.style.display = "none";\n')
         html_f.write('    } else {\n')
         html_f.write('      content.style.display = "grid";\n')
         html_f.write('      content.nextElementSibling.style.display = "grid";\n')
+        html_f.write('      content.nextElementSibling.nextElementSibling.style.display = "grid";\n')
         html_f.write('    }\n')
         html_f.write(' });\n')
         html_f.write('}\n')
