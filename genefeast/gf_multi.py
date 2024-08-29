@@ -151,7 +151,7 @@ def gf_multi(mif_path, output_dir, cfg_yaml_path):
     (status, message, _extra_annotations_dict, _num_extra_annotations) = gfb.make_extra_annotations_dict(EA_FILE)
     
     # These are constants for rendering HTML report
-    NEW_H = 350
+    NEW_H = 300
     #NEW_H_SINGLETON = 325
     NEW_H_SINGLETON_ADJUSTMENT = 25
     IMG_EXTENSION = '.png'

@@ -150,7 +150,7 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     (status, message, _extra_annotations_dict, _num_extra_annotations) = gfb.make_extra_annotations_dict(EA_FILE)
     
     # These are constants for rendering HTML report
-    NEW_H = 350
+    NEW_H = 300
     IMG_EXTENSION = '.png'
     # Notes on IMG_EXTENSION: At the moment, the only file format available for 
     # external, extra, images is png. However, this might change in future releases.
@@ -375,9 +375,9 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     html_f.write(".grid-container2 {\n")
     html_f.write("  display: grid;\n")
     html_f.write("  grid-template-areas:\n")
-    html_f.write("    'members2 heatmap2 heatmap2 heatmap2 heatmap2 heatmap2'\n")
+    html_f.write("    'members2 upset2 upset2 upset2 upset2 upset2'\n")
     html_f.write("    'spacer2a plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2'\n")
-    html_f.write("    'spacer2b upset2 upset2 upset2 upset2 upset2';\n")
+    html_f.write("    'spacer2b heatmap2 heatmap2 heatmap2 heatmap2 heatmap2';\n")
     html_f.write("  grid-gap: 10px;\n")
     html_f.write("  background-color: #DC143C;\n")
     html_f.write("  padding: 10px;\n")
@@ -482,8 +482,15 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     html_f.write("  background-color: #FFD700;\n")
     html_f.write("}\n\n")
             
+#    html_f.write(".content {\n")
+#    html_f.write("display: none;\n")
+#    html_f.write("}\n")
+    
     html_f.write(".content {\n")
-    html_f.write("display: none;\n")
+    html_f.write("display: grid;\n")
+    html_f.write("background-color: #FFD700;\n")
+    html_f.write("padding-left: 10px;\n")
+    html_f.write("padding-top: 10px;\n")
     html_f.write("}\n")
     
     html_f.write(".navgrid-container {\n")

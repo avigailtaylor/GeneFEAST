@@ -280,7 +280,7 @@ class circosDrawer:
                 circos_dict_values  = [ np.nan if np.isnan(row_values[x]) else (gtheatmap_index, int(row_values[x] + np.nansum(row_values[0:x]) -1) , int(row_values[x] + np.nansum(row_values[0:x])), 750) for x in range(0,len(row_values))]
             circos_dict[gtheatmap_index] = circos_dict_values
             
-            arc = Garc(arc_id=gtheatmap_index, size=np.nansum(row_values), interspace = 1, raxis_range=(950,1000), labelposition=60, label_visible=True)
+            arc = Garc(arc_id=gtheatmap_index, size=np.nansum(row_values), interspace = 1, raxis_range=(950,1000), labelposition=100, label_visible=True)
             circle.add_garc(arc)
         
         circle.set_garcs()
@@ -326,9 +326,16 @@ class circosDrawer:
             circle.chord_plot(chord_start, chord_end)
         
         circle.figure
-        pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__circos.svg", bbox_inches="tight")
+        pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "_circos.png", bbox_inches="tight", dpi=300)
         pyplot.close()
 
+        image = Image.open(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "_circos.png")
+        w,h = image.size
+        new_w = int(self.etg.new_h * w/h)
+        image.close()
+
+        return( self.etg.rel_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "_circos.png" , new_w)
+        
 
 class heatmapDrawer:
     def __init__ (self, etg, trim_terms=True):
@@ -370,7 +377,7 @@ class heatmapDrawer:
             return extra_annotation_df.append(gene_term_heatmap_df)
         
         
-    def draw_heatmaps(self, ylabel1='Term', ylabel2='Experiment'):
+    def draw_heatmaps(self, ylabel1='Term', ylabel2='Experiment', postfix=''):
         
         #NOTE: The 'fm' in heatmap_fm stands for 'for masking'
         
@@ -434,10 +441,10 @@ class heatmapDrawer:
         ax2.set_yticklabels(ax2.get_yticklabels(), rotation=0, fontsize=20)
 
         pyplot.subplots_adjust(hspace=0.5)
-        pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__A_heatmap.png", bbox_inches="tight")
+        pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__A_heatmap_" + postfix + ".png", bbox_inches="tight")
         pyplot.close()
         
-        image = Image.open(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__A_heatmap.png")
+        image = Image.open(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__A_heatmap_" + postfix + ".png")
         w,h = image.size
         new_w_A = int(self.etg.new_h * w/h)
         image.close()
@@ -516,10 +523,10 @@ class heatmapDrawer:
 
         pyplot.subplots_adjust(hspace=0.5)
         
-        pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__B_heatmap.png", bbox_inches="tight")
+        pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__B_heatmap_" + postfix + ".png", bbox_inches="tight")
         pyplot.close()
 
-        image = Image.open(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__B_heatmap.png")
+        image = Image.open(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__B_heatmap_" + postfix + ".png")
         w,h = image.size
         new_w_B = int(self.etg.new_h * w/h)
         image.close()
@@ -574,17 +581,22 @@ class heatmapDrawer:
 
         pyplot.subplots_adjust(hspace=0.5)
         
-        pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__C_heatmap.png", bbox_inches="tight")
+        pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__C_heatmap_" + postfix + ".png", bbox_inches="tight")
         pyplot.close()
-        image = Image.open(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__C_heatmap.png")
+        image = Image.open(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__C_heatmap_" + postfix + ".png")
         w,h = image.size
         new_w_C = int(self.etg.new_h * w/h)
         image.close()
 
-        return( [self.etg.rel_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__A_heatmap.png" , 
-                 self.etg.rel_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__B_heatmap.png",
-                 self.etg.rel_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__C_heatmap.png"] , 
-                [new_w_A, new_w_B, new_w_C], ["Heatmap A of " + self.etg.name, "Heatmap B of " + self.etg.name, "Heatmap C of " + self.etg.name])
+        if(postfix==''):
+            heatmap_titles = ["Heatmap A of " + self.etg.name, "Heatmap B of " + self.etg.name, "Heatmap C of " + self.etg.name]
+        else:
+            heatmap_titles = ["Heatmap A of " + self.etg.name + " ("+ postfix +")", "Heatmap B of " + self.etg.name + " ("+ postfix +")", "Heatmap C of " + self.etg.name + " ("+ postfix +")"]
+            
+        return( [self.etg.rel_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__A_heatmap_" + postfix + ".png" , 
+                 self.etg.rel_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__B_heatmap_" + postfix + ".png",
+                 self.etg.rel_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__C_heatmap_" + postfix + ".png"] , 
+                [new_w_A, new_w_B, new_w_C], heatmap_titles)
 
 class dotplotDrawer:
     def __init__ (self, community):
@@ -856,8 +868,12 @@ class bigBasicCommunityPrinter():
     def _print_html_griditem2(self, html_f):
         html_f.write('<div class="plotbox">\n')
         html_f.write('<div style="width: 1200px;">\n')
-        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.community.name + '_plotbox_title">UpSet plot</td></tr></table>\n')
-        html_f.write('<img id="' + self.community.name + '_plotbox" src="' + self.community.upset_img_path + '" width="' + str(self.community.upset_img_width) + '" height="' + str(self.community.new_h) + '">\n')
+        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.community.name + '_plotbox_title">Circos plot</td></tr></table>\n')
+        html_f.write('<img id="' + self.community.name + '_plotbox" src="' + self.community.circos_img_path + '" width="' + str(self.community.circos_img_width) + '" height="' + str(self.community.new_h) + '">\n')
+        
+        #html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.community.name + '_plotbox_title">UpSet plot</td></tr></table>\n')
+        #html_f.write('<img id="' + self.community.name + '_plotbox" src="' + self.community.upset_img_path + '" width="' + str(self.community.upset_img_width) + '" height="' + str(self.community.new_h) + '">\n')
+        
         
         html_f.write('<div style="display:none;height:' + str(self.community.new_h + 3) + 'px;padding:0px;border:0px;margin:0px;" id="' +  self.community.name + '_plotbox_table_0">\n')
         html_f.write('<table style="font-size:small;white-space: nowrap;">\n')
@@ -914,13 +930,43 @@ class bigBasicCommunityPrinter():
         
         html_f.write('<div class="plot_buttons">\n')
         
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.upset_img_path + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.upset_img_width) + '\' ,\'UpSet plot\',1)">Upset plot</button>\n')
         
-        heatmap_img_paths_array_as_str = ','.join(self.community.heatmap_img_paths_list)
-        heatmap_widths_array_as_str = ','.join(map(str, self.community.heatmap_img_widths_list))
-        heatmap_img_titles_array_as_str = ','.join(self.community.heatmap_img_titles_list)
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.circos_img_path + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.circos_img_width) + '\' ,\'Circos plot\',1)">Circos plot</button>\n')
+        
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.upset_img_path + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.upset_img_width) + '\' ,\'UpSet plot\',1)">UpSet plot</button>\n')
+        
+        
+        
+        
+        #heatmap_img_paths_array_as_str = ','.join(self.community.heatmap_img_paths_list)
+        #heatmap_widths_array_as_str = ','.join(map(str, self.community.heatmap_img_widths_list))
+        #heatmap_img_titles_array_as_str = ','.join(self.community.heatmap_img_titles_list)
                         
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\'  , \'' + heatmap_img_paths_array_as_str + '\' ,' + str(self.community.new_h) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heatmaps</button>\n')
+        #html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\'  , \'' + heatmap_img_paths_array_as_str + '\' ,' + str(self.community.new_h) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heatmaps</button>\n')
+        
+        
+        if(len(self.community.heatmap_img_paths_list) == 3):
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[0] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[0]) + '\' ,\'' + self.community.heatmap_img_titles_list[0] + '\',1)">Heatmap A</button>\n')
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[1] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[1]) + '\' ,\'' + self.community.heatmap_img_titles_list[1] + '\',1)">Heatmap B</button>\n')
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[2] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[2]) + '\' ,\'' + self.community.heatmap_img_titles_list[2] + '\',1)">Heatmap C</button>\n')
+        else:
+            heatmap_img_paths_array_as_str_A = ','.join( [self.community.heatmap_img_paths_list[x] for x in [0,3]] )
+            heatmap_widths_array_as_str_A = ','.join( map( str , [self.community.heatmap_img_widths_list[x] for x in [0,3]] ) )
+            heatmap_img_titles_array_as_str_A = ','.join( [self.community.heatmap_img_titles_list[x] for x in [0,3]] )
+            
+            heatmap_img_paths_array_as_str_B = ','.join( [self.community.heatmap_img_paths_list[x] for x in [1,4]] )
+            heatmap_widths_array_as_str_B = ','.join( map( str , [self.community.heatmap_img_widths_list[x] for x in [1,4]] ) )
+            heatmap_img_titles_array_as_str_B = ','.join( [self.community.heatmap_img_titles_list[x] for x in [1,4]] )
+            
+            heatmap_img_paths_array_as_str_C = ','.join( [self.community.heatmap_img_paths_list[x] for x in [2,5]] )
+            heatmap_widths_array_as_str_C = ','.join( map( str , [self.community.heatmap_img_widths_list[x] for x in [2,5]] ) )
+            heatmap_img_titles_array_as_str_C = ','.join( [self.community.heatmap_img_titles_list[x] for x in [2,5]] )
+            
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A</button>\n' )
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B</button>\n' )
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C</button>\n' )
+        
+        
         
         
         if(self.community.all_term_dotplot_dict):
@@ -1614,17 +1660,38 @@ class bigCommunity(community):
         self.gene_exp_heatmap_fm_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).reindex( index=self.exp_ids, columns = self.genes_sorted )
         
         self.rows_cols = ( [] , [] )
-        if( len( self.genes ) > 25 and len( self.terms ) >= 4 ):
-            self.rows_cols = ( ( range( len( self.terms ) ) , self.gene_term_heatmap_df.sum() > len( self.terms )//4 ) )  
+        if( len( self.genes ) > 25 and len( self.terms ) >= 4 and 
+           (sum(self.gene_term_heatmap_df.sum() > 0) > sum(self.gene_term_heatmap_df.sum() > (len( self.terms )//4)))):
+            self.rows_cols = ( ( range( len( self.terms ) ) , self.gene_term_heatmap_df.sum() > 0 ) )
+            my_heatmapDrawer_full = heatmapDrawer( self )
+            
+            if( len(self.exp_ids) > 1 ):
+                ( heatmap_img_paths_list_full , heatmap_img_widths_list_full  , heatmap_img_titles_list_full  ) = my_heatmapDrawer_full.draw_heatmaps( postfix='full')
+            else:
+                ( heatmap_img_paths_list_full , heatmap_img_widths_list_full  , heatmap_img_titles_list_full  ) = my_heatmapDrawer_full.draw_heatmaps( ylabel2='', postfix='full' )
+            
+            
+            self.rows_cols = ( ( range( len( self.terms ) ) , self.gene_term_heatmap_df.sum() > len( self.terms )//4 ) )
+            my_heatmapDrawer_compressed = heatmapDrawer( self )
+            
+            if( len(self.exp_ids) > 1 ):
+                ( heatmap_img_paths_list_compressed , heatmap_img_widths_list_compressed , heatmap_img_titles_list_compressed ) = my_heatmapDrawer_compressed.draw_heatmaps( postfix='compressed')
+            else:
+                ( heatmap_img_paths_list_compressed , heatmap_img_widths_list_compressed , heatmap_img_titles_list_compressed ) = my_heatmapDrawer_compressed.draw_heatmaps( ylabel2='', postfix='compressed' )
+                
+                
+            self.heatmap_img_paths_list = heatmap_img_paths_list_compressed + heatmap_img_paths_list_full
+            self.heatmap_img_widths_list = heatmap_img_widths_list_compressed + heatmap_img_widths_list_full
+            self.heatmap_img_titles_list = heatmap_img_titles_list_compressed + heatmap_img_titles_list_full
+            
         else:
             self.rows_cols = ( ( range( len( self.terms ) ) , self.gene_term_heatmap_df.sum() > 0 ) )
-            
-        my_heatmapDrawer = heatmapDrawer( self )
+            my_heatmapDrawer = heatmapDrawer( self )
         
-        if( len(self.exp_ids) > 1 ):
-            ( self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps( )
-        else:
-            ( self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps( ylabel2 = '' )
+            if( len(self.exp_ids) > 1 ):
+                ( self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps( )
+            else:
+                ( self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps( ylabel2 = '' )
         
         # Before drawing the rest of the plots, extract the gene list that's shown in the heatmap:
         ( _ , s_cols ) = self.rows_cols
@@ -1636,7 +1703,7 @@ class bigCommunity(community):
         
         # Draw Circos plot
         my_circosDrawer = circosDrawer(self, rows_cols = (( range( len( self.terms ) ) , self.gene_term_heatmap_df.sum() > 0 )))
-        my_circosDrawer.draw_circos()
+        ( self.circos_img_path , self.circos_img_width ) = my_circosDrawer.draw_circos()
         
         #*****************************************************************************************
         
@@ -2115,12 +2182,17 @@ class singletonCommunity( community ):
         html_f.write('</div>\n')
                          
         
-        heatmap_img_paths_array_as_str = ','.join( self.heatmap_img_paths_list )
-        heatmap_widths_array_as_str = ','.join( map( str , self.heatmap_img_widths_list ) )
-        heatmap_img_titles_array_as_str = ','.join( self.heatmap_img_titles_list )
+        #heatmap_img_paths_array_as_str = ','.join( self.heatmap_img_paths_list )
+        #heatmap_widths_array_as_str = ','.join( map( str , self.heatmap_img_widths_list ) )
+        #heatmap_img_titles_array_as_str = ','.join( self.heatmap_img_titles_list )
         
         html_f.write('<div class="plot_buttons3">\n')
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + heatmap_img_paths_array_as_str + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heatmaps</button>\n' )
+        #html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + heatmap_img_paths_array_as_str + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heatmaps</button>\n' )
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\',\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A</button>\n' )
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\',\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B</button>\n' )
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\',\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C</button>\n' )
+        
+        
         html_f.write('<button class="view-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'heatmap\', true , \'Literature search\')">Literature search</button>\n' )
     
         if( len(self.exp_ids) > 1 and ( self.num_extra_images > 1 ) ):# only want a button to toggle through extra images if there is more than one such image... len(self.exp_ids) > 1
@@ -2210,19 +2282,54 @@ class metaGroup( community ):
         self.gene_exp_heatmap_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).fillna( 0 ).reindex( index=self.exp_ids, columns = self.genes_sorted )
         self.gene_exp_heatmap_fm_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).reindex( index=self.exp_ids, columns = self.genes_sorted )
     
+#        self.rows_cols = ( [] , [] )
+#        if( len( self.genes ) > 50 and len( self.communities ) >= 3 ):
+#            self.rows_cols = ( ( range( len( self.communities ) ) , self.gene_term_heatmap_df.sum() > len( self.communities )//3 ) )  
+#        else:
+#            self.rows_cols = ( ( range( len( self.communities ) ) , self.gene_term_heatmap_df.sum() > 1 ) )
+#            
+#        my_heatmapDrawer = heatmapDrawer( self )
+#        
+#        if( len(self.exp_ids) > 1 ):
+#            (self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps(ylabel1 = 'Community')
+#        else:
+#            (self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps(ylabel1 = 'Community' , ylabel2 = '')
+            
+            
         self.rows_cols = ( [] , [] )
-        if( len( self.genes ) > 50 and len( self.communities ) >= 3 ):
+        if( len( self.genes ) > 50 and len( self.terms ) >= 3 and 
+           (sum(self.gene_term_heatmap_df.sum() > 1) > sum(self.gene_term_heatmap_df.sum() > (len( self.communities )//3)))):
+            self.rows_cols = ( ( range( len( self.communities ) ) , self.gene_term_heatmap_df.sum() > 1 ) )
+            my_heatmapDrawer_full = heatmapDrawer( self )
+            
+            if( len(self.exp_ids) > 1 ):
+                ( heatmap_img_paths_list_full , heatmap_img_widths_list_full  , heatmap_img_titles_list_full  ) = my_heatmapDrawer_full.draw_heatmaps( ylabel1='Community', postfix='full')
+            else:
+                ( heatmap_img_paths_list_full , heatmap_img_widths_list_full  , heatmap_img_titles_list_full  ) = my_heatmapDrawer_full.draw_heatmaps( ylabel1='Community' , ylabel2='', postfix='full' )
+            
+            
             self.rows_cols = ( ( range( len( self.communities ) ) , self.gene_term_heatmap_df.sum() > len( self.communities )//3 ) )  
+            my_heatmapDrawer_compressed = heatmapDrawer( self )
+            
+            if( len(self.exp_ids) > 1 ):
+                ( heatmap_img_paths_list_compressed , heatmap_img_widths_list_compressed , heatmap_img_titles_list_compressed ) = my_heatmapDrawer_compressed.draw_heatmaps( ylabel1='Community', postfix='compressed')
+            else:
+                ( heatmap_img_paths_list_compressed , heatmap_img_widths_list_compressed , heatmap_img_titles_list_compressed ) = my_heatmapDrawer_compressed.draw_heatmaps( ylabel1='Community', ylabel2='', postfix='compressed' )
+                
+                
+            self.heatmap_img_paths_list = heatmap_img_paths_list_compressed + heatmap_img_paths_list_full
+            self.heatmap_img_widths_list = heatmap_img_widths_list_compressed + heatmap_img_widths_list_full
+            self.heatmap_img_titles_list = heatmap_img_titles_list_compressed + heatmap_img_titles_list_full
+            
         else:
             self.rows_cols = ( ( range( len( self.communities ) ) , self.gene_term_heatmap_df.sum() > 1 ) )
+            my_heatmapDrawer = heatmapDrawer( self )
+        
+            if( len(self.exp_ids) > 1 ):
+                ( self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps( ylabel1 = 'Community' )
+            else:
+                ( self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps( ylabel1 = 'Community' , ylabel2 = '' )
             
-        my_heatmapDrawer = heatmapDrawer( self )
-        
-        if( len(self.exp_ids) > 1 ):
-            (self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps(ylabel1 = 'Community')
-        else:
-            (self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps(ylabel1 = 'Community' , ylabel2 = '')
-        
         
         # Now extract the gene list that's shown in the heatmap:
         ( _ , s_cols ) = self.rows_cols
@@ -2234,7 +2341,7 @@ class metaGroup( community ):
         
         # Draw Circos plot
         my_circosDrawer = circosDrawer(self, rows_cols = (( range( len( self.communities ) ) , self.gene_term_heatmap_df.sum() > 0 )), metaGroupCircosDrawer = True)
-        my_circosDrawer.draw_circos()
+        ( self.circos_img_path , self.circos_img_width ) = my_circosDrawer.draw_circos()
         
         #*****************************************************************************************                        
 
@@ -2368,21 +2475,56 @@ class metaGroup( community ):
         html_f.write('</div>\n')
         html_f.write('</div>\n')
         
-        heatmap_img_paths_array_as_str = ','.join( self.heatmap_img_paths_list )
-        heatmap_widths_array_as_str = ','.join( map( str , self.heatmap_img_widths_list ) )
-        heatmap_img_titles_array_as_str = ','.join( self.heatmap_img_titles_list )
+        #heatmap_img_paths_array_as_str = ','.join( self.heatmap_img_paths_list )
+        #heatmap_widths_array_as_str = ','.join( map( str , self.heatmap_img_widths_list ) )
+        #heatmap_img_titles_array_as_str = ','.join( self.heatmap_img_titles_list )
         
         
         html_f.write('<div class="plot_buttons2">\n')
-        html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heatmaps</button>\n' )
+        
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.circos_img_path + '\' ,' + str(self.new_h) + ',\'' + str(self.circos_img_width) + '\' ,\'Circos plot\',1)">Circos plot</button>\n')
+        
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.upset_img_path + '\' ,' + str(self.new_h) + ',\'' + str(self.upset_img_width) + '\' ,\'UpSet plot\',1)">UpSet plot</button>\n')
+        
+        
+        if(len(self.heatmap_img_paths_list) == 3):
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\' ,\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A</button>\n')
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\' ,\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B</button>\n')
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\' ,\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C</button>\n')
+        else:
+            heatmap_img_paths_array_as_str_A = ','.join( [self.heatmap_img_paths_list[x] for x in [0,3]] )
+            heatmap_widths_array_as_str_A = ','.join( map( str , [self.heatmap_img_widths_list[x] for x in [0,3]] ) )
+            heatmap_img_titles_array_as_str_A = ','.join( [self.heatmap_img_titles_list[x] for x in [0,3]] )
+            
+            heatmap_img_paths_array_as_str_B = ','.join( [self.heatmap_img_paths_list[x] for x in [1,4]] )
+            heatmap_widths_array_as_str_B = ','.join( map( str , [self.heatmap_img_widths_list[x] for x in [1,4]] ) )
+            heatmap_img_titles_array_as_str_B = ','.join( [self.heatmap_img_titles_list[x] for x in [1,4]] )
+            
+            heatmap_img_paths_array_as_str_C = ','.join( [self.heatmap_img_paths_list[x] for x in [2,5]] )
+            heatmap_widths_array_as_str_C = ','.join( map( str , [self.heatmap_img_widths_list[x] for x in [2,5]] ) )
+            heatmap_img_titles_array_as_str_C = ','.join( [self.heatmap_img_titles_list[x] for x in [2,5]] )
+            
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A</button>\n' )
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B</button>\n' )
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C</button>\n' )
+        
+        
         html_f.write( '<button class="view-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'heatmap\', true , \'Literature search\')">Literature search</button>\n' )
+        
         html_f.write('</div>\n')
         
         
         html_f.write('<div class="upset2">\n')
         html_f.write('<div style="width: 1200px;">\n')
-        html_f.write('<table><tr><td style="font-weight: bold;">UpSet plot</td></tr></table>\n')
-        html_f.write('<img src="' + self.upset_img_path + '" width="' + str( self.upset_img_width )  + '" height="' + str( self.new_h ) + '">\n')
+        #html_f.write('<table><tr><td style="font-weight: bold;">UpSet plot</td></tr></table>\n')
+        #html_f.write('<img src="' + self.upset_img_path + '" width="' + str( self.upset_img_width )  + '" height="' + str( self.new_h ) + '">\n')
+        #html_f.write('<table><tr><td style="font-weight: bold;">Circos plot</td></tr></table>\n')
+        #html_f.write('<img src="' + self.circos_img_path + '" width="' + str( self.circos_img_width )  + '" height="' + str( self.new_h ) + '">\n')
+        
+        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.name + '_upset_title">Circos plot</td></tr></table>\n')
+        html_f.write('<img id="' + self.name + '_upset" src="' + self.circos_img_path + '" width="' + str(self.circos_img_width) + '" height="' + str(self.new_h) + '">\n')
+        
+        
         html_f.write('</div>\n')
         html_f.write('</div>\n')
         
@@ -2524,9 +2666,9 @@ class etgContainer:
         html_f.write(".grid-container2 {\n")
         html_f.write("  display: grid;\n")
         html_f.write("  grid-template-areas:\n")
-        html_f.write("    'members2 heatmap2 heatmap2 heatmap2 heatmap2 heatmap2'\n")
+        html_f.write("    'members2 upset2 upset2 upset2 upset2 upset2'\n")
         html_f.write("    'spacer2a plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2'\n")
-        html_f.write("    'spacer2b upset2 upset2 upset2 upset2 upset2';\n")
+        html_f.write("    'spacer2b heatmap2 heatmap2 heatmap2 heatmap2 heatmap2';\n")
         html_f.write("  grid-gap: 10px;\n")
         html_f.write("  background-color: #DC143C;\n")
         html_f.write("  padding: 10px;\n")
@@ -2631,8 +2773,15 @@ class etgContainer:
         html_f.write("  background-color: #FFD700;\n")
         html_f.write("}\n\n")
             
+        #html_f.write(".content {\n")
+        #html_f.write("display: none;\n")
+        #html_f.write("}\n")
+        
         html_f.write(".content {\n")
-        html_f.write("display: none;\n")
+        html_f.write("display: grid;\n")
+        html_f.write("background-color: #FFD700;\n")
+        html_f.write("padding-left: 10px;\n")
+        html_f.write("padding-top: 10px;\n")
         html_f.write("}\n")
         
         html_f.write(".navgrid-container {\n")
@@ -3519,10 +3668,10 @@ class javaScriptPrinter:
         html_f.write('    var content = this.nextElementSibling;\n')
         html_f.write('    if (content.style.display == "grid" || content.style.display == "") {\n')
         html_f.write('      content.style.display = "none";\n')
-        html_f.write('      content.nextElementSibling.style.display = "none";\n')
+        #html_f.write('      content.nextElementSibling.style.display = "none";\n')
         html_f.write('    } else {\n')
         html_f.write('      content.style.display = "grid";\n')
-        html_f.write('      content.nextElementSibling.style.display = "grid";\n')
+        #html_f.write('      content.nextElementSibling.style.display = "grid";\n')
         html_f.write('    }\n')
         html_f.write(' });\n')
         html_f.write('}\n')
@@ -3536,10 +3685,10 @@ class javaScriptPrinter:
         html_f.write('    var content = this.nextElementSibling;\n')
         html_f.write('    if (content.style.display == "grid" || content.style.display == "") {\n')
         html_f.write('      content.style.display = "none";\n')
-        html_f.write('      content.nextElementSibling.style.display = "none";\n')
+        #html_f.write('      content.nextElementSibling.style.display = "none";\n')
         html_f.write('    } else {\n')
         html_f.write('      content.style.display = "grid";\n')
-        html_f.write('      content.nextElementSibling.style.display = "grid";\n')
+        #html_f.write('      content.nextElementSibling.style.display = "grid";\n')
         html_f.write('    }\n')
         html_f.write(' });\n')
         html_f.write('}\n')
@@ -3553,10 +3702,10 @@ class javaScriptPrinter:
         html_f.write('    var content = this.nextElementSibling;\n')
         html_f.write('    if (content.style.display == "grid" || content.style.display == "") {\n')
         html_f.write('      content.style.display = "none";\n')
-        html_f.write('      content.nextElementSibling.style.display = "none";\n')
+        #html_f.write('      content.nextElementSibling.style.display = "none";\n')
         html_f.write('    } else {\n')
         html_f.write('      content.style.display = "grid";\n')
-        html_f.write('      content.nextElementSibling.style.display = "grid";\n')
+        #html_f.write('      content.nextElementSibling.style.display = "grid";\n')
         html_f.write('    }\n')
         html_f.write(' });\n')
         html_f.write('}\n')
@@ -3567,15 +3716,16 @@ class javaScriptPrinter:
         html_f.write('var i;\n')
         html_f.write('for (i = 0; i < coll.length; i++) {\n')
         html_f.write('  coll[i].addEventListener("click", function() {\n')
-        html_f.write('    var content = this.nextElementSibling.nextElementSibling;\n')
+        #html_f.write('    var content = this.nextElementSibling.nextElementSibling;\n')
+        html_f.write('    var content = this.nextElementSibling;\n')
         html_f.write('    if (content.style.display == "grid" || content.style.display == "") {\n')
         html_f.write('      content.style.display = "none";\n')
         html_f.write('      content.nextElementSibling.style.display = "none";\n')
-        html_f.write('      content.nextElementSibling.nextElementSibling.style.display = "none";\n')
+        #html_f.write('      content.nextElementSibling.nextElementSibling.style.display = "none";\n')
         html_f.write('    } else {\n')
         html_f.write('      content.style.display = "grid";\n')
         html_f.write('      content.nextElementSibling.style.display = "grid";\n')
-        html_f.write('      content.nextElementSibling.nextElementSibling.style.display = "grid";\n')
+        #html_f.write('      content.nextElementSibling.nextElementSibling.style.display = "grid";\n')
         html_f.write('    }\n')
         html_f.write(' });\n')
         html_f.write('}\n')
