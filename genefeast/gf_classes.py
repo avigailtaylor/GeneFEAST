@@ -28,11 +28,19 @@ Garc = pycircos.Garc
 Gcircle = pycircos.Gcircle
 
 # GLOBAL FUNCTIONS ************************************************************
-def trim_term(term):
+def trim_term(term, strong_trim=False):
         if term.find('community') == 0:
-            return term.split('(')[0]
+            if(strong_trim):
+                return term.split('(')[0].split(' ')[1]
+            else:
+                return term.split('(')[0]
+        
         elif term.find('ETSI') == 0: #(ETSI stands for Experiment term-set intersection)
-            return ' '.join(term.split('_')[1].split(' ')[0:2])
+            
+            if(strong_trim):
+                return term.split('_')[1].split(' ')[1]
+            else:
+                return ' '.join(term.split('_')[1].split(' ')[0:2])
         elif(len(term) > 15):
             return term[0:15] + '...'
         else:
@@ -195,10 +203,9 @@ class circosDrawer:
         self.etg = etg
         self.rows_cols = rows_cols
         self.trim_terms = trim_terms
-        self.trimmed_term_mapping_dict = self.__build_trimmed_term_mapping_dict()
+        self.trimmed_term_mapping_dict = self.__build_trimmed_term_mapping_dict(metaGroupCircosDrawer)
         self.metaGroupCircosDrawer = metaGroupCircosDrawer
         self.metaGroup_barplot_dict = self.__build_metaGroup_barplot_dict()
-        print(self.metaGroup_barplot_dict)
         
     def __get_lordered_gene_exp_heatmap_fm_subset_df(self, s_cols, cluster_genes):
         
@@ -215,9 +222,9 @@ class circosDrawer:
             return (heatmap_fm_df, [[]], [0])
         
     
-    def __build_trimmed_term_mapping_dict(self):
+    def __build_trimmed_term_mapping_dict(self, strict_trim):
         if(self.trim_terms):
-            trimmed_terms = [trim_term(term) for term in self.etg.terms]
+            trimmed_terms = [trim_term(term, strict_trim) for term in self.etg.terms]
             annotated_trimmed_terms = annotate_trimmed_terms(trimmed_terms)
             return dict(zip(self.etg.terms,annotated_trimmed_terms))
         else:
@@ -280,7 +287,7 @@ class circosDrawer:
                 circos_dict_values  = [ np.nan if np.isnan(row_values[x]) else (gtheatmap_index, int(row_values[x] + np.nansum(row_values[0:x]) -1) , int(row_values[x] + np.nansum(row_values[0:x])), 750) for x in range(0,len(row_values))]
             circos_dict[gtheatmap_index] = circos_dict_values
             
-            arc = Garc(arc_id=gtheatmap_index, size=np.nansum(row_values), interspace = 1, raxis_range=(950,1000), labelposition=100, label_visible=True)
+            arc = Garc(arc_id=gtheatmap_index, size=np.nansum(row_values), interspace = 1, raxis_range=(950,1000), labelposition=150, label_visible=True, labelsize=16)
             circle.add_garc(arc)
         
         circle.set_garcs()
@@ -404,7 +411,8 @@ class heatmapDrawer:
         (rows_e, _) = gene_exp_heatmap_fm_subset_df.values.shape
         
         fig_width = max((cols_g * 0.6) + 4, self.etg.heatmap_width_min) * 2
-        fig_height = max(((rows_t + rows_e) * 0.3) + 4, self.etg.heatmap_height_min) * 1.5 * 2
+        fig_height = max(((rows_t + rows_e) * 0.5) + 4, self.etg.heatmap_height_min) * 1.5 * 2 
+        # fig_height = max(((rows_t + rows_e) * 0.3) + 4, self.etg.heatmap_height_min) * 1.5 * 2
     
         with sns.axes_style("dark" , {'axes.facecolor': '#686868'}):
             fig, (ax1, ax2, ax3) = pyplot.subplots(nrows=3, figsize=(fig_width, fig_height))
@@ -427,20 +435,20 @@ class heatmapDrawer:
         ax3.get_yaxis().set_ticks([])
         
         cbar = fig.colorbar(ax2.collections[0], ax=ax3, location="bottom", use_gridspec=False, pad=0.5)
-        cbar.ax.tick_params(labelsize=20)
-        cbar.set_label(self.etg.quant_data_type, size=20)
+        cbar.ax.tick_params(labelsize=40)
+        cbar.set_label(self.etg.quant_data_type, size=40)
         
         ax1.set_xlabel('')
-        ax1.set_ylabel(ylabel1, fontsize=20)
-        ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=20)
-        ax1.set_yticklabels(ax1.get_yticklabels(), rotation=0, fontsize = 20)
+        ax1.set_ylabel(ylabel1, fontsize=30)
+        ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=40)
+        ax1.set_yticklabels(ax1.get_yticklabels(), rotation=0, fontsize = 30)
 
         ax2.set_xlabel('')
-        ax2.set_ylabel(ylabel2, fontsize=20)
-        ax2.set_xticklabels(ax2.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=20)
-        ax2.set_yticklabels(ax2.get_yticklabels(), rotation=0, fontsize=20)
+        ax2.set_ylabel(ylabel2, fontsize=30)
+        ax2.set_xticklabels(ax2.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=40)
+        ax2.set_yticklabels(ax2.get_yticklabels(), rotation=0, fontsize=30)
 
-        pyplot.subplots_adjust(hspace=0.5)
+        pyplot.subplots_adjust(hspace=0.7)
         pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__A_heatmap_" + postfix + ".png", bbox_inches="tight")
         pyplot.close()
         
@@ -508,20 +516,20 @@ class heatmapDrawer:
         ax3.get_yaxis().set_ticks([])
         
         cbar = fig.colorbar(ax2.collections[0], ax=ax3, location="bottom", use_gridspec=False, pad=0.5)
-        cbar.ax.tick_params(labelsize=20)
-        cbar.set_label(self.etg.quant_data_type, size=20)
+        cbar.ax.tick_params(labelsize=40)
+        cbar.set_label(self.etg.quant_data_type, size=40)
         
         ax1.set_xlabel('')
-        ax1.set_ylabel(ylabel1, fontsize=20)
-        ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=20)
-        ax1.set_yticklabels(ax1.get_yticklabels(), rotation=0, fontsize=20)
+        ax1.set_ylabel(ylabel1, fontsize=30)
+        ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=40)
+        ax1.set_yticklabels(ax1.get_yticklabels(), rotation=0, fontsize=30)
 
         ax2.set_xlabel('')
-        ax2.set_ylabel(ylabel2, fontsize=20)
-        ax2.set_xticklabels(ax2.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=20)
-        ax2.set_yticklabels(ax2.get_yticklabels(), rotation=0, fontsize=20)
+        ax2.set_ylabel(ylabel2, fontsize=30)
+        ax2.set_xticklabels(ax2.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=40)
+        ax2.set_yticklabels(ax2.get_yticklabels(), rotation=0, fontsize=30)
 
-        pyplot.subplots_adjust(hspace=0.5)
+        pyplot.subplots_adjust(hspace=0.7)
         
         pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__B_heatmap_" + postfix + ".png", bbox_inches="tight")
         pyplot.close()
@@ -566,20 +574,20 @@ class heatmapDrawer:
         ax3.get_yaxis().set_ticks([])
         
         cbar = fig.colorbar(ax2.collections[0], ax=ax3, location="bottom", use_gridspec=False, pad=0.5)
-        cbar.ax.tick_params(labelsize=20)
-        cbar.set_label(self.etg.quant_data_type, size=20)
+        cbar.ax.tick_params(labelsize=40)
+        cbar.set_label(self.etg.quant_data_type, size=40)
         
         ax1.set_xlabel('')
-        ax1.set_ylabel(ylabel1, fontsize=20)
-        ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45,  ha='right', va='top', fontsize=20)
-        ax1.set_yticklabels(ax1.get_yticklabels(), rotation=0, fontsize=20)
+        ax1.set_ylabel(ylabel1, fontsize=30)
+        ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45,  ha='right', va='top', fontsize=40)
+        ax1.set_yticklabels(ax1.get_yticklabels(), rotation=0, fontsize=30)
 
         ax2.set_xlabel('')
-        ax2.set_ylabel(ylabel2, fontsize=20)
-        ax2.set_xticklabels(ax2.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=20)
-        ax2.set_yticklabels(ax2.get_yticklabels(), rotation=0, fontsize=20)
+        ax2.set_ylabel(ylabel2, fontsize=30)
+        ax2.set_xticklabels(ax2.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=40)
+        ax2.set_yticklabels(ax2.get_yticklabels(), rotation=0, fontsize=30)
 
-        pyplot.subplots_adjust(hspace=0.5)
+        pyplot.subplots_adjust(hspace=0.7)
         
         pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__C_heatmap_" + postfix + ".png", bbox_inches="tight")
         pyplot.close()
@@ -712,7 +720,7 @@ class dotplotDrawer:
         cbar.set_label('-log10(p-adj)')
         
         if(not(exp_id)):
-            pyplot.savefig(self.community.abs_images_dir + self.community.name.replace(':', '').replace(' ', '') + "_dotplot.png", bbox_inches="tight")
+            pyplot.savefig(self.community.abs_images_dir + self.community.name.replace(':', '').replace(' ', '') + "_dotplot.png", bbox_inches="tight", dpi=120)
             pyplot.close()
             
             image = Image.open(self.community.abs_images_dir + self.community.name.replace(':', '').replace(' ', '') + "_dotplot.png")
@@ -723,7 +731,7 @@ class dotplotDrawer:
             return (self.community.rel_images_dir + self.community.name.replace(':', '').replace(' ', '') + "_dotplot.png", new_w)
         
         else:
-            pyplot.savefig(self.community.abs_images_dir + self.community.name.replace(':', '').replace(' ', '') + "_" + exp_id + "_dotplot.png", bbox_inches="tight")
+            pyplot.savefig(self.community.abs_images_dir + self.community.name.replace(':', '').replace(' ', '') + "_" + exp_id + "_dotplot.png", bbox_inches="tight", dpi=120)
             pyplot.close()
             
             image = Image.open(self.community.abs_images_dir + self.community.name.replace(':', '').replace(' ', '') + "_" + exp_id + "_dotplot.png")
@@ -1672,17 +1680,17 @@ class bigCommunity(community):
             
             
             self.rows_cols = ( ( range( len( self.terms ) ) , self.gene_term_heatmap_df.sum() > len( self.terms )//4 ) )
-            my_heatmapDrawer_compressed = heatmapDrawer( self )
+            my_heatmapDrawer_truncated = heatmapDrawer( self )
             
             if( len(self.exp_ids) > 1 ):
-                ( heatmap_img_paths_list_compressed , heatmap_img_widths_list_compressed , heatmap_img_titles_list_compressed ) = my_heatmapDrawer_compressed.draw_heatmaps( postfix='compressed')
+                ( heatmap_img_paths_list_truncated , heatmap_img_widths_list_truncated , heatmap_img_titles_list_truncated ) = my_heatmapDrawer_truncated.draw_heatmaps( postfix='truncated')
             else:
-                ( heatmap_img_paths_list_compressed , heatmap_img_widths_list_compressed , heatmap_img_titles_list_compressed ) = my_heatmapDrawer_compressed.draw_heatmaps( ylabel2='', postfix='compressed' )
+                ( heatmap_img_paths_list_truncated , heatmap_img_widths_list_truncated , heatmap_img_titles_list_truncated ) = my_heatmapDrawer_truncated.draw_heatmaps( ylabel2='', postfix='truncated' )
                 
                 
-            self.heatmap_img_paths_list = heatmap_img_paths_list_compressed + heatmap_img_paths_list_full
-            self.heatmap_img_widths_list = heatmap_img_widths_list_compressed + heatmap_img_widths_list_full
-            self.heatmap_img_titles_list = heatmap_img_titles_list_compressed + heatmap_img_titles_list_full
+            self.heatmap_img_paths_list = heatmap_img_paths_list_truncated + heatmap_img_paths_list_full
+            self.heatmap_img_widths_list = heatmap_img_widths_list_truncated + heatmap_img_widths_list_full
+            self.heatmap_img_titles_list = heatmap_img_titles_list_truncated + heatmap_img_titles_list_full
             
         else:
             self.rows_cols = ( ( range( len( self.terms ) ) , self.gene_term_heatmap_df.sum() > 0 ) )
@@ -2309,17 +2317,17 @@ class metaGroup( community ):
             
             
             self.rows_cols = ( ( range( len( self.communities ) ) , self.gene_term_heatmap_df.sum() > len( self.communities )//3 ) )  
-            my_heatmapDrawer_compressed = heatmapDrawer( self )
+            my_heatmapDrawer_truncated = heatmapDrawer( self )
             
             if( len(self.exp_ids) > 1 ):
-                ( heatmap_img_paths_list_compressed , heatmap_img_widths_list_compressed , heatmap_img_titles_list_compressed ) = my_heatmapDrawer_compressed.draw_heatmaps( ylabel1='Community', postfix='compressed')
+                ( heatmap_img_paths_list_truncated , heatmap_img_widths_list_truncated , heatmap_img_titles_list_truncated ) = my_heatmapDrawer_truncated.draw_heatmaps( ylabel1='Community', postfix='truncated')
             else:
-                ( heatmap_img_paths_list_compressed , heatmap_img_widths_list_compressed , heatmap_img_titles_list_compressed ) = my_heatmapDrawer_compressed.draw_heatmaps( ylabel1='Community', ylabel2='', postfix='compressed' )
+                ( heatmap_img_paths_list_truncated , heatmap_img_widths_list_truncated , heatmap_img_titles_list_truncated ) = my_heatmapDrawer_truncated.draw_heatmaps( ylabel1='Community', ylabel2='', postfix='truncated' )
                 
                 
-            self.heatmap_img_paths_list = heatmap_img_paths_list_compressed + heatmap_img_paths_list_full
-            self.heatmap_img_widths_list = heatmap_img_widths_list_compressed + heatmap_img_widths_list_full
-            self.heatmap_img_titles_list = heatmap_img_titles_list_compressed + heatmap_img_titles_list_full
+            self.heatmap_img_paths_list = heatmap_img_paths_list_truncated + heatmap_img_paths_list_full
+            self.heatmap_img_widths_list = heatmap_img_widths_list_truncated + heatmap_img_widths_list_full
+            self.heatmap_img_titles_list = heatmap_img_titles_list_truncated + heatmap_img_titles_list_full
             
         else:
             self.rows_cols = ( ( range( len( self.communities ) ) , self.gene_term_heatmap_df.sum() > 1 ) )
@@ -2373,7 +2381,7 @@ class metaGroup( community ):
         
         html_f.write('<div class="grid-container2">\n')
         
-        html_f.write('<div class="members2" style="max-height: ' + str( self.new_h + 25 ) + 'px;" >\n') 
+        html_f.write('<div class="members2" style="max-height: ' + str( self.new_h + 25 ) + 'px;" >\n')
         html_f.write('<table style="font-size:small;white-space: nowrap;">\n')
         
         if ( len( self.communities ) > 0 ):
@@ -2419,6 +2427,7 @@ class metaGroup( community ):
         
         html_f.write('<div style="display:none;height:' + str( self.new_h + 3 ) + 'px;padding:0px;border:0px;margin:0px;" id="' +  self.name + '_heatmap_table_0">\n')
         html_f.write('<table style="font-size:small;white-space: nowrap;">\n')
+        
         
         html_f.write('<tr>\n')
         html_f.write('<td>\n')
@@ -2510,7 +2519,7 @@ class metaGroup( community ):
         
         
         html_f.write( '<button class="view-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'heatmap\', true , \'Literature search\')">Literature search</button>\n' )
-        
+
         html_f.write('</div>\n')
         
         
@@ -2536,7 +2545,9 @@ class metaGroup( community ):
         #html_f.write('<br>\n')
 
 class etgContainer:
-    def __init__( self , etg_name , etg_text_details , key_i_str ,  output_dir , relative_main_html , rel_images_dir, meta_communities , singleton_meta_communities , singleton_communities , new_h ):
+    def __init__( self , etg_name , etg_text_details , key_i_str ,  output_dir , relative_main_html , rel_images_dir, meta_communities , singleton_meta_communities , singleton_communities , new_h, 
+                 silplot_img_path , silplot_img_width, silplot_img_height,
+                 comparisonplot_img_path , comparisonplot_img_width, comparisonplot_img_height):
         self.name = etg_name
         self.text_details = etg_text_details
         self.key_i_str = key_i_str
@@ -2550,6 +2561,12 @@ class etgContainer:
         self.singleton_meta_communities = singleton_meta_communities
         self.singleton_communities = singleton_communities
         self.new_h = new_h
+        self.silplot_img_path = silplot_img_path
+        self.silplot_img_width = silplot_img_width
+        self.silplot_img_height = silplot_img_height
+        self.comparisonplot_img_path = comparisonplot_img_path
+        self.comparisonplot_img_width = comparisonplot_img_width
+        self.comparisonplot_img_height = comparisonplot_img_height
         
     def print_csv(self):
         csv_f = open(self.output_dir + '/' + self.csv_filename , 'w')
@@ -2570,7 +2587,12 @@ class etgContainer:
     
 
     def print_html( self, etgContainers ):
-        my_summaryPrinter = summaryPrinter( self.key_i_str , self.name + ': ' + self.text_details , self.output_dir , self.hyperlink , self.rel_images_dir, self.meta_communities , self.singleton_meta_communities , self.singleton_communities , self.relative_main_html , etgContainers )
+        # Can we refactor this to pass the etgContainer object, rather than all of its attributes? The question is, how will this affect instances of summaryPrinter not called by an etgContainer?
+        my_summaryPrinter = summaryPrinter( self.key_i_str , self.name + ': ' + self.text_details , self.output_dir , self.hyperlink , self.rel_images_dir, 
+                                            self.meta_communities , self.singleton_meta_communities , self.singleton_communities , 
+                                            self.silplot_img_path, self.silplot_img_width, self.silplot_img_height, 
+                                            self.comparisonplot_img_path, self.comparisonplot_img_width, self.comparisonplot_img_height, 
+                                            self.relative_main_html, etgContainers )
         my_summaryPrinter.print_html()
         my_summaryPrinter.print_html('communities_silhouette')
         my_summaryPrinter.print_html('communities_paramcomparison')
@@ -3061,7 +3083,7 @@ class etgContainer:
                 html_f.write('<div class="dropdownsubsub" style="width:300px">\n')
                 html_f.write('<a href="' + self.hyperlink + '#' + mg.name + '">' + mg.name + '</a>\n' )
                 
-                html_f.write('<div class="dropdownsubsub-content" style="width:300px">\n')
+                html_f.write('<div class="dropdownsubsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
                 for bc in mg.communities:
                     html_f.write('<a href="' + self.hyperlink + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
                 
@@ -3074,11 +3096,11 @@ class etgContainer:
         
         
         if(len(self.singleton_meta_communities)==0):
-            html_f.write('<a href="#">Communities</a>\n')
+            html_f.write('<a href="javascript:;">Communities</a>\n')
         else:
             html_f.write('<div class="dropdownsub" style="width:300px">\n')
-            html_f.write('<a href="' + self.hyperlink + '#' + self.meta_communities[0].name + '">Communities</a>\n')
-            html_f.write('<div class="dropdownsub-content" style="width:300px">\n')
+            html_f.write('<a href="' + self.hyperlink + '#' + self.singleton_meta_communities[0].name + '">Communities</a>\n')
+            html_f.write('<div class="dropdownsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
             for bc in self.singleton_meta_communities:
                 html_f.write('<a href="' + self.hyperlink + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
             
@@ -3090,7 +3112,7 @@ class etgContainer:
         else:
             html_f.write('<div class="dropdownsub" style="width:300px">\n')
             html_f.write('<a href="' + self.hyperlink + '#' + self.singleton_communities[0].name + '">Terms</a>\n')
-            html_f.write('<div class="dropdownsub-content" style="width:300px">\n')
+            html_f.write('<div class="dropdownsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
             for sc in self.singleton_communities:
                 if( sc.name == sc.all_term_defs_dict[ sc.name ] ):
                     html_f.write('<a href="' + self.hyperlink + '#' + sc.name + '">' + sc.name + '</a>\n' )
@@ -3132,7 +3154,11 @@ class etgContainer:
 
 
 class summaryPrinter:
-    def __init__( self , summary_id , summary_title , output_dir , report_html , rel_images_dir, meta_communities , singleton_meta_communities , singleton_communities , backlink = '' , etgContainers = [] ):
+    #Can we refactor this? See note and query in etgContainer object...
+    def __init__( self , summary_id , summary_title , output_dir , report_html , rel_images_dir, meta_communities , singleton_meta_communities , singleton_communities , 
+                  silplot_img_path, silplot_img_width, silplot_img_height, 
+                  comparisonplot_img_path, comparisonplot_img_width, comparisonplot_img_height, 
+                  backlink = '' , etgContainers = [] ):
         self.summary_id = summary_id
         self.summary_title = summary_title
         self.output_dir = output_dir
@@ -3141,6 +3167,12 @@ class summaryPrinter:
         self.meta_communities = meta_communities
         self.singleton_meta_communities = singleton_meta_communities
         self.singleton_communities = singleton_communities
+        self.silplot_img_path = silplot_img_path
+        self.silplot_img_width = silplot_img_width
+        self.silplot_img_height = silplot_img_height
+        self.comparisonplot_img_path = comparisonplot_img_path
+        self.comparisonplot_img_width = comparisonplot_img_width
+        self.comparisonplot_img_height = comparisonplot_img_height
         self.backlink = backlink
         self.etgContainers = etgContainers
         
@@ -3474,7 +3506,7 @@ class summaryPrinter:
                 html_f.write('<div class="dropdownsubsub" style="width:300px">\n')
                 html_f.write('<a href="' + self.report_html + '#' + mg.name + '">' + mg.name + '</a>\n' )
                 
-                html_f.write('<div class="dropdownsubsub-content" style="width:300px">\n')
+                html_f.write('<div class="dropdownsubsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
                 for bc in mg.communities:
                     html_f.write('<a href="' + self.report_html + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
                 
@@ -3487,11 +3519,11 @@ class summaryPrinter:
         
         
         if(len(self.singleton_meta_communities)==0):
-            html_f.write('<a href="#">Communities</a>\n')
+            html_f.write('<a href="javascript:;">Communities</a>\n')
         else:
             html_f.write('<div class="dropdownsub" style="width:300px">\n')
-            html_f.write('<a href="' + self.report_html + '#' + self.meta_communities[0].name + '">Communities</a>\n')
-            html_f.write('<div class="dropdownsub-content" style="width:300px">\n')
+            html_f.write('<a href="' + self.report_html + '#' + self.singleton_meta_communities[0].name + '">Communities</a>\n')
+            html_f.write('<div class="dropdownsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
             for bc in self.singleton_meta_communities:
                 html_f.write('<a href="' + self.report_html + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
             
@@ -3503,7 +3535,7 @@ class summaryPrinter:
         else:
             html_f.write('<div class="dropdownsub" style="width:300px">\n')
             html_f.write('<a href="' + self.report_html + '#' + self.singleton_communities[0].name + '">Terms</a>\n')
-            html_f.write('<div class="dropdownsub-content" style="width:300px">\n')
+            html_f.write('<div class="dropdownsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
             for sc in self.singleton_communities:
                 if( sc.name == sc.all_term_defs_dict[ sc.name ] ):
                     html_f.write('<a href="' + self.report_html + '#' + sc.name + '">' + sc.name + '</a>\n' )
@@ -3572,7 +3604,8 @@ class summaryPrinter:
             html_f.write('</div>\n')
             html_f.write('<div class="grid-container">\n')
             html_f.write('<div class="figure">\n')
-            html_f.write('<img src="' + self.rel_images_dir + 'sil_ violinplots.svg">\n')
+            html_f.write('<img src="' + self.comparisonplot_img_path + '" width="' + str(self.comparisonplot_img_width) + '" height="' + str(self.comparisonplot_img_height) + '">\n')
+            #html_f.write('<img src="' + self.rel_images_dir + 'sil_violinplots.svg">\n')
             html_f.write('</div>\n')
             html_f.write('</div>\n')
             
@@ -3582,7 +3615,7 @@ class summaryPrinter:
             html_f.write('</div>\n')
             html_f.write('<div class="grid-container">\n')
             html_f.write('<div class="figure">\n')
-            html_f.write('<img src="' + self.rel_images_dir + 'sil_plot.svg">\n')
+            html_f.write('<img src="' + self.silplot_img_path + '" width="' + str(self.silplot_img_width) + '" height="' + str(self.silplot_img_height) + '">\n')
             html_f.write('</div>\n')
             html_f.write('</div>\n')
         

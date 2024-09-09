@@ -10,11 +10,13 @@ import sys
 import argparse
 
 import networkx as nx
+import numpy as np
 import pandas as pd
 import yaml
 from bs4 import BeautifulSoup
 from goatools import obo_parser
 from goatools.gosubdag.gosubdag import GoSubDag
+from matplotlib import pyplot
 from networkx.algorithms.community import greedy_modularity_communities
 
 from genefeast import gf_base as gfb
@@ -274,11 +276,36 @@ def gf(mif_path, output_dir, cfg_yaml_path):
                                           info_string, msigdb_html_soup, GO_DAG, 
                                           _exp_img_dir_paths_dict, _exp_img_extension_dict)
         
-                
+    
+    term_community_pairs = gfb.get_big_community_labels_for_terms(big_communities)
+        
+    TEST = False
+    if(not(TEST) and (len(big_communities) >= 2) & (len(big_communities) <= (len(term_community_pairs)-1))):
+        terms_distance_matrix = gfb.build_terms_distance_matrix(term_community_pairs, _term_genes_dict, TT_OVERLAP_MEASURE)
+        ( silplot_img_path , silplot_img_width, silplot_img_height ) = gfb.make_silhouette_plot(terms_distance_matrix, np.array([c for (t,c) in term_community_pairs]), big_communities, _term_genes_dict, 
+                                                                                                abs_images_dir, rel_images_dir, '', NEW_H * 2.5)
+    else:
+        # preconditions for silhouette coefficient not met, so generate empty figure.
+        pyplot.figure(figsize=(10, 10))
+        pyplot.savefig(abs_images_dir + "_sil_plot.png", bbox_inches="tight")
+        pyplot.close()
+        silplot_img_path = rel_images_dir + "_sil_plot.png"
+        silplot_img_width = NEW_H * 2.5
+        silplot_img_height = NEW_H * 2.5
+    
+        # Now run analysis to plot out how clustering looks when varying two thresholds: MIN_WEIGHT_TT_EDGE and MAX_COMMUNITY_SIZE_THRESH
+        # TODO: check this works when multiple FEA databases are used and database agglomeration is off!
+        
+    ( comparisonplot_img_path , comparisonplot_img_width, comparisonplot_img_height ) = gfb.make_sil_violinplots(MIN_WEIGHT_TT_EDGE, MAX_COMMUNITY_SIZE_THRESH, COMBINE_TERM_TYPES, type_2_term_dict,
+                                                                                                                 terms_list, _term_genes_dict, TT_OVERLAP_MEASURE,
+                                                                                                                 MAX_DCNT, _term_types_dict, _GO_term_stats, 
+                                                                                                                 abs_images_dir, rel_images_dir, '', NEW_H * 2.5)
+            
     # *****************************************************************************
     
     # 7. GENERATE HTML REPORT *****************************************************
-    my_summaryPrinter = gfc.summaryPrinter(summary_id, summary_id, output_dir, info_string + '_report.html', rel_images_dir, meta_communities, singleton_meta_communities, singleton_communities)
+    my_summaryPrinter = gfc.summaryPrinter(summary_id, summary_id, output_dir, info_string + '_report.html', rel_images_dir, meta_communities, singleton_meta_communities, singleton_communities,
+                                           silplot_img_path, silplot_img_width, silplot_img_height, comparisonplot_img_path, comparisonplot_img_width, comparisonplot_img_height)
     my_summaryPrinter.print_html()
     my_summaryPrinter.print_html('communities_silhouette')
     my_summaryPrinter.print_html('communities_paramcomparison')
@@ -382,6 +409,7 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     html_f.write("  background-color: #DC143C;\n")
     html_f.write("  padding: 10px;\n")
     html_f.write("}\n\n")
+
     
     html_f.write(".members2 { grid-area: members2; }\n")
     html_f.write(".heatmap2 { grid-area: heatmap2;\n") 
@@ -393,6 +421,7 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     html_f.write("          overflow: scroll;}\n")
     html_f.write("\n") 
         
+    
     html_f.write(".grid-container2 > div {\n")
     html_f.write("  max-height: "+ str(NEW_H + 30) +"px;\n")
     html_f.write("  overflow: scroll;\n")
@@ -759,7 +788,7 @@ def gf(mif_path, output_dir, cfg_yaml_path):
             html_f.write('<div class="dropdownsubsub" style="width:300px">\n')
             html_f.write('<a href="' + info_string + '_report.html' + '#' + mg.name + '">' + mg.name + '</a>\n' )
             
-            html_f.write('<div class="dropdownsubsub-content" style="width:300px">\n')
+            html_f.write('<div class="dropdownsubsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
             for bc in mg.communities:
                 html_f.write('<a href="' + info_string + '_report.html' + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
             
@@ -772,11 +801,11 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     
     
     if(len(singleton_meta_communities)==0):
-        html_f.write('<a href="#">Communities</a>\n')
+        html_f.write('<a href="javascript:;">Communities</a>\n')
     else:
         html_f.write('<div class="dropdownsub" style="width:300px">\n')
-        html_f.write('<a href="' + info_string + '_report.html' + '#' + meta_communities[0].name + '">Communities</a>\n')
-        html_f.write('<div class="dropdownsub-content" style="width:300px">\n')
+        html_f.write('<a href="' + info_string + '_report.html' + '#' + singleton_meta_communities[0].name + '">Communities</a>\n')
+        html_f.write('<div class="dropdownsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
         for bc in singleton_meta_communities:
             html_f.write('<a href="' + info_string + '_report.html' + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
         
@@ -788,7 +817,7 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     else:
         html_f.write('<div class="dropdownsub" style="width:300px">\n')
         html_f.write('<a href="' + info_string + '_report.html' + '#' + singleton_communities[0].name + '">Terms</a>\n')
-        html_f.write('<div class="dropdownsub-content" style="width:300px">\n')
+        html_f.write('<div class="dropdownsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
         for sc in singleton_communities:
             if( sc.name == sc.all_term_defs_dict[ sc.name ] ):
                 html_f.write('<a href="' + info_string + '_report.html' + '#' + sc.name + '">' + sc.name + '</a>\n' )
@@ -823,6 +852,8 @@ def gf(mif_path, output_dir, cfg_yaml_path):
         sc.print_html(html_f, summary_id + '_communities_summary.html', first_print)
         first_print = False
        
+    
+    jSPrinter.print_html_for_event_listeners( html_f )
     
     html_f.write("</body>\n")
     html_f.write("</html>\n")
