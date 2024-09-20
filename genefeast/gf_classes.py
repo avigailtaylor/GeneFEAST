@@ -154,7 +154,7 @@ class upsetDrawer:
         annotated_trimmed_terms.reverse()
         community_df = community_df.reorder_levels(annotated_trimmed_terms)
         
-        my_upset = my_UpSet(community_df, sort_categories_by = None)
+        my_upset = my_UpSet(community_df, sort_categories_by = None,  sort_by='degree')
         my_upset.plot(fig=pyplot.figure(dpi = 120))
            
         pyplot.savefig(self.community.abs_images_dir + self.community.name.replace(' ', '') + "_upset.png", bbox_inches="tight")
@@ -2250,7 +2250,8 @@ class metaGroup( community ):
         self.rel_images_dir = rel_images_dir
         self.extra_annotations_dict = extra_annotations_dict
         self.num_extra_annotations = num_extra_annotations
-        self.new_h = new_h
+#        self.new_h = new_h
+        self.new_h = new_h + 160
         self.heatmap_width_min = heatmap_width_min
         self.heatmap_height_min = heatmap_height_min
         self.heatmap_min = heatmap_min
@@ -2381,7 +2382,8 @@ class metaGroup( community ):
         
         html_f.write('<div class="grid-container2">\n')
         
-        html_f.write('<div class="members2" style="max-height: ' + str( self.new_h + 25 ) + 'px;" >\n')
+#        html_f.write('<div class="members2" style="max-height: ' + str( self.new_h + 25 ) + 'px;" >\n')
+        html_f.write('<div class="members2" style="max-height: ' + str( self.new_h + 90 ) + 'px;" >\n')
         html_f.write('<table style="font-size:small;white-space: nowrap;">\n')
         
         if ( len( self.communities ) > 0 ):
@@ -2414,18 +2416,28 @@ class metaGroup( community ):
         html_f.write('</div>\n') 
         
         
-        html_f.write('<div class="spacer2a">\n')
-        html_f.write('</div>\n')
-        html_f.write('<div class="spacer2b">\n')
+#        html_f.write('<div class="spacer2a">\n')
+#        html_f.write('</div>\n')
+#        html_f.write('<div class="spacer2b">\n')
+#        html_f.write('</div>\n')
+        
+        html_f.write('<div class="spacer2">\n')
         html_f.write('</div>\n')
         
         
-        html_f.write('<div class="heatmap2">\n')
+#        html_f.write('<div class="heatmap2">\n')
+#        html_f.write('<div style="width: 1200px;">\n')
+        
+#        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.name + '_heatmap_title">' + self.heatmap_img_titles_list[0]  + '</td></tr></table>\n')
+#        html_f.write('<img id="' + self.name + '_heatmap" src="' + self.heatmap_img_paths_list[0] + '" width="' + str( self.heatmap_img_widths_list[0] )  + '" height="' + str( self.new_h ) + '">\n')
+#        html_f.write('<div style="display:none;height:' + str( self.new_h + 3 ) + 'px;padding:0px;border:0px;margin:0px;" id="' +  self.name + '_heatmap_table_0">\n')
+#        html_f.write('<table style="font-size:small;white-space: nowrap;">\n')
+        
+        html_f.write('<div class="upset2">\n')
         html_f.write('<div style="width: 1200px;">\n')
-        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.name + '_heatmap_title">' + self.heatmap_img_titles_list[0]  + '</td></tr></table>\n')
-        html_f.write('<img id="' + self.name + '_heatmap" src="' + self.heatmap_img_paths_list[0] + '" width="' + str( self.heatmap_img_widths_list[0] )  + '" height="' + str( self.new_h ) + '">\n')
-        
-        html_f.write('<div style="display:none;height:' + str( self.new_h + 3 ) + 'px;padding:0px;border:0px;margin:0px;" id="' +  self.name + '_heatmap_table_0">\n')
+        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.name + '_upset_title">Circos plot</td></tr></table>\n')
+        html_f.write('<img id="' + self.name + '_upset" src="' + self.circos_img_path + '" width="' + str(self.circos_img_width) + '" height="' + str(self.new_h) + '">\n')
+        html_f.write('<div style="display:none;height:' + str( self.new_h + 3 ) + 'px;padding:0px;border:0px;margin:0px;" id="' +  self.name + '_upset_table_0">\n')
         html_f.write('<table style="font-size:small;white-space: nowrap;">\n')
         
         
@@ -2497,9 +2509,14 @@ class metaGroup( community ):
         
         
         if(len(self.heatmap_img_paths_list) == 3):
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\' ,\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A</button>\n')
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\' ,\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B</button>\n')
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\' ,\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C</button>\n')
+#            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\' ,\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A</button>\n')
+#            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\' ,\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B</button>\n')
+#            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\' ,\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C</button>\n')
+        
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\' ,\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A</button>\n')
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\' ,\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B</button>\n')
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\' ,\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C</button>\n')
+        
         else:
             heatmap_img_paths_array_as_str_A = ','.join( [self.heatmap_img_paths_list[x] for x in [0,3]] )
             heatmap_widths_array_as_str_A = ','.join( map( str , [self.heatmap_img_widths_list[x] for x in [0,3]] ) )
@@ -2513,29 +2530,34 @@ class metaGroup( community ):
             heatmap_widths_array_as_str_C = ','.join( map( str , [self.heatmap_img_widths_list[x] for x in [2,5]] ) )
             heatmap_img_titles_array_as_str_C = ','.join( [self.heatmap_img_titles_list[x] for x in [2,5]] )
             
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A</button>\n' )
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B</button>\n' )
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C</button>\n' )
+#            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A</button>\n' )
+#            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B</button>\n' )
+#            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C</button>\n' )
+#        
+        
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A</button>\n' )
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B</button>\n' )
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C</button>\n' )
         
         
-        html_f.write( '<button class="view-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'heatmap\', true , \'Literature search\')">Literature search</button>\n' )
+        html_f.write( '<button class="view-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'upset\', true , \'Literature search\')">Literature search</button>\n' )
 
         html_f.write('</div>\n')
         
         
-        html_f.write('<div class="upset2">\n')
-        html_f.write('<div style="width: 1200px;">\n')
-        #html_f.write('<table><tr><td style="font-weight: bold;">UpSet plot</td></tr></table>\n')
-        #html_f.write('<img src="' + self.upset_img_path + '" width="' + str( self.upset_img_width )  + '" height="' + str( self.new_h ) + '">\n')
-        #html_f.write('<table><tr><td style="font-weight: bold;">Circos plot</td></tr></table>\n')
-        #html_f.write('<img src="' + self.circos_img_path + '" width="' + str( self.circos_img_width )  + '" height="' + str( self.new_h ) + '">\n')
-        
-        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.name + '_upset_title">Circos plot</td></tr></table>\n')
-        html_f.write('<img id="' + self.name + '_upset" src="' + self.circos_img_path + '" width="' + str(self.circos_img_width) + '" height="' + str(self.new_h) + '">\n')
-        
-        
-        html_f.write('</div>\n')
-        html_f.write('</div>\n')
+#        html_f.write('<div class="upset2">\n')
+#        html_f.write('<div style="width: 1200px;">\n')
+#        #html_f.write('<table><tr><td style="font-weight: bold;">UpSet plot</td></tr></table>\n')
+#        #html_f.write('<img src="' + self.upset_img_path + '" width="' + str( self.upset_img_width )  + '" height="' + str( self.new_h ) + '">\n')
+#        #html_f.write('<table><tr><td style="font-weight: bold;">Circos plot</td></tr></table>\n')
+#        #html_f.write('<img src="' + self.circos_img_path + '" width="' + str( self.circos_img_width )  + '" height="' + str( self.new_h ) + '">\n')
+#        
+#        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.name + '_upset_title">Circos plot</td></tr></table>\n')
+#        html_f.write('<img id="' + self.name + '_upset" src="' + self.circos_img_path + '" width="' + str(self.circos_img_width) + '" height="' + str(self.new_h) + '">\n')
+#        
+#        
+#        html_f.write('</div>\n')
+#        html_f.write('</div>\n')
         
         html_f.write('</div>\n')
         
@@ -2685,36 +2707,64 @@ class etgContainer:
         
         #***********************************
         
+#        html_f.write(".grid-container2 {\n")
+#        html_f.write("  display: grid;\n")
+#        html_f.write("  grid-template-areas:\n")
+#        html_f.write("    'members2 upset2 upset2 upset2 upset2 upset2'\n")
+#        html_f.write("    'spacer2a plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2'\n")
+#        html_f.write("    'spacer2b heatmap2 heatmap2 heatmap2 heatmap2 heatmap2';\n")
+#        html_f.write("  grid-gap: 10px;\n")
+#        html_f.write("  background-color: #DC143C;\n")
+#        html_f.write("  padding: 10px;\n")
+#        html_f.write("}\n\n")
+        
         html_f.write(".grid-container2 {\n")
         html_f.write("  display: grid;\n")
         html_f.write("  grid-template-areas:\n")
         html_f.write("    'members2 upset2 upset2 upset2 upset2 upset2'\n")
-        html_f.write("    'spacer2a plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2'\n")
-        html_f.write("    'spacer2b heatmap2 heatmap2 heatmap2 heatmap2 heatmap2';\n")
+        html_f.write("    'spacer2 plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2';\n")
         html_f.write("  grid-gap: 10px;\n")
         html_f.write("  background-color: #DC143C;\n")
         html_f.write("  padding: 10px;\n")
-        html_f.write("}\n\n")
-        
-        html_f.write(".members2 { grid-area: members2; }\n")
-        html_f.write(".heatmap2 { grid-area: heatmap2;\n") 
+        html_f.write("}\n\n")    
+#        
+#        html_f.write(".members2 { grid-area: members2; }\n")
+#        html_f.write(".heatmap2 { grid-area: heatmap2;\n") 
+#        html_f.write("          overflow: scroll;}\n")
+#        html_f.write(".spacer2a{ grid-area: spacer2a;}\n")
+#        html_f.write(".plot_buttons2{ grid-area: plot_buttons2; }\n")
+#        html_f.write(".spacer2b{ grid-area: spacer2b;}\n")
+#        html_f.write(".upset2 { grid-area: upset2;\n")  
+#        html_f.write("          overflow: scroll;}\n")
+#        html_f.write("\n")
+            
+        html_f.write(".members2 { grid-area: members2;\n")
         html_f.write("          overflow: scroll;}\n")
-        html_f.write(".spacer2a{ grid-area: spacer2a;}\n")
+        html_f.write(".spacer2{ grid-area: spacer2;}\n")
         html_f.write(".plot_buttons2{ grid-area: plot_buttons2; }\n")
-        html_f.write(".spacer2b{ grid-area: spacer2b;}\n")
         html_f.write(".upset2 { grid-area: upset2;\n")  
         html_f.write("          overflow: scroll;}\n")
-        html_f.write("\n") 
-            
+        html_f.write("\n")         
+                
+#        html_f.write(".grid-container2 > div {\n")
+#        html_f.write("  max-height: "+ str( self.new_h + 30) +"px;\n")
+#        html_f.write("  overflow: scroll;\n")
+#        html_f.write("  background-color: rgba(255, 255, 255, 0.8);\n")
+#        html_f.write("  text-align: left;\n")
+#        html_f.write("  padding: 15px;\n")
+#        html_f.write("  font-size: small;\n")
+#        html_f.write("}\n")
+        
         html_f.write(".grid-container2 > div {\n")
-        html_f.write("  max-height: "+ str( self.new_h + 30) +"px;\n")
+        #html_f.write("  max-height: "+ str((self.new_h*2) + (30*3)) +"px;\n")
+        html_f.write("  max-height: "+ str(self.new_h + 160 + 80) +"px;\n")
         html_f.write("  overflow: scroll;\n")
         html_f.write("  background-color: rgba(255, 255, 255, 0.8);\n")
         html_f.write("  text-align: left;\n")
         html_f.write("  padding: 15px;\n")
         html_f.write("  font-size: small;\n")
-        html_f.write("}\n")
-        
+        html_f.write("}\n\n")
+            
         html_f.write(".collapsible2 {\n")
         html_f.write("  background-color: rgba(220, 20, 60, 0.8);\n")
         html_f.write("  color: white;\n")
