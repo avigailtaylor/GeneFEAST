@@ -13,6 +13,7 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import yaml
 
 from PIL import Image
 from fractions import Fraction
@@ -98,6 +99,60 @@ def get_meta_info(mif_path):
                                'of fields in each line and that there are no empty lines. ***')
         return(status, message, collections.OrderedDict(), [])
         
+def get_meta_info_from_setup(setup_yaml_path):
+    status = 0
+    message = ''
+    mi_dict = collections.OrderedDict() # mi short for meta input
+    exp_ids = []
+    
+    if os.stat(setup_yaml_path).st_size > 0:
+        with open(setup_yaml_path, "r") as ymlfile:
+            setup = yaml.safe_load(ymlfile)
+            
+            if(setup.get("Experiments") is None):
+                status = 2
+                message = ('*** ERROR: No experiments have been listed in setup YAML file. ***')
+                return(status, message, collections.OrderedDict(), [])
+            else:
+                mi_list = setup.get("Experiments")
+                for exp_mi in mi_list:
+                    if(not("id" in exp_mi.keys()) 
+                        or not("gene_qd_file_path" in exp_mi.keys()) 
+                        or not("ora_file_path" in exp_mi.keys())):
+                        
+                        status = 3
+                        message = ('*** ERROR: One of the experiments listed in setup YAML file is '
+                                   'missing one or more of "id", "gene_qd_file_path", or "ora_file_path." ***')
+                        return(status, message, collections.OrderedDict(), [])
+                    else:
+                        if("input_img_dir" in exp_mi.keys()):
+                            input_img_dir = exp_mi["input_img_dir"]
+                        else:
+                            input_img_dir = ""
+                        
+                        
+                        exp_id = exp_mi["id"]
+                        gene_qd_file_path = exp_mi["gene_qd_file_path"]
+                        ora_file_path = exp_mi["ora_file_path"]
+                        
+                        if(exp_id in mi_dict):
+                            status = 4
+                            message = ('*** ERROR: Two or more experiments have the same ID. '
+                                       'Please check your meta input file for repeated '
+                                       'lines and/ or naming errors. ***')
+                            return(status, message, collections.OrderedDict(), [])
+                        
+                        else:
+                            mi_dict[ exp_id ] = [ora_file_path, gene_qd_file_path, input_img_dir]
+                            exp_ids.append( exp_id )
+                            
+                return(status, message, mi_dict, exp_ids)
+
+    else:
+        status = 1
+        message = ('*** ERROR: Setup YAML file is empty. ***')
+        return(status, message, collections.OrderedDict(), [])
+        
 def generate_images_dirs(info_string, output_dir):
     rel_images_dir = 'images_' + info_string + '_AUTO/'
     abs_images_dir = output_dir + '/' + rel_images_dir
@@ -120,7 +175,7 @@ def is_fraction_str(fraction_string):
     else:
         return True
         
-def read_in_ora_data(ora_file_path, exp_id, min_level, max_dcnt, dotplots, GO_term_stats):
+def read_in_ora_data(ora_file_path, exp_id, min_level, max_dcnt, enrichr_format, dotplots, GO_term_stats):
     status = 0
     message = ''
     term_types_dict = {}
@@ -139,22 +194,51 @@ def read_in_ora_data(ora_file_path, exp_id, min_level, max_dcnt, dotplots, GO_te
             for line in csvreader:
                 lines_read += 1
                 
-                if(len(line) < 10):
-                    status = 1
-                    message = ('*** ERROR: ORA (or GSEA) file not formatted correctly. '
-                               'Check that the format matches the description in the docs. '
-                               'Also, check the number of fields in each line and that there '
-                               'are no empty lines. ***')
-                    return(status, message, {}, {}, {}, {}, [])
-                    
-                else:
-                    term = line[1]
-                    genes = set(line[ len(line) - 2 ].split("/"))
-                    ttype = line[0].upper()
-                    
-                    len_diff = len( line ) - 10
-                    definition = ','.join( line[ 2 : ( 2 + len_diff + 1 ) ] )
                 
+                if(enrichr_format):
+                    if(len(line) < 10):
+                        status = 1
+                        message = ('*** ERROR: ORA (or GSEA) file not formatted correctly. '
+                                   'Enrichr format is expected, but has not been supplied. '
+                                   'If your ORA file is in basic csv format with four columns '
+                                   '(Type, Term, Definition, Genes), then '
+                                   'please check that variable ENRICHR is set to False in the setup YAML file, '
+                                   'and then run again. (Note that the default value for ENRICHR is False if not '
+                                   'given in the setup YAML file.) '
+                                   'Otherwise, please check that your ORA file is '
+                                   'in the expected Enrichr format and matches the description in the docs. '
+                                   'Also, check the number of fields in each line and that there '
+                                   'are no empty lines. ***')
+                        return(status, message, {}, {}, {}, {}, [])
+                        
+                    else:
+                        term = line[1]
+                        genes = set(line[ len(line) - 2 ].split("/"))
+                        ttype = line[0].upper()
+                        
+                        len_diff = len( line ) - 10
+                        definition = ','.join( line[ 2 : ( 2 + len_diff + 1 ) ] )
+                else:
+                    if(len(line) != 4):
+                        status = 1
+                        message = ('*** ERROR: ORA (or GSEA) file not formatted correctly. '
+                                   'Basic format is expected, but has not been supplied. '
+                                   'If your ORA file is in Enrichr format (see docs), then '
+                                   'please check that variable ENRICHR is set to True in the setup YAML, '
+                                   'and then run again. (Note that the default value for ENRICHR is False if not '
+                                   'given in the setup YAML file.) Otherwise, please check that your ORA file is '
+                                   'in basic csv format with four columns (Type, Term, Definition, Genes). '
+                                   'Also, check the number of fields in each line and that there '
+                                   'are no empty lines. ***')
+                        return(status, message, {}, {}, {}, {}, [])
+                        
+                    else:
+                        len_diff = len( line ) - 4
+                        
+                        ttype = line[0].upper()
+                        term = line[1]
+                        definition = ','.join( line[ 2 : ( 2 + len_diff + 1 ) ] )
+                        genes = set(line[ len(line) - 1 ].split("/"))
                 
                 
                 if((exp_id, term) in seen_exp_term_pairs):
@@ -186,32 +270,46 @@ def read_in_ora_data(ora_file_path, exp_id, min_level, max_dcnt, dotplots, GO_te
                         term_defs_dict[ term ] = definition
                         
                     if( dotplots ):
-                        gene_ratio_string = line[ len(line) - 7 ]
-                        bg_ratio_string = line[ len(line) - 6 ]
-                        padj_string = line[len(line) - 4]
-                        count_string = line[len(line) - 1]
                         
-                        if(not(is_fraction_str(gene_ratio_string)) or \
-                           not(is_fraction_str(bg_ratio_string)) or \
-                           not(is_number_str(padj_string)) or \
-                           not(is_number_str(count_string))):
-                            
-                            
+                        if(not(enrichr_format)):
                             status = 3
-                            message = ( '*** ERROR: Data for dotplots is not formatted as expected in ORA/ GSEA file. '
-                                        'Please refer to documentation for expected column order and content. '
-                                        'If you do not have dotplot data to plot, or if you want to omit dotplots '
-                                        'for whatever reason, then you can set DOTPLOTS to False in the config file. '
-                                        'NOTE, however, that your ORA/ GSEA file still has to have the expected '
-                                        'column order (see docs). ***' )
+                            message = ( '*** ERROR: DOTPLOTS is True, but ORA/ GSEA file is not in the Enrichr format '
+                                       'required for dotplots. To fix this, set DOTPLOTS to False in the setup YAML file. '
+                                       'Alternatively, set ENRICHR '
+                                       'to True in the setup YAML file (if not given, the default value is False), '
+                                       'and supply ORA/ GSEA results in the Enrichr format (see docs). ***')
                             return(status, message, {}, {}, {}, {}, [])
+                            
                         else:
-                            gene_ratio_Fraction = Fraction( gene_ratio_string )
-                            gene_ratio = round( gene_ratio_Fraction.numerator/gene_ratio_Fraction.denominator , 3 )
-                            neg_log10_padj = round( -1 * math.log10(float(padj_string)), 1)
-                            count = int(count_string)
-                            exp_term_dotplot_dict[ ( exp_id , term ) ] = [ gene_ratio , neg_log10_padj , count , gene_ratio_string , bg_ratio_string ]
+                        
+                            gene_ratio_string = line[ len(line) - 7 ]
+                            bg_ratio_string = line[ len(line) - 6 ]
+                            padj_string = line[len(line) - 4]
+                            count_string = line[len(line) - 1]
+                            
+                            if(not(is_fraction_str(gene_ratio_string)) or \
+                               not(is_fraction_str(bg_ratio_string)) or \
+                               not(is_number_str(padj_string)) or \
+                               not(is_number_str(count_string))):
+                                
+                                
+                                status = 3
+                                message = ( '*** ERROR: Data for dotplots is not formatted as expected in ORA/ GSEA file. '
+                                            'Please refer to documentation for expected column order and content. '
+                                            'If you do not have dotplot data to plot, or if you want to omit dotplots '
+                                            'for whatever reason, then you can set DOTPLOTS to False in the config file. '
+                                            'NOTE, however, that your ORA/ GSEA file still has to have the expected '
+                                            'column order (see docs). ***' )
+                                return(status, message, {}, {}, {}, {}, [])
+                            else:
+                                gene_ratio_Fraction = Fraction( gene_ratio_string )
+                                gene_ratio = round( gene_ratio_Fraction.numerator/gene_ratio_Fraction.denominator , 3 )
+                                neg_log10_padj = round( -1 * math.log10(float(padj_string)), 1)
+                                count = int(count_string)
+                                exp_term_dotplot_dict[ ( exp_id , term ) ] = [ gene_ratio , neg_log10_padj , count , gene_ratio_string , bg_ratio_string ]
                 
+                    
+                    
                     exp_terms.append(term)
         
             if(lines_read==0):

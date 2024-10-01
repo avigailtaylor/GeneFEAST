@@ -25,24 +25,37 @@ from genefeast import gf_classes as gfc
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("mif_path")
+#    parser.add_argument("mif_path")
+#    parser.add_argument("output_dir")
+#    parser.add_argument("cfg_yaml_path")
+#    args = parser.parse_args()
+#    
+#    gf(args.mif_path, args.output_dir, args.cfg_yaml_path)
+    
+    parser.add_argument("setup_yaml_path")
     parser.add_argument("output_dir")
-    parser.add_argument("cfg_yaml_path")
     args = parser.parse_args()
     
-    gf(args.mif_path, args.output_dir, args.cfg_yaml_path)
+#    with open(args.setup_yaml_path, "r") as ymlfile:
+#        setup = yaml.safe_load(ymlfile)
+        
+    #gf(args.setup_yaml_path, args.output_dir, setup["cfg_yaml_path"])
+    gf(args.setup_yaml_path, args.output_dir)
 
 
-def gf(mif_path, output_dir, cfg_yaml_path):
+#def gf(mif_path, output_dir, cfg_yaml_path):
+#def gf(setup_yaml_path, output_dir, cfg_yaml_path):
+def gf(setup_yaml_path, output_dir):
     # MAIN PROGRAM ****************************************************************
     # 0. CHECK PYTHON VERSION *****************************************************
-    if(not(sys.version_info.major==3 and sys.version_info.minor==7)):
-        print('GeneFEAST requires Python 3.7. Please make sure you have a compliant version installed.')
+    if(not(sys.version_info.major==3 and sys.version_info.minor>=7)):
+        print('GeneFEAST requires at least Python 3.7. Please make sure you have a compliant version installed.')
         sys.exit()
     
     # 1. SET UP I/O FILES AND DIRECTORIES *****************************************
     
-    (status, message, mi_dict, exp_ids) = gfb.get_meta_info(mif_path) # mi short for meta input
+    #(status, message, mi_dict, exp_ids) = gfb.get_meta_info(mif_path) # mi short for meta input
+    (status, message, mi_dict, exp_ids) = gfb.get_meta_info_from_setup(setup_yaml_path) # mi short for meta input
     print(message)
     if(status > 0):
         sys.exit()
@@ -53,7 +66,7 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     info_string = exp_id
     summary_id = info_string
     
-    ora_file_path , gene_qd_file_path , input_img_dir_path = mi_dict[info_string]
+    ora_file_path , gene_qd_file_path , input_img_dir = mi_dict[info_string]
     
     (status, message) = gfb.get_output_dir_status(output_dir)
     print(message)
@@ -72,59 +85,178 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     # *****************************************************************************
     
     # 2. IMPORT VARIABLES FROM CONFIG FILE ****************************************
-    with open(cfg_yaml_path, "r") as ymlfile:
-        cfg_yaml = yaml.safe_load(ymlfile)
+    #with open(cfg_yaml_path, "r") as ymlfile:
+    #    cfg_yaml = yaml.safe_load(ymlfile)
         
-    print(cfg_yaml)
+    with open(setup_yaml_path, "r") as ymlfile:
+        setup = yaml.safe_load(ymlfile)
     
-    QUANT_DATA_TYPE = cfg_yaml['QUANT_DATA_TYPE']
+#   QUANT_DATA_TYPE = cfg_yaml['QUANT_DATA_TYPE']
+    if(setup.get("QUANT_DATA_TYPE") is None):
+        QUANT_DATA_TYPE = "log2 FC"
+    else:
+        QUANT_DATA_TYPE = setup.get("QUANT_DATA_TYPE")
+
+#    DOTPLOTS = cfg_yaml['DOTPLOTS']
     
-    DOTPLOTS = cfg_yaml['DOTPLOTS']
+    if(setup.get("ENRICHR") is None):
+        ENRICHR = False
+    else:
+        ENRICHR = setup.get("ENRICHR")
     
-    MIN_NUM_GENES = cfg_yaml['MIN_NUM_GENES']
     
-    MAX_DCNT = cfg_yaml['MAX_DCNT']
-    MIN_LEVEL = cfg_yaml['MIN_LEVEL']
+    if(setup.get("DOTPLOTS") is None):
+        DOTPLOTS = False
+    else:
+        DOTPLOTS = setup.get("DOTPLOTS")
+        
+    if(DOTPLOTS and not(ENRICHR)):
+        print('*** ERROR: DOTPLOTS is set to True, but ENRICHR is set to False. '
+              'Dotplots can only be plotted if ORA/ GSEA results are in Enrichr format (see docs). '
+              'Please ensure that ORA/ GSEA results are in Enrichr format, and explicitly set ENRICHR to True in '
+              'setup YAML file. (The default value for ENRICHR is False if not given in the setup '
+              'YAML file.) ***')
+        sys.exit()
     
-    TT_OVERLAP_MEASURE = cfg_yaml['TT_OVERLAP_MEASURE']
-    MIN_WEIGHT_TT_EDGE = cfg_yaml['MIN_WEIGHT_TT_EDGE']
+#    MIN_NUM_GENES = cfg_yaml['MIN_NUM_GENES']
+    if(setup.get("MIN_NUM_GENES") is None):
+        MIN_NUM_GENES = 10
+    else:
+        MIN_NUM_GENES = setup.get("MIN_NUM_GENES")
     
-    SC_BC_OVERLAP_MEASURE = cfg_yaml['SC_BC_OVERLAP_MEASURE']
-    MIN_WEIGHT_SC_BC = cfg_yaml['MIN_WEIGHT_SC_BC']
+#    MAX_DCNT = cfg_yaml['MAX_DCNT']
+    if(setup.get("MAX_DCNT") is None):
+        MAX_DCNT = 50
+    else:
+        MAX_DCNT = setup.get("MAX_DCNT")
+        
+#    MIN_LEVEL = cfg_yaml['MIN_LEVEL']
+    if(setup.get("MIN_LEVEL") is None):
+        MIN_LEVEL = 3
+    else:
+        MIN_LEVEL = setup.get("MIN_LEVEL")
+
+#    TT_OVERLAP_MEASURE = cfg_yaml['TT_OVERLAP_MEASURE']
+    if(setup.get("TT_OVERLAP_MEASURE") is None):
+        TT_OVERLAP_MEASURE = "OC"
+    else:
+        TT_OVERLAP_MEASURE = setup.get("TT_OVERLAP_MEASURE")
+
+#    MIN_WEIGHT_TT_EDGE = cfg_yaml['MIN_WEIGHT_TT_EDGE']
+    if(setup.get("MIN_WEIGHT_TT_EDGE") is None):
+        MIN_WEIGHT_TT_EDGE = 0.5
+    else:
+        MIN_WEIGHT_TT_EDGE = setup.get("MIN_WEIGHT_TT_EDGE")
     
-    BC_BC_OVERLAP_MEASURE = cfg_yaml['BC_BC_OVERLAP_MEASURE']
-    MIN_WEIGHT_BC_BC = cfg_yaml['MIN_WEIGHT_BC_BC']
+#    SC_BC_OVERLAP_MEASURE = cfg_yaml['SC_BC_OVERLAP_MEASURE']
+    if(setup.get("SC_BC_OVERLAP_MEASURE") is None):
+        SC_BC_OVERLAP_MEASURE = "OC"
+    else:
+        SC_BC_OVERLAP_MEASURE = setup.get("SC_BC_OVERLAP_MEASURE")
+
+#    MIN_WEIGHT_SC_BC = cfg_yaml['MIN_WEIGHT_SC_BC']
+    if(setup.get("MIN_WEIGHT_SC_BC") is None):
+        MIN_WEIGHT_SC_BC = 0.25
+    else:
+        MIN_WEIGHT_SC_BC = setup.get("MIN_WEIGHT_SC_BC")
+
+#    BC_BC_OVERLAP_MEASURE = cfg_yaml['BC_BC_OVERLAP_MEASURE']
+    if(setup.get("BC_BC_OVERLAP_MEASURE") is None):
+        BC_BC_OVERLAP_MEASURE = "J"
+    else:
+        BC_BC_OVERLAP_MEASURE = setup.get("BC_BC_OVERLAP_MEASURE")
+
+#    MIN_WEIGHT_BC_BC = cfg_yaml['MIN_WEIGHT_BC_BC']
+    if(setup.get("MIN_WEIGHT_BC_BC") is None):
+        MIN_WEIGHT_BC_BC = 0.1
+    else:
+        MIN_WEIGHT_BC_BC = setup.get("MIN_WEIGHT_BC_BC")
+   
+#    MAX_COMMUNITY_SIZE_THRESH = cfg_yaml['MAX_COMMUNITY_SIZE_THRESH']
+    if(setup.get("MAX_COMMUNITY_SIZE_THRESH") is None):
+        MAX_COMMUNITY_SIZE_THRESH = 15
+    else:
+        MAX_COMMUNITY_SIZE_THRESH = setup.get("MAX_COMMUNITY_SIZE_THRESH")
+        
+#    MAX_META_COMMUNITY_SIZE_THRESH = cfg_yaml['MAX_META_COMMUNITY_SIZE_THRESH']
+    if(setup.get("MAX_META_COMMUNITY_SIZE_THRESH") is None):
+        MAX_META_COMMUNITY_SIZE_THRESH = 15
+    else:
+        MAX_META_COMMUNITY_SIZE_THRESH = setup.get("MAX_META_COMMUNITY_SIZE_THRESH")
     
-    MAX_COMMUNITY_SIZE_THRESH = cfg_yaml['MAX_COMMUNITY_SIZE_THRESH']
-    MAX_META_COMMUNITY_SIZE_THRESH = cfg_yaml['MAX_META_COMMUNITY_SIZE_THRESH']
+#    COMBINE_TERM_TYPES = cfg_yaml['COMBINE_TERM_TYPES']
+    if(setup.get("COMBINE_TERM_TYPES") is None):
+        COMBINE_TERM_TYPES = False
+    else:
+        COMBINE_TERM_TYPES = setup.get("COMBINE_TERM_TYPES")    
     
-    COMBINE_TERM_TYPES = cfg_yaml['COMBINE_TERM_TYPES']
     
-    HEATMAP_WIDTH_MIN = cfg_yaml['HEATMAP_WIDTH_MIN']
-    HEATMAP_HEIGHT_MIN = cfg_yaml['HEATMAP_HEIGHT_MIN']
+#    HEATMAP_WIDTH_MIN = cfg_yaml['HEATMAP_WIDTH_MIN']
+    if(setup.get("HEATMAP_WIDTH_MIN") is None):
+        HEATMAP_WIDTH_MIN = 10
+    else:
+        HEATMAP_WIDTH_MIN = setup.get("HEATMAP_WIDTH_MIN")  
+
+#    HEATMAP_HEIGHT_MIN = cfg_yaml['HEATMAP_HEIGHT_MIN']
+    if(setup.get("HEATMAP_HEIGHT_MIN") is None):
+        HEATMAP_HEIGHT_MIN = 6.5
+    else:
+        HEATMAP_HEIGHT_MIN = setup.get("HEATMAP_HEIGHT_MIN")  
     
-    HEATMAP_MIN = cfg_yaml['HEATMAP_MIN']
-    HEATMAP_MAX = cfg_yaml['HEATMAP_MAX']
+#    HEATMAP_MIN = cfg_yaml['HEATMAP_MIN']
+    if(setup.get("HEATMAP_MIN") is None):
+        HEATMAP_MIN = -4
+    else:
+        HEATMAP_MIN = setup.get("HEATMAP_MIN")  
+
+#    HEATMAP_MAX = cfg_yaml['HEATMAP_MAX']
+    if(setup.get("HEATMAP_MAX") is None):
+        HEATMAP_MAX = 4
+    else:
+        HEATMAP_MAX = setup.get("HEATMAP_MAX")  
                             
-    if(not(cfg_yaml['SEARCH_WORDS'])):
+#    if(not(cfg_yaml['SEARCH_WORDS'])):
+#        SEARCH_WORDS = []
+#    else:
+#        SEARCH_WORDS = cfg_yaml['SEARCH_WORDS']
+    if(setup.get("SEARCH_WORDS") is None):
         SEARCH_WORDS = []
     else:
-        SEARCH_WORDS = cfg_yaml['SEARCH_WORDS']
+        SEARCH_WORDS = setup.get("SEARCH_WORDS")  
+
                  
-    GENE_INDEX = cfg_yaml['GENE_INDEX'] 
-    QD_INDEX = cfg_yaml['QD_INDEX']
+#    GENE_INDEX = cfg_yaml['GENE_INDEX'] 
+    if(setup.get("GENE_INDEX") is None):
+        GENE_INDEX = 0
+    else:
+        GENE_INDEX = setup.get("GENE_INDEX")  
+
+#    QD_INDEX = cfg_yaml['QD_INDEX']
+    if(setup.get("QD_INDEX") is None):
+        QD_INDEX = 1
+    else:
+        QD_INDEX = setup.get("QD_INDEX")  
     
-    EA_FILE = cfg_yaml['EA_FILE']
+#    EA_FILE = cfg_yaml['EA_FILE']
+    EA_FILE = setup.get("EA_FILE")
+
+        
     
     # *****************************************************************************
     
     # 3. DEFINE CONSTANTS *********************************************************
     # Populate the data structures required for plotting GO hierarchies and for
     # storing GO term stats (required for making decions on term inclusion.)
-    if(not(cfg_yaml['OBO_FILE'])):
+#    if(not(cfg_yaml['OBO_FILE'])):
+#        OBO_FILE = os.path.dirname(__file__) + "/go-basic.obo"
+#    else:
+#        OBO_FILE = cfg_yaml['OBO_FILE']
+
+    if(setup.get("OBO_FILE") is None):
         OBO_FILE = os.path.dirname(__file__) + "/go-basic.obo"
     else:
-        OBO_FILE = cfg_yaml['OBO_FILE']
+        OBO_FILE = setup.get("OBO_FILE")  
+    
         
     GO_DAG = obo_parser.GODag(obo_file=OBO_FILE)
     GO_SUBDAG = GoSubDag(GO_DAG.keys(), GO_DAG, tcntobj=None, children=True, prt=sys.stdout)
@@ -137,12 +269,15 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     # We also need to load the html tables for any MSigDB terms we might want to show 
     # - best to keep this a constant, I think...
     
-    if(not(cfg_yaml['MSIGDB_HTML'])):
+#    if(not(cfg_yaml['MSIGDB_HTML'])):
+#        MSIGDB_HTML = os.path.dirname(__file__) + "/msigdb_v7.2.filtered.html"
+#    else:
+#        MSIGDB_HTML = cfg_yaml['MSIGDB_HTML']
+        
+    if(setup.get("MSIGDB_HTML") is None):
         MSIGDB_HTML = os.path.dirname(__file__) + "/msigdb_v7.2.filtered.html"
     else:
-        MSIGDB_HTML = cfg_yaml['MSIGDB_HTML']
-        
-    print(MSIGDB_HTML)
+        MSIGDB_HTML = setup.get("MSIGDB_HTML")      
         
     msigdb_file = open(MSIGDB_HTML, "r")
     msigdb_contents = msigdb_file.read()
@@ -185,14 +320,14 @@ def gf(mif_path, output_dir, cfg_yaml_path):
     
     # Store input image directory and extensions
     _exp_img_dir_paths_dict = {}
-    _exp_img_dir_paths_dict[exp_id] = input_img_dir_path
+    _exp_img_dir_paths_dict[exp_id] = input_img_dir
     _exp_img_extension_dict = {}
     _exp_img_extension_dict[exp_id] = IMG_EXTENSION
     
     
     # Read in the ORA/ GSEA data
     (status, message, _term_types_dict, _term_defs_dict, exp_term_genes_dict, _exp_term_dotplot_dict, _) = \
-            gfb.read_in_ora_data(ora_file_path, exp_id, MIN_LEVEL, MAX_DCNT, DOTPLOTS, _GO_term_stats)
+            gfb.read_in_ora_data(ora_file_path, exp_id, MIN_LEVEL, MAX_DCNT, ENRICHR, DOTPLOTS, _GO_term_stats)
     print(message)
     if(status > 0):
         sys.exit()
