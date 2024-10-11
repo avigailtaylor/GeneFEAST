@@ -12,6 +12,7 @@ import argparse
 import networkx as nx
 import numpy as np
 import pandas as pd
+import warnings
 import yaml
 from bs4 import BeautifulSoup
 from goatools import obo_parser
@@ -24,6 +25,7 @@ from genefeast import gf_classes as gfc
 
 
 def main():
+    warnings.filterwarnings("ignore", category=FutureWarning)
     parser = argparse.ArgumentParser()
 #    parser.add_argument("mif_path")
 #    parser.add_argument("output_dir")
@@ -48,12 +50,12 @@ def main():
 def gf(setup_yaml_path, output_dir):
     # MAIN PROGRAM ****************************************************************
     # 0. CHECK PYTHON VERSION *****************************************************
-    if(not(sys.version_info.major==3 and sys.version_info.minor>=7)):
-        print('GeneFEAST requires at least Python 3.7. Please make sure you have a compliant version installed.')
+    if(not(sys.version_info.major==3 and sys.version_info.minor==12)):
+        print('GeneFEAST requires Python 3.12. Please make sure you have a compliant version installed.')
         sys.exit()
     
     # 1. SET UP I/O FILES AND DIRECTORIES *****************************************
-    
+    print("\nSetting up I/O files and directories")
     #(status, message, mi_dict, exp_ids) = gfb.get_meta_info(mif_path) # mi short for meta input
     (status, message, mi_dict, exp_ids) = gfb.get_meta_info_from_setup(setup_yaml_path) # mi short for meta input
     print(message)
@@ -87,7 +89,8 @@ def gf(setup_yaml_path, output_dir):
     # 2. IMPORT VARIABLES FROM CONFIG FILE ****************************************
     #with open(cfg_yaml_path, "r") as ymlfile:
     #    cfg_yaml = yaml.safe_load(ymlfile)
-        
+    print("\nConfiguring variables for report generation")    
+    
     with open(setup_yaml_path, "r") as ymlfile:
         setup = yaml.safe_load(ymlfile)
     
@@ -252,6 +255,7 @@ def gf(setup_yaml_path, output_dir):
 #    else:
 #        OBO_FILE = cfg_yaml['OBO_FILE']
 
+    print("\nReading in OBO file")
     if(setup.get("OBO_FILE") is None):
         OBO_FILE = os.path.dirname(__file__) + "/go-basic.obo"
     else:
@@ -273,13 +277,14 @@ def gf(setup_yaml_path, output_dir):
 #        MSIGDB_HTML = os.path.dirname(__file__) + "/msigdb_v7.2.filtered.html"
 #    else:
 #        MSIGDB_HTML = cfg_yaml['MSIGDB_HTML']
-        
+     
+    print("\nReading in MSigDB file")  
     if(setup.get("MSIGDB_HTML") is None):
         MSIGDB_HTML = os.path.dirname(__file__) + "/msigdb_v7.2.filtered.html"
     else:
         MSIGDB_HTML = setup.get("MSIGDB_HTML")      
         
-    msigdb_file = open(MSIGDB_HTML, "r")
+    msigdb_file = open(MSIGDB_HTML, "r", encoding='UTF8')
     msigdb_contents = msigdb_file.read()
     msigdb_html_soup = BeautifulSoup(msigdb_contents, features="lxml")
     
@@ -317,7 +322,7 @@ def gf(setup_yaml_path, output_dir):
     # *****************************************************************************
     
     # 5 READ IN DATA FOR SUMMARISING HERE*****************************
-    
+    print("\nReading in FEA results for summarization")
     # Store input image directory and extensions
     _exp_img_dir_paths_dict = {}
     _exp_img_dir_paths_dict[exp_id] = input_img_dir
@@ -357,7 +362,8 @@ def gf(setup_yaml_path, output_dir):
     # *****************************************************************************
     
     # 6. CLUSTER TERMS BY THEIR GENE-SET OVERLAP **********************************
-     
+    print("\nFinding communities of terms")
+    
     # create network of terms - terms are connected by edges if their overlap 
     # weight exceeds a certain threshold. *****************************************
     
@@ -417,6 +423,7 @@ def gf(setup_yaml_path, output_dir):
     TEST = False
     if(not(TEST) and (len(big_communities) >= 2) & (len(big_communities) <= (len(term_community_pairs)-1))):
         terms_distance_matrix = gfb.build_terms_distance_matrix(term_community_pairs, _term_genes_dict, TT_OVERLAP_MEASURE)
+        print("\nGenerating silhouette plot for communities detected with chosen parameters")
         ( silplot_img_path , silplot_img_width, silplot_img_height ) = gfb.make_silhouette_plot(terms_distance_matrix, np.array([c for (t,c) in term_community_pairs]), big_communities, _term_genes_dict, 
                                                                                                 abs_images_dir, rel_images_dir, '', NEW_H * 2.5)
     else:
@@ -430,7 +437,8 @@ def gf(setup_yaml_path, output_dir):
     
         # Now run analysis to plot out how clustering looks when varying two thresholds: MIN_WEIGHT_TT_EDGE and MAX_COMMUNITY_SIZE_THRESH
         # TODO: check this works when multiple FEA databases are used and database agglomeration is off!
-        
+    
+    print("\nGenerating community detection quality comparison plot for grid search of community detection parameters")
     ( comparisonplot_img_path , comparisonplot_img_width, comparisonplot_img_height ) = gfb.make_sil_violinplots(MIN_WEIGHT_TT_EDGE, MAX_COMMUNITY_SIZE_THRESH, COMBINE_TERM_TYPES, type_2_term_dict,
                                                                                                                  terms_list, _term_genes_dict, TT_OVERLAP_MEASURE,
                                                                                                                  MAX_DCNT, _term_types_dict, _GO_term_stats, 
@@ -439,6 +447,7 @@ def gf(setup_yaml_path, output_dir):
     # *****************************************************************************
     
     # 7. GENERATE HTML REPORT *****************************************************
+    print("\nGenerating HTML report")
     my_summaryPrinter = gfc.summaryPrinter(summary_id, summary_id, output_dir, info_string + '_report.html', rel_images_dir, meta_communities, singleton_meta_communities, singleton_communities,
                                            silplot_img_path, silplot_img_width, silplot_img_height, comparisonplot_img_path, comparisonplot_img_width, comparisonplot_img_height)
     my_summaryPrinter.print_html()
@@ -469,6 +478,7 @@ def gf(setup_yaml_path, output_dir):
     html_f.write("  padding: 4px 6px;\n")
     html_f.write("  transition: 0.1s;\n")
     html_f.write("  font-size: 16pxs;\n")
+    html_f.write("  margin: 2px;\n")
     html_f.write("}\n")
         
     html_f.write(".view-button:hover {\n")
@@ -1022,6 +1032,7 @@ def gf(setup_yaml_path, output_dir):
     html_f.write("</html>\n")
     html_f.close()
     
+    print("\nGenerating csv files")
     csv_f = open(output_dir + '/' + info_string + '_report.csv', 'w')
     for mc in meta_communities:
         for bc in mc.communities:
@@ -1034,6 +1045,8 @@ def gf(setup_yaml_path, output_dir):
         sc.print_csv(csv_f)
         
     csv_f.close()
+    
+    print("\nDONE!\n")
 
 if __name__ == "__main__":
     main()

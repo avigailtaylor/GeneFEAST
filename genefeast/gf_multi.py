@@ -15,6 +15,7 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import warnings
 import yaml
 from bs4 import BeautifulSoup
 from goatools import obo_parser
@@ -29,6 +30,7 @@ from genefeast import gf_classes as gfc
 
 
 def main():
+    warnings.filterwarnings("ignore", category=FutureWarning)
     parser = argparse.ArgumentParser()
 #    parser.add_argument("mif_path")
 #    parser.add_argument("output_dir")
@@ -53,12 +55,12 @@ def main():
 def gf_multi(setup_yaml_path, output_dir):
     # MAIN PROGRAM ****************************************************************
     # 0. CHECK PYTHON VERSION *****************************************************
-    if(not(sys.version_info.major==3 and sys.version_info.minor>=7)):
-        print('GeneFEAST requires at least Python 3.7. Please make sure you have a compliant version installed.')
+    if(not(sys.version_info.major==3 and sys.version_info.minor==12)):
+        print('GeneFEAST requires Python 3.12. Please make sure you have a compliant version installed.')
         sys.exit()
     
     # 1. SET UP I/O FILES AND DIRECTORIES *****************************************
-    
+    print("\nSetting up I/O files and directories")
     #(status, message, _mi_dict, _exp_ids) = gfb.get_meta_info(mif_path) # mi short for meta input
     (status, message, _mi_dict, _exp_ids) = gfb.get_meta_info_from_setup(setup_yaml_path) # mi short for meta input
     print(message)
@@ -88,6 +90,7 @@ def gf_multi(setup_yaml_path, output_dir):
     # *****************************************************************************
     
     # 2. IMPORT VARIABLES FROM CONFIG FILE ****************************************
+    print("\nConfiguring variables for report generation") 
 #    with open(cfg_yaml_path, "r") as ymlfile:
 #        cfg_yaml = yaml.safe_load(ymlfile)
 #    
@@ -291,7 +294,7 @@ def gf_multi(setup_yaml_path, output_dir):
 #    else:
 #        OBO_FILE = cfg_yaml['OBO_FILE']
         
-    
+    print("\nReading in OBO file")
     if(setup.get("OBO_FILE") is None):
         OBO_FILE = os.path.dirname(__file__) + "/go-basic.obo"
     else:
@@ -310,13 +313,14 @@ def gf_multi(setup_yaml_path, output_dir):
 #        MSIGDB_HTML = os.path.dirname(__file__) + "/msigdb_v7.2.filtered.html"
 #    else:
 #        MSIGDB_HTML = cfg_yaml['MSIGDB_HTML']
+    print("\nReading in MSigDB file")
     if(setup.get("MSIGDB_HTML") is None):
         MSIGDB_HTML = os.path.dirname(__file__) + "/msigdb_v7.2.filtered.html"
     else:
         MSIGDB_HTML = setup.get("MSIGDB_HTML")            
     
     
-    msigdb_file = open(MSIGDB_HTML, "r")
+    msigdb_file = open(MSIGDB_HTML, "r", encoding='UTF8')
     msigdb_contents = msigdb_file.read()
     msigdb_html_soup = BeautifulSoup(msigdb_contents, features="lxml")
     
@@ -355,7 +359,7 @@ def gf_multi(setup_yaml_path, output_dir):
     # *****************************************************************************
     
     # 5 READ IN ORA OR EA OUTPUTS FOR SUMMARISING HERE*****************************
-    
+    print("\nReading in FEA results for summarization")
     _exp_img_dir_paths_dict = {}
     _exp_img_extension_dict = {}
     
@@ -424,6 +428,7 @@ def gf_multi(setup_yaml_path, output_dir):
     # *****************************************************************************
     
     # 6. MAKE OVERALL UPSET DF ****************************************************
+    print("\nFinding overlaps in FEA results between experiments")
     exp_term_upset_df = from_contents(_exp_terms_dict)
     
     exp_term_upset_for_image_df = exp_term_upset_df.reorder_levels(_exp_ids[:: -1]) 
@@ -443,6 +448,7 @@ def gf_multi(setup_yaml_path, output_dir):
     etgContainers = []
     
     for key_i in range(len(ud.upset.intersections.keys())):
+        print("\nFinding communities of terms in Experiment term-set intersection " + str(key_i+1))
         key = ud.upset.intersections.keys()[key_i]
         exp_term_group = exp_term_upset_grouped.get_group(key)
         _etg_exp_ids = [exp_term_group.index.names[i] for i in range(len(exp_term_group.index.names)) if key[i]]
@@ -526,6 +532,7 @@ def gf_multi(setup_yaml_path, output_dir):
         TEST = False
         if(not(TEST) and (len(_big_communities) >= 2) & (len(_big_communities) <= (len(_term_community_pairs)-1))):
             _terms_distance_matrix = gfb.build_terms_distance_matrix(_term_community_pairs, _term_genes_dict, TT_OVERLAP_MEASURE)
+            print("\nGenerating silhouette plot for communities detected with chosen parameters")
             ( silplot_img_path , silplot_img_width, silplot_img_height ) = gfb.make_silhouette_plot(_terms_distance_matrix, np.array([c for (t,c) in _term_community_pairs]), _big_communities, _term_genes_dict, 
                                                                                                     _abs_images_dir, _rel_images_dir, _etg_name, NEW_H * 2.5)
         else:
@@ -540,6 +547,7 @@ def gf_multi(setup_yaml_path, output_dir):
         # Now run analysis to plot out how clustering looks when varying two thresholds: MIN_WEIGHT_TT_EDGE and MAX_COMMUNITY_SIZE_THRESH
         # TODO: check this works when multiple FEA databases are used and database agglomeration is off!
         
+        print("\nGenerating community detection quality comparison plot for grid search of community detection parameters")
         ( comparisonplot_img_path , comparisonplot_img_width, comparisonplot_img_height ) = gfb.make_sil_violinplots(MIN_WEIGHT_TT_EDGE, MAX_COMMUNITY_SIZE_THRESH, COMBINE_TERM_TYPES, type_2_term_dict,
                                                                                                 etg_terms, _term_genes_dict, TT_OVERLAP_MEASURE,
                                                                                                 MAX_DCNT, _term_types_dict, _GO_term_stats, 
@@ -652,6 +660,7 @@ def gf_multi(setup_yaml_path, output_dir):
     
     # 8. GENERATE HTML REPORT *****************************************************
     
+    print("\nGenerating HTML report")
     html_f = open( MAIN_HYPERLINK , 'w')
     html_f.write("<!DOCTYPE html>\n")
     html_f.write("<html>\n")
@@ -868,9 +877,11 @@ def gf_multi(setup_yaml_path, output_dir):
     for etgContainer in etgContainers:
         etgContainer.print_html( etgContainers )
     
+    print("\nGenerating csv files")
     for etgContainer in etgContainers:
         etgContainer.print_csv()
-
+    
+    print("\nDONE!\n")
 
 if __name__ == "__main__":
     main()

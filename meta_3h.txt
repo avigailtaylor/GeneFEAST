@@ -1,1 +1,0 @@
-mmc2_3h,full/path/to/GO_BP_3h_0.001_4GF.csv,full/path/to/mmc2_goi_3h.csv,
