@@ -9,10 +9,17 @@ import os
 import collections
 import csv
 import math
-from fractions import Fraction
-
 import networkx as nx
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import yaml
+
+from PIL import Image
+from fractions import Fraction
 from networkx.algorithms.community import greedy_modularity_communities
+from matplotlib import pyplot
+from sklearn.metrics import silhouette_samples, silhouette_score
 from upsetplot import from_contents
 
 from genefeast import gf_classes as gfc
@@ -92,6 +99,60 @@ def get_meta_info(mif_path):
                                'of fields in each line and that there are no empty lines. ***')
         return(status, message, collections.OrderedDict(), [])
         
+def get_meta_info_from_setup(setup_yaml_path):
+    status = 0
+    message = ''
+    mi_dict = collections.OrderedDict() # mi short for meta input
+    exp_ids = []
+    
+    if os.stat(setup_yaml_path).st_size > 0:
+        with open(setup_yaml_path, "r") as ymlfile:
+            setup = yaml.safe_load(ymlfile)
+            
+            if(setup.get("Experiments") is None):
+                status = 2
+                message = ('*** ERROR: No experiments have been listed in setup YAML file. ***')
+                return(status, message, collections.OrderedDict(), [])
+            else:
+                mi_list = setup.get("Experiments")
+                for exp_mi in mi_list:
+                    if(not("id" in exp_mi.keys()) 
+                        or not("gene_qd_file_path" in exp_mi.keys()) 
+                        or not("ora_file_path" in exp_mi.keys())):
+                        
+                        status = 3
+                        message = ('*** ERROR: One of the experiments listed in setup YAML file is '
+                                   'missing one or more of "id", "gene_qd_file_path", or "ora_file_path." ***')
+                        return(status, message, collections.OrderedDict(), [])
+                    else:
+                        if("input_img_dir" in exp_mi.keys()):
+                            input_img_dir = exp_mi["input_img_dir"]
+                        else:
+                            input_img_dir = ""
+                        
+                        
+                        exp_id = exp_mi["id"]
+                        gene_qd_file_path = exp_mi["gene_qd_file_path"]
+                        ora_file_path = exp_mi["ora_file_path"]
+                        
+                        if(exp_id in mi_dict):
+                            status = 4
+                            message = ('*** ERROR: Two or more experiments have the same ID. '
+                                       'Please check your meta input file for repeated '
+                                       'lines and/ or naming errors. ***')
+                            return(status, message, collections.OrderedDict(), [])
+                        
+                        else:
+                            mi_dict[ exp_id ] = [ora_file_path, gene_qd_file_path, input_img_dir]
+                            exp_ids.append( exp_id )
+                            
+                return(status, message, mi_dict, exp_ids)
+
+    else:
+        status = 1
+        message = ('*** ERROR: Setup YAML file is empty. ***')
+        return(status, message, collections.OrderedDict(), [])
+        
 def generate_images_dirs(info_string, output_dir):
     rel_images_dir = 'images_' + info_string + '_AUTO/'
     abs_images_dir = output_dir + '/' + rel_images_dir
@@ -114,7 +175,7 @@ def is_fraction_str(fraction_string):
     else:
         return True
         
-def read_in_ora_data(ora_file_path, exp_id, min_level, max_dcnt, dotplots, GO_term_stats):
+def read_in_ora_data(ora_file_path, exp_id, min_level, max_dcnt, enrichr_format, dotplots, GO_term_stats):
     status = 0
     message = ''
     term_types_dict = {}
@@ -133,22 +194,51 @@ def read_in_ora_data(ora_file_path, exp_id, min_level, max_dcnt, dotplots, GO_te
             for line in csvreader:
                 lines_read += 1
                 
-                if(len(line) < 10):
-                    status = 1
-                    message = ('*** ERROR: ORA (or GSEA) file not formatted correctly. '
-                               'Check that the format matches the description in the docs. '
-                               'Also, check the number of fields in each line and that there '
-                               'are no empty lines. ***')
-                    return(status, message, {}, {}, {}, {}, [])
-                    
-                else:
-                    term = line[1]
-                    genes = set(line[ len(line) - 2 ].split("/"))
-                    ttype = line[0].upper()
-                    
-                    len_diff = len( line ) - 10
-                    definition = ','.join( line[ 2 : ( 2 + len_diff + 1 ) ] )
                 
+                if(enrichr_format):
+                    if(len(line) < 10):
+                        status = 1
+                        message = ('*** ERROR: ORA (or GSEA) file not formatted correctly. '
+                                   'Enrichr format is expected, but has not been supplied. '
+                                   'If your ORA file is in basic csv format with four columns '
+                                   '(Type, Term, Definition, Genes), then '
+                                   'please check that variable ENRICHR is set to False in the setup YAML file, '
+                                   'and then run again. (Note that the default value for ENRICHR is False if not '
+                                   'given in the setup YAML file.) '
+                                   'Otherwise, please check that your ORA file is '
+                                   'in the expected Enrichr format and matches the description in the docs. '
+                                   'Also, check the number of fields in each line and that there '
+                                   'are no empty lines. ***')
+                        return(status, message, {}, {}, {}, {}, [])
+                        
+                    else:
+                        term = line[1]
+                        genes = set(line[ len(line) - 2 ].split("/"))
+                        ttype = line[0].upper()
+                        
+                        len_diff = len( line ) - 10
+                        definition = ','.join( line[ 2 : ( 2 + len_diff + 1 ) ] )
+                else:
+                    if(len(line) != 4):
+                        status = 1
+                        message = ('*** ERROR: ORA (or GSEA) file not formatted correctly. '
+                                   'Basic format is expected, but has not been supplied. '
+                                   'If your ORA file is in Enrichr format (see docs), then '
+                                   'please check that variable ENRICHR is set to True in the setup YAML, '
+                                   'and then run again. (Note that the default value for ENRICHR is False if not '
+                                   'given in the setup YAML file.) Otherwise, please check that your ORA file is '
+                                   'in basic csv format with four columns (Type, Term, Definition, Genes). '
+                                   'Also, check the number of fields in each line and that there '
+                                   'are no empty lines. ***')
+                        return(status, message, {}, {}, {}, {}, [])
+                        
+                    else:
+                        len_diff = len( line ) - 4
+                        
+                        ttype = line[0].upper()
+                        term = line[1]
+                        definition = ','.join( line[ 2 : ( 2 + len_diff + 1 ) ] )
+                        genes = set(line[ len(line) - 1 ].split("/"))
                 
                 
                 if((exp_id, term) in seen_exp_term_pairs):
@@ -180,32 +270,46 @@ def read_in_ora_data(ora_file_path, exp_id, min_level, max_dcnt, dotplots, GO_te
                         term_defs_dict[ term ] = definition
                         
                     if( dotplots ):
-                        gene_ratio_string = line[ len(line) - 7 ]
-                        bg_ratio_string = line[ len(line) - 6 ]
-                        padj_string = line[len(line) - 4]
-                        count_string = line[len(line) - 1]
                         
-                        if(not(is_fraction_str(gene_ratio_string)) or \
-                           not(is_fraction_str(bg_ratio_string)) or \
-                           not(is_number_str(padj_string)) or \
-                           not(is_number_str(count_string))):
-                            
-                            
+                        if(not(enrichr_format)):
                             status = 3
-                            message = ( '*** ERROR: Data for dotplots is not formatted as expected in ORA/ GSEA file. '
-                                        'Please refer to documentation for expected column order and content. '
-                                        'If you do not have dotplot data to plot, or if you want to omit dotplots '
-                                        'for whatever reason, then you can set DOTPLOTS to False in the config file. '
-                                        'NOTE, however, that your ORA/ GSEA file still has to have the expected '
-                                        'column order (see docs). ***' )
+                            message = ( '*** ERROR: DOTPLOTS is True, but ORA/ GSEA file is not in the Enrichr format '
+                                       'required for dotplots. To fix this, set DOTPLOTS to False in the setup YAML file. '
+                                       'Alternatively, set ENRICHR '
+                                       'to True in the setup YAML file (if not given, the default value is False), '
+                                       'and supply ORA/ GSEA results in the Enrichr format (see docs). ***')
                             return(status, message, {}, {}, {}, {}, [])
+                            
                         else:
-                            gene_ratio_Fraction = Fraction( gene_ratio_string )
-                            gene_ratio = round( gene_ratio_Fraction.numerator/gene_ratio_Fraction.denominator , 3 )
-                            neg_log10_padj = round( -1 * math.log10(float(padj_string)), 1)
-                            count = int(count_string)
-                            exp_term_dotplot_dict[ ( exp_id , term ) ] = [ gene_ratio , neg_log10_padj , count , gene_ratio_string , bg_ratio_string ]
+                        
+                            gene_ratio_string = line[ len(line) - 7 ]
+                            bg_ratio_string = line[ len(line) - 6 ]
+                            padj_string = line[len(line) - 4]
+                            count_string = line[len(line) - 1]
+                            
+                            if(not(is_fraction_str(gene_ratio_string)) or \
+                               not(is_fraction_str(bg_ratio_string)) or \
+                               not(is_number_str(padj_string)) or \
+                               not(is_number_str(count_string))):
+                                
+                                
+                                status = 3
+                                message = ( '*** ERROR: Data for dotplots is not formatted as expected in ORA/ GSEA file. '
+                                            'Please refer to documentation for expected column order and content. '
+                                            'If you do not have dotplot data to plot, or if you want to omit dotplots '
+                                            'for whatever reason, then you can set DOTPLOTS to False in the config file. '
+                                            'NOTE, however, that your ORA/ GSEA file still has to have the expected '
+                                            'column order (see docs). ***' )
+                                return(status, message, {}, {}, {}, {}, [])
+                            else:
+                                gene_ratio_Fraction = Fraction( gene_ratio_string )
+                                gene_ratio = round( gene_ratio_Fraction.numerator/gene_ratio_Fraction.denominator , 3 )
+                                neg_log10_padj = round( -1 * math.log10(float(padj_string)), 1)
+                                count = int(count_string)
+                                exp_term_dotplot_dict[ ( exp_id , term ) ] = [ gene_ratio , neg_log10_padj , count , gene_ratio_string , bg_ratio_string ]
                 
+                    
+                    
                     exp_terms.append(term)
         
             if(lines_read==0):
@@ -522,7 +626,6 @@ def build_big_communities_list(big_community_term_sets, big_community_stub,
         bc_index += 1
     return big_communities
 
-
 def build_singleton_communities_list(terms_list, big_community_term_sets,
                                 quant_data_type, exp_gene_qd, exp_ids, 
                                 term_types_dict, term_defs_dict, 
@@ -560,7 +663,258 @@ def build_singleton_communities_list(terms_list, big_community_term_sets,
     return singleton_communities
         
 
+def get_big_community_labels_for_terms(big_communities):
+    term_community_pairs = []
+    for bc in big_communities:
+        term_community_pairs = term_community_pairs + [(term, bc.name) for term in bc.terms]
 
+    return term_community_pairs
+
+def get_big_community_labels_for_terms_from_term_sets(big_community_term_sets):
+    term_community_pairs = []
+    for bc_index in range(len(big_community_term_sets)):
+        term_community_pairs = term_community_pairs + [(term, str(bc_index+1)) for term in big_community_term_sets[bc_index]]
+
+    return term_community_pairs
+
+
+def build_terms_distance_matrix(term_community_pairs, term_genes_dict, tt_overlap_measure):
+    
+    terms_ordered_by_community = [t for (t,c) in term_community_pairs]
+    terms_distance_matrix = np.zeros((len(terms_ordered_by_community), len(terms_ordered_by_community))) 
+    
+    for t_index in range(len(terms_ordered_by_community)-1):
+        
+        t1 = terms_ordered_by_community[t_index]
+        t1_genes = term_genes_dict[ t1 ] 
+        
+        for t_index2 in range(t_index+1, len(terms_ordered_by_community)):
+            
+            t2 = terms_ordered_by_community[t_index2]
+            t2_genes = term_genes_dict[ t2 ]
+    
+            similarity = 0
+            if( tt_overlap_measure == 'OC' ):
+                similarity = len( set.intersection( t1_genes , t2_genes ) )/ min( len( t1_genes ) , len( t2_genes ) )
+            if( tt_overlap_measure == 'J' ):
+                similarity = len( set.intersection( t1_genes , t2_genes ) )/ len( set.union( t1_genes , t2_genes ) )
+                
+            distance = 1 - similarity
+            terms_distance_matrix[t_index,t_index2] = distance
+            terms_distance_matrix[t_index2,t_index] = distance
+    
+    return(terms_distance_matrix)
+    
+def calc_prop_terms_in_big_communities(term_community_labels, term_genes_dict):
+    return(len(term_community_labels)/len(term_genes_dict))    
+    
+def make_silhouette_plot(terms_distance_matrix, term_community_labels, big_communities, term_genes_dict, abs_images_dir, rel_images_dir, etg_name, new_h):
+    
+    silhouette_avg = silhouette_score(terms_distance_matrix, term_community_labels, metric="precomputed")
+    sample_silhouette_values = silhouette_samples(terms_distance_matrix, term_community_labels, metric="precomputed")
+    prop_terms_in_big_communities = calc_prop_terms_in_big_communities(term_community_labels, term_genes_dict)
+    num_big_communities = len(big_communities)
+    
+    fig, ax = pyplot.subplots()
+    
+    ax.set_xlim([min(0,min(sample_silhouette_values))-0.1, 1])
+    ax.set_ylim([0, len(terms_distance_matrix) + (num_big_communities + 2) * 10])
+    
+    ax.fill_betweenx(
+            np.arange(10,12),
+            0,
+            [prop_terms_in_big_communities, prop_terms_in_big_communities],
+            facecolor='g',
+            edgecolor='g',
+            alpha=0.7
+    )
+    
+    ax.text(-0.05, 11, "proportion terms in big communities" , fontsize='xx-small')
+    ax.axhspan(0, 20, facecolor='0.5', alpha=0.25)
+    
+    y_lower = 22
+    
+    for i in range(num_big_communities-1,-1,-1):
+    
+        # Aggregate the silhouette scores for samples belonging to
+        # cluster i, and sort them
+        ith_cluster_silhouette_values = sample_silhouette_values[term_community_labels == big_communities[i].name]
+
+        ith_cluster_silhouette_values.sort()
+
+        size_cluster_i = ith_cluster_silhouette_values.shape[0]
+        y_upper = y_lower + size_cluster_i
+
+        #color = pyplot.cm.nipy_spectral(float(i) / num_big_communities)
+        color = pyplot.cm.cool(float(i) / num_big_communities)
+        ax.fill_betweenx(
+            np.arange(y_lower, y_upper),
+            0,
+            ith_cluster_silhouette_values,
+            facecolor=color,
+            edgecolor=color,
+            alpha=0.7,
+        )
+
+        # Label the silhouette plots with their cluster numbers at the middle
+        ax.text(-0.05, y_lower + 0.5 * size_cluster_i, gfc.trim_term(big_communities[i].name), fontsize='xx-small')
+
+        # Compute the new y_lower for next plot
+        y_lower = y_upper + 10  # 10 for the 0 samples
+
+    # add blank text to stretch the plot vertically
+    #ax.set_title("Silhouette plot for communities", fontsize='x-small')
+    ax.set_xlabel("silhouette coefficient", fontsize='xx-small')
+    ax.tick_params(axis='x', labelsize=6)
+
+    # The vertical line for average silhouette score of all the values
+    ax.axvline(x=silhouette_avg, color="red", linestyle="--")
+
+    ax.set_yticks([])  # Clear the yaxis labels / ticks
+    #ax.set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])
+    pyplot.savefig(abs_images_dir + etg_name  + "_sil_plot.png", bbox_inches="tight", dpi=300)
+    pyplot.close()
+    
+    image = Image.open(abs_images_dir + etg_name  + "_sil_plot.png")
+    w,h = image.size
+    new_w = int(new_h * w/h)
+    image.close()
+            
+    return (rel_images_dir + etg_name + "_sil_plot.png", new_w, new_h)
+
+
+def make_sil_violinplots(min_weight_tt_edge, max_community_size_thresh, combine_term_types, type_2_term_dict,
+                                 etg_terms, term_genes_dict, tt_overlap_measure,
+                                 max_dcnt, term_types_dict, GO_term_stats, 
+                                 abs_images_dir, rel_images_dir, etg_name, new_h):
+    
+
+    min_weight_tt_edge_trials = sorted(set([x/10 for x in list(range(2,9,2))] + [min_weight_tt_edge]))
+    max_community_size_thresh_trials = sorted(set([10,15,20,max_community_size_thresh]))
+    
+    fig, axes = pyplot.subplots(len(min_weight_tt_edge_trials), len(max_community_size_thresh_trials), figsize=(16, 10))
+    #fig.tight_layout()
+    
+    #for min_weight_tt_edge_try in min_weight_tt_edge_trials:
+    for min_weight_tt_edge_try_i in range(len(min_weight_tt_edge_trials)):
+        
+        min_weight_tt_edge_try = min_weight_tt_edge_trials[min_weight_tt_edge_try_i]
+        
+        sub_terms_graphs_try = []
+        if(combine_term_types or len(type_2_term_dict.keys())==1):
+            sub_terms_graphs_try.append(build_terms_graph(etg_terms, term_genes_dict, tt_overlap_measure, min_weight_tt_edge_try))
+        else:
+            type_2_term_dict_keys = list(type_2_term_dict.keys())
+            type_2_term_dict_keys.sort()
+            for type_2_term_dict_key in type_2_term_dict_keys:
+                sub_terms_list = type_2_term_dict[type_2_term_dict_key]
+                sub_terms_graphs_try.append(build_terms_graph(sub_terms_list, term_genes_dict, tt_overlap_measure, min_weight_tt_edge_try))
+            
+        #for max_community_size_thresh_try in max_community_size_thresh_trials:
+        for max_community_size_thresh_try_i in range(len(max_community_size_thresh_trials)):
+            
+            max_community_size_thresh_try = max_community_size_thresh_trials[max_community_size_thresh_try_i]
+            big_community_term_sets_try = []
+            for sub_terms_graph_try in sub_terms_graphs_try:
+                big_community_term_sets_try = big_community_term_sets_try + get_big_community_term_sets(sub_terms_graph_try, max_community_size_thresh_try,
+                                                                                                            tt_overlap_measure, min_weight_tt_edge_try, 
+                                                                                                            max_dcnt, term_types_dict, GO_term_stats, 
+                                                                                                            term_genes_dict)
+                
+            num_big_communities_try = len(big_community_term_sets_try)
+            
+            term_community_pairs_try = get_big_community_labels_for_terms_from_term_sets(big_community_term_sets_try)
+            term_community_labels_try = np.array([c for (t,c) in term_community_pairs_try])
+            #prop_try = gfb.calc_prop_terms_in_big_communities(term_community_labels_try, term_genes_dict)
+            
+            if((num_big_communities_try >= 2) & (num_big_communities_try <= (len(term_community_pairs_try)-1))):
+                if((min_weight_tt_edge_try == min_weight_tt_edge) & (max_community_size_thresh_try==max_community_size_thresh)):
+                    axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_facecolor("yellow")
+                
+                terms_distance_matrix_try = build_terms_distance_matrix(term_community_pairs_try, term_genes_dict, tt_overlap_measure)
+                silhouette_avg_try = silhouette_score(terms_distance_matrix_try, term_community_labels_try, metric="precomputed")
+                sample_silhouette_values_try = silhouette_samples(terms_distance_matrix_try, term_community_labels_try, metric="precomputed")
+                
+                sample_silhouette_values_try_data = {'Community': term_community_labels_try,
+                                                     'Silhouette Score': sample_silhouette_values_try} 
+                
+                sample_silhouette_values_try_df = pd.DataFrame(sample_silhouette_values_try_data)
+                
+    
+#                    _color_palette = sns.color_palette("Greens")
+#                    _color_index = int(prop_try * (len(_color_palette)-1))
+                
+#                    sns.violinplot(ax=axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i], data=sample_silhouette_values_try_df,
+#                                                                                                       y='Score', x='Community',
+#                                                                                                       color=_color_palette[_color_index],
+#                                                                                                       saturation=1, inner=None, cut=0)
+#                    axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_xticklabels([])
+#                    axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_ylim([-1,1])
+                
+                
+                community_cum_prop_of_total_df = sample_silhouette_values_try_df.groupby('Community').size().cumsum().reset_index()
+                community_cum_prop_of_total_df['cum prop of total terms'] = [(x/len(term_genes_dict))*100 for x in sample_silhouette_values_try_df.groupby('Community').size().cumsum()]
+            
+                axis = axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i]
+                ax_twin = axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].twinx()
+                ax_twin.bar(community_cum_prop_of_total_df['Community'], community_cum_prop_of_total_df['cum prop of total terms'], alpha=0.25)
+                ax_twin.set_ylim([0,100])
+                if(max_community_size_thresh_try_i == (len(max_community_size_thresh_trials)-1)):
+                    ax_twin.yaxis.tick_right()
+                    ax_twin.set_ylabel("Cum. % terms")
+                
+                
+                sns.violinplot(ax=axis, data=sample_silhouette_values_try_df,y='Silhouette Score', x='Community', color="red",inner=None, cut=0)
+                
+                axis.axhline(y = 0, color = 'k', linestyle = '-')
+                axis.axhline(y = 0.5, color = 'darkgrey', linestyle = '--')
+                axis.axhline(y = silhouette_avg_try, color = 'r', linestyle = ':')
+                
+                
+                #axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_xticklabels([]])
+                axis.set_ylim([-1.1,1.1])
+                
+                if(max_community_size_thresh_try_i > 0 ):
+                    axis.set_ylabel("")
+                if(min_weight_tt_edge_try_i < (len(min_weight_tt_edge_trials)-1)):
+                    axis.set_xlabel("")
+                    
+                axis.set_title(str(min_weight_tt_edge_try) + ", " + str(max_community_size_thresh_try))
+                
+                axis.set_xticks(axis.get_xticks()[::2])
+                
+                
+#                sns.violinplot(ax=axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i], data=sample_silhouette_values_try_df,
+#                                                                                                   y='Silhouette Score', x='Community',
+#                                                                                                   color="red",inner=None, cut=0)
+#                
+#                axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].axhline(y = 0, color = 'k', linestyle = '-')
+#                axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].axhline(y = 0.5, color = 'darkgrey', linestyle = '--')
+#                axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].axhline(y = silhouette_avg_try, color = 'r', linestyle = ':')
+#                
+#                
+#                #axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_xticklabels([]])
+#                axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_ylim([-1.1,1.1])
+#                
+#                if(max_community_size_thresh_try_i > 0 ):
+#                    axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_ylabel("")
+#                if(min_weight_tt_edge_try_i < (len(min_weight_tt_edge_trials)-1)):
+#                    axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_xlabel("")
+#                    
+#                axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_title(str(min_weight_tt_edge_try) + ", " + str(max_community_size_thresh_try))
+#                
+#                axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_xticklabels(axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].get_xticklabels(), rotation=45, ha='right', va='top')
+#               
+    pyplot.subplots_adjust(hspace=0.7)            
+    pyplot.savefig(abs_images_dir + etg_name + "_sil_violinplots.png", bbox_inches="tight")
+    pyplot.close()
+    image = Image.open(abs_images_dir + etg_name + "_sil_violinplots.png")
+    w,h = image.size
+    new_w = int(new_h * w/h)
+    image.close()
+            
+    return (rel_images_dir + etg_name + "_sil_violinplots.png", new_w, new_h)
+    
 def build_big_communities_tracker_and_graph(big_communities, bc_bc_overlap_measure, min_weight_bc_bc):
     big_communities_tracker_dict = {}
     big_communities_graph = nx.Graph()

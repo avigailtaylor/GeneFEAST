@@ -8,26 +8,39 @@
 
 from pathlib import Path
 
+import collections
 import matplotlib as mp
 import numpy as np
 import pandas as pd
+import pycircos
 import seaborn as sns
 import upsetplot as up
 from PIL import Image
 from collections import OrderedDict
 from goatools import godag_plot
+from itertools import combinations
 from matplotlib import pyplot
-from matplotlib.tight_layout import get_renderer
+#from matplotlib.tight_layout import get_renderer
 from scipy.cluster.hierarchy import dendrogram, linkage
 from upsetplot import from_contents
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+Garc = pycircos.Garc
+Gcircle = pycircos.Gcircle
 
 # GLOBAL FUNCTIONS ************************************************************
-def trim_term(term):
+def trim_term(term, strong_trim=False):
         if term.find('community') == 0:
-            return term.split('(')[0]
+            if(strong_trim):
+                return term.split('(')[0].split(' ')[1]
+            else:
+                return term.split('(')[0]
+        
         elif term.find('ETSI') == 0: #(ETSI stands for Experiment term-set intersection)
-            return ' '.join(term.split('_')[1].split(' ')[0:2])
+            
+            if(strong_trim):
+                return term.split('_')[1].split(' ')[1]
+            else:
+                return ' '.join(term.split('_')[1].split(' ')[0:2])
         elif(len(term) > 15):
             return term[0:15] + '...'
         else:
@@ -73,7 +86,7 @@ class my_UpSet(up.UpSet):
             fig = pyplot.gcf()
 
         # Determine text size to determine figure size / spacing
-        r = get_renderer(fig)
+        r = fig.canvas.get_renderer()
         t = fig.text(0, 0, '\n'.join(self.totals.index.values))
         textw = t.get_window_extent(renderer=r).width
         t.remove()
@@ -141,7 +154,7 @@ class upsetDrawer:
         annotated_trimmed_terms.reverse()
         community_df = community_df.reorder_levels(annotated_trimmed_terms)
         
-        my_upset = my_UpSet(community_df, sort_categories_by = None)
+        my_upset = my_UpSet(community_df, sort_categories_by = None,  sort_by='-degree')
         my_upset.plot(fig=pyplot.figure(dpi = 120))
            
         pyplot.savefig(self.community.abs_images_dir + self.community.name.replace(' ', '') + "_upset.png", bbox_inches="tight")
@@ -184,6 +197,153 @@ class upsetDrawer_app2: # an upsetDrawer for my_app_3... Requirements are quite 
         
         return (self.rel_images_dir + self.name.replace(' ', '') + "_" + self.sets_of + "_upset.png", new_w)
 
+
+class circosDrawer:
+    def __init__ (self, etg, rows_cols, trim_terms=True, metaGroupCircosDrawer = False):
+        self.etg = etg
+        self.rows_cols = rows_cols
+        self.trim_terms = trim_terms
+        self.trimmed_term_mapping_dict = self.__build_trimmed_term_mapping_dict(metaGroupCircosDrawer)
+        self.metaGroupCircosDrawer = metaGroupCircosDrawer
+        self.metaGroup_barplot_dict = self.__build_metaGroup_barplot_dict()
+        
+    def __get_lordered_gene_exp_heatmap_fm_subset_df(self, s_cols, cluster_genes):
+        
+        heatmap_df = self.etg.gene_exp_heatmap_df.loc[:, s_cols]
+        heatmap_fm_df = self.etg.gene_exp_heatmap_fm_df.loc[:, s_cols]
+        
+        
+        if(len(cluster_genes) > 1):
+            Z = linkage(heatmap_df.values.T, 'ward', optimal_ordering=True)# MIGHT NEED TO REMOVE optimal_ordering=True
+            dn = dendrogram(Z, no_plot=True)
+            heatmap_fm_df = heatmap_fm_df.reindex(columns=[cluster_genes[gi] for gi in dn['leaves']])
+            return (heatmap_fm_df, Z, dn['leaves'])
+        else:
+            return (heatmap_fm_df, [[]], [0])
+        
+    
+    def __build_trimmed_term_mapping_dict(self, strict_trim):
+        if(self.trim_terms):
+            trimmed_terms = [trim_term(term, strict_trim) for term in self.etg.terms]
+            annotated_trimmed_terms = annotate_trimmed_terms(trimmed_terms)
+            return dict(zip(self.etg.terms,annotated_trimmed_terms))
+        else:
+            return dict(zip(self.etg.terms,self.etg.terms))
+        
+    
+    def __build_metaGroup_barplot_dict(self):
+        
+        metaGroup_barplot_dict = dict()
+        if(self.metaGroupCircosDrawer):
+            for community in self.etg.communities:
+                metaGroup_barplot_dict[self.trimmed_term_mapping_dict[community.name]] = community.term_genes_dict.values()
+        return metaGroup_barplot_dict
+        
+    def draw_circos(self):
+               
+        # We want to draw the circos plot to reflect the order of genes in heatmap B. So we need to do the work to build the 
+        # dataframe for that heatmap first...
+        (s_rows, s_cols) = self.rows_cols
+        cluster_genes = [self.etg.genes_sorted[i] for i in range(len(self.etg.genes_sorted)) if s_cols.iloc[i]]
+        cluster_genes_indices = [i for i in range(len(self.etg.genes_sorted)) if s_cols.iloc[i]]
+        
+        gene_term_heatmap_fm_subset_df = self.etg.gene_term_heatmap_fm_df.iloc[s_rows].loc[:, s_cols]    
+        (rows_t, cols_g) = gene_term_heatmap_fm_subset_df.values.shape
+        
+        gene_term_heatmap_fm_subset_df_COPY = gene_term_heatmap_fm_subset_df.copy()
+        for exponent in range(rows_t):
+            gene_term_heatmap_fm_subset_df_COPY.iloc[exponent] = gene_term_heatmap_fm_subset_df.iloc[exponent] * (2**exponent)
+        gene_binary_sums = gene_term_heatmap_fm_subset_df_COPY.sum().values
+        
+        gene_counts = gene_term_heatmap_fm_subset_df.sum().values 
+        
+        ordered_cluster_genes = []
+        for (gc, gbs) in list(OrderedDict.fromkeys(sorted(list(zip(gene_counts, gene_binary_sums)), key=lambda x: (-x[0], -x[1])))):
+            
+            subset_cluster_genes = [gene for (gene, count, binary_sum) in list(zip(cluster_genes, gene_counts, gene_binary_sums)) if (count==gc and binary_sum==gbs)]
+            subset_cluster_gene_indices = [gene_index for (gene_index, count, binary_sum) in list(zip(cluster_genes_indices, gene_counts, gene_binary_sums)) if (count==gc and binary_sum==gbs)]
+            subset_cluster_gene_cols = [(i in subset_cluster_gene_indices) for i in range(len(s_cols))]
+
+            if(len(subset_cluster_genes) > 1):
+                (_, _, subset_leaves) = self.__get_lordered_gene_exp_heatmap_fm_subset_df(subset_cluster_gene_cols, subset_cluster_genes)
+            else:
+                subset_leaves = [0]
+            
+            ordered_cluster_genes = ordered_cluster_genes + [subset_cluster_genes[gi] for gi in subset_leaves]
+        
+        gene_term_heatmap_fm_subset_df = gene_term_heatmap_fm_subset_df.reindex(columns=ordered_cluster_genes).infer_objects(copy=False)
+        
+        gene_term_heatmap_fm_subset_df.rename(index=self.trimmed_term_mapping_dict, inplace=True)       #print(gene_term_heatmap_fm_subset_df.index)
+       
+        
+        # Now that we have the correct heatmap df, we can make the circos plot in the same order...
+        circle = Gcircle()
+        circos_dict = {}
+        for gtheatmap_index, gtheatmap_row in gene_term_heatmap_fm_subset_df.iterrows():
+            row_values = gtheatmap_row.values
+            if(not(self.metaGroupCircosDrawer)):
+                circos_dict_values  = [ np.nan if np.isnan(row_values[x]) else (gtheatmap_index, int(row_values[x] + np.nansum(row_values[0:x]) -1) , int(row_values[x] + np.nansum(row_values[0:x])), 900) for x in range(0,len(row_values))]
+            else:
+                circos_dict_values  = [ np.nan if np.isnan(row_values[x]) else (gtheatmap_index, int(row_values[x] + np.nansum(row_values[0:x]) -1) , int(row_values[x] + np.nansum(row_values[0:x])), 750) for x in range(0,len(row_values))]
+            circos_dict[gtheatmap_index] = circos_dict_values
+            
+            arc = Garc(arc_id=gtheatmap_index, size=np.nansum(row_values), interspace = 1, raxis_range=(950,1000), labelposition=150, label_visible=True, labelsize=16)
+            circle.add_garc(arc)
+        
+        circle.set_garcs()
+        
+        
+        if(self.metaGroupCircosDrawer):
+            values_all = []
+            arcdata_dict = collections.defaultdict(dict)
+            for gtheatmap_index, gtheatmap_row in gene_term_heatmap_fm_subset_df.iterrows():
+                row_values = gtheatmap_row.values
+                
+                arcdata_dict[gtheatmap_index]["positions"] = range(int(np.nansum(row_values)))
+                arcdata_dict[gtheatmap_index]["widths"] = [1 for x in range(int(np.nansum(row_values)))]
+                arcdata_dict[gtheatmap_index]["values"] = [sum([ordered_cluster_genes[x] in v for v in self.metaGroup_barplot_dict[gtheatmap_index]]) 
+                                                            for x in range(0,len(row_values)) if not(np.isnan(row_values[x]))]
+                values_all.append(arcdata_dict[gtheatmap_index]["values"])
+            
+            #print(values_all)
+            #print(min(values_all))
+            #print(max(values_all))
+            vmin,vmax = min([value for values in values_all for value in values]), max([value for values in values_all for value in values])
+            for key in arcdata_dict:
+                circle.barplot(key, data=arcdata_dict[key]["values"], positions=arcdata_dict[key]["positions"],
+                               width=arcdata_dict[key]["widths"], base_value=0.0, rlim=[vmin-0.05*abs(vmin), vmax+0.05*abs(vmax)],
+                               raxis_range=[800,900], facecolor="b", spine=True)
+                
+            
+        
+        
+        circos_df = pd.DataFrame(circos_dict).transpose()
+        num_circos_segments = circos_df.shape[0]
+        circos_pair_indices = list(combinations(range(num_circos_segments),2))
+        
+        circos_df_columns = list(circos_df)
+        
+        circos_chords = [ [(circos_df[c][x], circos_df[c][y]) for (x,y) in circos_pair_indices if 
+                               (isinstance(circos_df[c][x],tuple) and
+                                isinstance(circos_df[c][y],tuple)) ] for c in circos_df_columns ]
+        
+        circos_chords_flat = [ chord_tuple for col_tuples in circos_chords for chord_tuple in col_tuples]
+        
+        for (chord_start, chord_end) in circos_chords_flat:
+            circle.chord_plot(chord_start, chord_end)
+        
+        circle.figure
+        pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "_circos.png", bbox_inches="tight", dpi=300)
+        pyplot.close()
+
+        image = Image.open(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "_circos.png")
+        w,h = image.size
+        new_w = int(self.etg.new_h * w/h)
+        image.close()
+
+        return( self.etg.rel_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "_circos.png" , new_w)
+        
+
 class heatmapDrawer:
     def __init__ (self, etg, trim_terms=True):
         self.etg = etg
@@ -219,18 +379,22 @@ class heatmapDrawer:
         else:
             extra_annotation_df = pd.DataFrame()
             for annotation in self.etg.extra_annotations_dict.keys():
-                extra_annotation_df = extra_annotation_df.append(pd.DataFrame([[0.5 if a in self.etg.extra_annotations_dict[annotation] else np.nan for a in list(gene_term_heatmap_df.columns)]], columns = list(gene_term_heatmap_df.columns), index = [annotation]))
+                #extra_annotation_df = extra_annotation_df.append(pd.DataFrame([[0.5 if a in self.etg.extra_annotations_dict[annotation] else np.nan for a in list(gene_term_heatmap_df.columns)]], columns = list(gene_term_heatmap_df.columns), index = [annotation]))
+                extra_annotation_df =  pd.concat([extra_annotation_df, 
+                                                  pd.DataFrame([[0.5 if a in self.etg.extra_annotations_dict[annotation] else np.nan for a in list(gene_term_heatmap_df.columns)]], columns = list(gene_term_heatmap_df.columns), index = [annotation])], 
+                                                 ignore_index=False)
 
-            return extra_annotation_df.append(gene_term_heatmap_df)
+            #return extra_annotation_df.append(gene_term_heatmap_df)
+            return pd.concat([extra_annotation_df, gene_term_heatmap_df], ignore_index=False)
         
         
-    def draw_heatmaps(self, ylabel1='Term', ylabel2='Experiment'):
+    def draw_heatmaps(self, ylabel1='Term', ylabel2='Experiment', postfix=''):
         
         #NOTE: The 'fm' in heatmap_fm stands for 'for masking'
         
         (s_rows, s_cols) = self.etg.rows_cols
-        cluster_genes = [self.etg.genes_sorted[i] for i in range(len(self.etg.genes_sorted)) if s_cols[i]]
-        cluster_genes_indices = [i for i in range(len(self.etg.genes_sorted)) if s_cols[i]]
+        cluster_genes = [self.etg.genes_sorted[i] for i in range(len(self.etg.genes_sorted)) if s_cols.iloc[i]]
+        cluster_genes_indices = [i for i in range(len(self.etg.genes_sorted)) if s_cols.iloc[i]]
         
         (gene_exp_heatmap_fm_subset_df, Z, leaves) = self.__get_lordered_gene_exp_heatmap_fm_subset_df(s_cols, cluster_genes)
         gene_term_heatmap_fm_subset_df = self.etg.gene_term_heatmap_fm_df.iloc[s_rows].loc[:, s_cols]
@@ -239,11 +403,11 @@ class heatmapDrawer:
         gene_term_heatmap_fm_subset_df.rename(index=self.trimmed_term_mapping_dict, inplace=True)
         gene_term_heatmap_fm_subset_df = self.__add_extra_annotations(gene_term_heatmap_fm_subset_df)
         
-        print(gene_term_heatmap_fm_subset_df)
+        #print(gene_term_heatmap_fm_subset_df)
         
         gene_term_mask = gene_term_heatmap_fm_subset_df.isnull()
         
-        print(gene_term_mask)
+        #print(gene_term_mask)
         gene_exp_mask = gene_exp_heatmap_fm_subset_df.isnull()
         
         
@@ -251,7 +415,8 @@ class heatmapDrawer:
         (rows_e, _) = gene_exp_heatmap_fm_subset_df.values.shape
         
         fig_width = max((cols_g * 0.6) + 4, self.etg.heatmap_width_min) * 2
-        fig_height = max(((rows_t + rows_e) * 0.3) + 4, self.etg.heatmap_height_min) * 1.5 * 2
+        fig_height = max(((rows_t + rows_e) * 0.5) + 4, self.etg.heatmap_height_min) * 1.5 * 2 
+        # fig_height = max(((rows_t + rows_e) * 0.3) + 4, self.etg.heatmap_height_min) * 1.5 * 2
     
         with sns.axes_style("dark" , {'axes.facecolor': '#686868'}):
             fig, (ax1, ax2, ax3) = pyplot.subplots(nrows=3, figsize=(fig_width, fig_height))
@@ -274,31 +439,32 @@ class heatmapDrawer:
         ax3.get_yaxis().set_ticks([])
         
         cbar = fig.colorbar(ax2.collections[0], ax=ax3, location="bottom", use_gridspec=False, pad=0.5)
-        cbar.ax.tick_params(labelsize=20)
-        cbar.set_label(self.etg.quant_data_type, size=20)
+        cbar.ax.tick_params(labelsize=40)
+        cbar.set_label(self.etg.quant_data_type, size=40)
         
         ax1.set_xlabel('')
-        ax1.set_ylabel(ylabel1, fontsize=20)
-        ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=20)
-        ax1.set_yticklabels(ax1.get_yticklabels(), rotation=0, fontsize = 20)
+        ax1.set_ylabel(ylabel1, fontsize=30)
+        ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=40)
+        ax1.set_yticklabels(ax1.get_yticklabels(), rotation=0, fontsize = 30)
 
         ax2.set_xlabel('')
-        ax2.set_ylabel(ylabel2, fontsize=20)
-        ax2.set_xticklabels(ax2.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=20)
-        ax2.set_yticklabels(ax2.get_yticklabels(), rotation=0, fontsize=20)
+        ax2.set_ylabel(ylabel2, fontsize=30)
+        ax2.set_xticklabels(ax2.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=40)
+        ax2.set_yticklabels(ax2.get_yticklabels(), rotation=0, fontsize=30)
 
-        pyplot.subplots_adjust(hspace=0.5)
-        pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__A_heatmap.png", bbox_inches="tight")
+        pyplot.subplots_adjust(hspace=0.7)
+        pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__A_heatmap_" + postfix + ".png", bbox_inches="tight")
         pyplot.close()
         
-        image = Image.open(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__A_heatmap.png")
+        image = Image.open(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__A_heatmap_" + postfix + ".png")
         w,h = image.size
         new_w_A = int(self.etg.new_h * w/h)
         image.close()
+
         
         #******************************************************************
         
-        gene_term_heatmap_fm_subset_df = self.etg.gene_term_heatmap_fm_df.iloc[s_rows].loc[:, s_cols]
+        gene_term_heatmap_fm_subset_df = self.etg.gene_term_heatmap_fm_df.iloc[s_rows].loc[:, s_cols]    
         
         gene_counts = gene_term_heatmap_fm_subset_df.sum().values
         
@@ -324,7 +490,9 @@ class heatmapDrawer:
             ordered_cluster_genes = ordered_cluster_genes + [subset_cluster_genes[gi] for gi in subset_leaves]
         
         gene_term_heatmap_fm_subset_df = gene_term_heatmap_fm_subset_df.reindex(columns=ordered_cluster_genes)
+        
         gene_term_heatmap_fm_subset_df.rename(index=self.trimmed_term_mapping_dict, inplace=True)
+        
         gene_term_heatmap_fm_subset_df = self.__add_extra_annotations(gene_term_heatmap_fm_subset_df)
         
         gene_exp_heatmap_fm_subset_df = self.etg.gene_exp_heatmap_fm_df.loc[:, s_cols]
@@ -353,25 +521,25 @@ class heatmapDrawer:
         ax3.get_yaxis().set_ticks([])
         
         cbar = fig.colorbar(ax2.collections[0], ax=ax3, location="bottom", use_gridspec=False, pad=0.5)
-        cbar.ax.tick_params(labelsize=20)
-        cbar.set_label(self.etg.quant_data_type, size=20)
+        cbar.ax.tick_params(labelsize=40)
+        cbar.set_label(self.etg.quant_data_type, size=40)
         
         ax1.set_xlabel('')
-        ax1.set_ylabel(ylabel1, fontsize=20)
-        ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=20)
-        ax1.set_yticklabels(ax1.get_yticklabels(), rotation=0, fontsize=20)
+        ax1.set_ylabel(ylabel1, fontsize=30)
+        ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=40)
+        ax1.set_yticklabels(ax1.get_yticklabels(), rotation=0, fontsize=30)
 
         ax2.set_xlabel('')
-        ax2.set_ylabel(ylabel2, fontsize=20)
-        ax2.set_xticklabels(ax2.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=20)
-        ax2.set_yticklabels(ax2.get_yticklabels(), rotation=0, fontsize=20)
+        ax2.set_ylabel(ylabel2, fontsize=30)
+        ax2.set_xticklabels(ax2.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=40)
+        ax2.set_yticklabels(ax2.get_yticklabels(), rotation=0, fontsize=30)
 
-        pyplot.subplots_adjust(hspace=0.5)
+        pyplot.subplots_adjust(hspace=0.7)
         
-        pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__B_heatmap.png", bbox_inches="tight")
+        pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__B_heatmap_" + postfix + ".png", bbox_inches="tight")
         pyplot.close()
 
-        image = Image.open(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__B_heatmap.png")
+        image = Image.open(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__B_heatmap_" + postfix + ".png")
         w,h = image.size
         new_w_B = int(self.etg.new_h * w/h)
         image.close()
@@ -411,32 +579,37 @@ class heatmapDrawer:
         ax3.get_yaxis().set_ticks([])
         
         cbar = fig.colorbar(ax2.collections[0], ax=ax3, location="bottom", use_gridspec=False, pad=0.5)
-        cbar.ax.tick_params(labelsize=20)
-        cbar.set_label(self.etg.quant_data_type, size=20)
+        cbar.ax.tick_params(labelsize=40)
+        cbar.set_label(self.etg.quant_data_type, size=40)
         
         ax1.set_xlabel('')
-        ax1.set_ylabel(ylabel1, fontsize=20)
-        ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45,  ha='right', va='top', fontsize=20)
-        ax1.set_yticklabels(ax1.get_yticklabels(), rotation=0, fontsize=20)
+        ax1.set_ylabel(ylabel1, fontsize=30)
+        ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45,  ha='right', va='top', fontsize=40)
+        ax1.set_yticklabels(ax1.get_yticklabels(), rotation=0, fontsize=30)
 
         ax2.set_xlabel('')
-        ax2.set_ylabel(ylabel2, fontsize=20)
-        ax2.set_xticklabels(ax2.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=20)
-        ax2.set_yticklabels(ax2.get_yticklabels(), rotation=0, fontsize=20)
+        ax2.set_ylabel(ylabel2, fontsize=30)
+        ax2.set_xticklabels(ax2.get_xticklabels(), rotation=45, ha='right', va='top', fontsize=40)
+        ax2.set_yticklabels(ax2.get_yticklabels(), rotation=0, fontsize=30)
 
-        pyplot.subplots_adjust(hspace=0.5)
+        pyplot.subplots_adjust(hspace=0.7)
         
-        pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__C_heatmap.png", bbox_inches="tight")
+        pyplot.savefig(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__C_heatmap_" + postfix + ".png", bbox_inches="tight")
         pyplot.close()
-        image = Image.open(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__C_heatmap.png")
+        image = Image.open(self.etg.abs_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__C_heatmap_" + postfix + ".png")
         w,h = image.size
         new_w_C = int(self.etg.new_h * w/h)
         image.close()
 
-        return( [self.etg.rel_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__A_heatmap.png" , 
-                 self.etg.rel_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__B_heatmap.png",
-                 self.etg.rel_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__C_heatmap.png"] , 
-                [new_w_A, new_w_B, new_w_C], ["Heatmap A of " + self.etg.name, "Heatmap B of " + self.etg.name, "Heatmap C of " + self.etg.name])
+        if(postfix==''):
+            heatmap_titles = ["Heatmap A of " + self.etg.name, "Heatmap B of " + self.etg.name, "Heatmap C of " + self.etg.name]
+        else:
+            heatmap_titles = ["Heatmap A of " + self.etg.name + " ("+ postfix +")", "Heatmap B of " + self.etg.name + " ("+ postfix +")", "Heatmap C of " + self.etg.name + " ("+ postfix +")"]
+            
+        return( [self.etg.rel_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__A_heatmap_" + postfix + ".png" , 
+                 self.etg.rel_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__B_heatmap_" + postfix + ".png",
+                 self.etg.rel_images_dir + self.etg.name.replace(':', '').replace(' ', '') + "__C_heatmap_" + postfix + ".png"] , 
+                [new_w_A, new_w_B, new_w_C], heatmap_titles)
 
 class dotplotDrawer:
     def __init__ (self, community):
@@ -552,7 +725,7 @@ class dotplotDrawer:
         cbar.set_label('-log10(p-adj)')
         
         if(not(exp_id)):
-            pyplot.savefig(self.community.abs_images_dir + self.community.name.replace(':', '').replace(' ', '') + "_dotplot.png", bbox_inches="tight")
+            pyplot.savefig(self.community.abs_images_dir + self.community.name.replace(':', '').replace(' ', '') + "_dotplot.png", bbox_inches="tight", dpi=120)
             pyplot.close()
             
             image = Image.open(self.community.abs_images_dir + self.community.name.replace(':', '').replace(' ', '') + "_dotplot.png")
@@ -563,7 +736,7 @@ class dotplotDrawer:
             return (self.community.rel_images_dir + self.community.name.replace(':', '').replace(' ', '') + "_dotplot.png", new_w)
         
         else:
-            pyplot.savefig(self.community.abs_images_dir + self.community.name.replace(':', '').replace(' ', '') + "_" + exp_id + "_dotplot.png", bbox_inches="tight")
+            pyplot.savefig(self.community.abs_images_dir + self.community.name.replace(':', '').replace(' ', '') + "_" + exp_id + "_dotplot.png", bbox_inches="tight", dpi=120)
             pyplot.close()
             
             image = Image.open(self.community.abs_images_dir + self.community.name.replace(':', '').replace(' ', '') + "_" + exp_id + "_dotplot.png")
@@ -603,7 +776,7 @@ class go_hierarchyDrawer:
     def draw_hierarchy(self):
         
         godag_plot.plot_gos(self.community.abs_images_dir + self.community.name.replace(':', '').replace(' ', '') + "_hierarchy.png",
-                            self.community.go_terms, self.community.go_dag)
+                            self.community.go_terms, self.community.go_dag, title="", dpi=300)
         
         pyplot.close()
         
@@ -640,24 +813,32 @@ class bigBasicCommunityPrinter():
     def __init__ (self, community):
         self.community = community
     
-    def _print_html_title(self, html_f, summary_html, backlink=''):
+    def _print_html_title(self, html_f, summary_html, first_print, backlink='' ):
         
-        html_f.write('<table id="' + self.community.name + '">\n')
+        if(first_print):
+            html_f.write('<div style="height:110px" id="' + self.community.name +'"></div>')
+        else:
+            html_f.write('<div style="height:100px" id="' + self.community.name +'"></div>')
+            html_f.write('<hr>\n')
+            
+        html_f.write('<button type="button" class="collapsible"><table>\n')
         html_f.write('<tr><td></td></tr>\n')
         html_f.write('<tr>\n')
         
         if(self.community.meta_community_name):
-            html_f.write('<td><h5 class="title">' + self.community.name + ' ' + self.community.info_string + '   *** ' + self.community.meta_community_name + ' ***</h5></td>\n')
+            #html_f.write('<td><h5 class="title">' + self.community.name + ' ' + self.community.info_string + '   *** ' + self.community.meta_community_name + ' ***</h5></td>\n')
+            html_f.write('<td><h5 class="title">' + self.community.name + ' // Member of ' + self.community.meta_community_name + '</h5></td>\n')
         else:
-            html_f.write('<td><h5 class="title">' + self.community.name + ' ' + self.community.info_string + '</h5></td>\n')
+            #html_f.write('<td><h5 class="title">' + self.community.name + ' ' + self.community.info_string + '</h5></td>\n')
+            html_f.write('<td><h5 class="title">' + self.community.name + '</h5></td>\n')
         
-        html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + summary_html + '\'">Communities summary</button></td>\n')
+        #html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + summary_html + '\'">Communities summary</button></td>\n')
         
-        if( backlink ):
-            html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + backlink + '\'">Main page</button></td>\n')
+        #if( backlink ):
+        #    html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + backlink + '\'">Main page</button></td>\n')
         
         html_f.write('</tr>\n')
-        html_f.write('</table>\n')
+        html_f.write('</table></button>\n')
     
     def _print_html_griditem1(self, html_f):
         html_f.write('<div class="terms">\n')
@@ -700,8 +881,12 @@ class bigBasicCommunityPrinter():
     def _print_html_griditem2(self, html_f):
         html_f.write('<div class="plotbox">\n')
         html_f.write('<div style="width: 1200px;">\n')
-        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.community.name + '_plotbox_title">Upset plot</td></tr></table>\n')
-        html_f.write('<img id="' + self.community.name + '_plotbox" src="' + self.community.upset_img_path + '" width="' + str(self.community.upset_img_width) + '" height="' + str(self.community.new_h) + '">\n')
+        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.community.name + '_plotbox_title">Circos plot</td></tr></table>\n')
+        html_f.write('<img id="' + self.community.name + '_plotbox" src="' + self.community.circos_img_path + '" width="' + str(self.community.circos_img_width) + '" height="' + str(self.community.new_h) + '">\n')
+        
+        #html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.community.name + '_plotbox_title">UpSet plot</td></tr></table>\n')
+        #html_f.write('<img id="' + self.community.name + '_plotbox" src="' + self.community.upset_img_path + '" width="' + str(self.community.upset_img_width) + '" height="' + str(self.community.new_h) + '">\n')
+        
         
         html_f.write('<div style="display:none;height:' + str(self.community.new_h + 3) + 'px;padding:0px;border:0px;margin:0px;" id="' +  self.community.name + '_plotbox_table_0">\n')
         html_f.write('<table style="font-size:small;white-space: nowrap;">\n')
@@ -758,13 +943,43 @@ class bigBasicCommunityPrinter():
         
         html_f.write('<div class="plot_buttons">\n')
         
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.upset_img_path + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.upset_img_width) + '\' ,\'UpSet plot\',1)">Upset plot</button>\n')
         
-        heatmap_img_paths_array_as_str = ','.join(self.community.heatmap_img_paths_list)
-        heatmap_widths_array_as_str = ','.join(map(str, self.community.heatmap_img_widths_list))
-        heatmap_img_titles_array_as_str = ','.join(self.community.heatmap_img_titles_list)
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.circos_img_path + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.circos_img_width) + '\' ,\'Circos plot\',1)">Circos plot</button>\n')
+        
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.upset_img_path + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.upset_img_width) + '\' ,\'UpSet plot\',1)">UpSet plot</button>\n')
+        
+        
+        
+        
+        #heatmap_img_paths_array_as_str = ','.join(self.community.heatmap_img_paths_list)
+        #heatmap_widths_array_as_str = ','.join(map(str, self.community.heatmap_img_widths_list))
+        #heatmap_img_titles_array_as_str = ','.join(self.community.heatmap_img_titles_list)
                         
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\'  , \'' + heatmap_img_paths_array_as_str + '\' ,' + str(self.community.new_h) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heatmaps</button>\n')
+        #html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\'  , \'' + heatmap_img_paths_array_as_str + '\' ,' + str(self.community.new_h) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heatmaps</button>\n')
+        
+        
+        if(len(self.community.heatmap_img_paths_list) == 3):
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[0] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[0]) + '\' ,\'' + self.community.heatmap_img_titles_list[0] + '\',1)">Heatmap A</button>\n')
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[1] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[1]) + '\' ,\'' + self.community.heatmap_img_titles_list[1] + '\',1)">Heatmap B</button>\n')
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[2] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[2]) + '\' ,\'' + self.community.heatmap_img_titles_list[2] + '\',1)">Heatmap C</button>\n')
+        else:
+            heatmap_img_paths_array_as_str_A = ','.join( [self.community.heatmap_img_paths_list[x] for x in [0,3]] )
+            heatmap_widths_array_as_str_A = ','.join( map( str , [self.community.heatmap_img_widths_list[x] for x in [0,3]] ) )
+            heatmap_img_titles_array_as_str_A = ','.join( [self.community.heatmap_img_titles_list[x] for x in [0,3]] )
+            
+            heatmap_img_paths_array_as_str_B = ','.join( [self.community.heatmap_img_paths_list[x] for x in [1,4]] )
+            heatmap_widths_array_as_str_B = ','.join( map( str , [self.community.heatmap_img_widths_list[x] for x in [1,4]] ) )
+            heatmap_img_titles_array_as_str_B = ','.join( [self.community.heatmap_img_titles_list[x] for x in [1,4]] )
+            
+            heatmap_img_paths_array_as_str_C = ','.join( [self.community.heatmap_img_paths_list[x] for x in [2,5]] )
+            heatmap_widths_array_as_str_C = ','.join( map( str , [self.community.heatmap_img_widths_list[x] for x in [2,5]] ) )
+            heatmap_img_titles_array_as_str_C = ','.join( [self.community.heatmap_img_titles_list[x] for x in [2,5]] )
+            
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A</button>\n' )
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B</button>\n' )
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C</button>\n' )
+        
+        
         
         
         if(self.community.all_term_dotplot_dict):
@@ -885,9 +1100,9 @@ class bigBasicCommunityPrinter():
         html_f.write('</div>\n')  
     
     
-    def print_html (self, html_f, summary_html, backlink=''):
+    def print_html (self, html_f, summary_html, first_print, backlink='' ):
         
-        self._print_html_title(html_f, summary_html, backlink)
+        self._print_html_title(html_f, summary_html, first_print, backlink)
                 
         html_f.write('<div class="grid-container">\n')
         
@@ -900,10 +1115,10 @@ class bigBasicCommunityPrinter():
         self._print_html_griditem4(html_f)
         
         html_f.write('</div>\n')
-        html_f.write('<hr>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
+        #html_f.write('<hr>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
 
 class bigOneExtraImgCommunityPrinter(bigBasicCommunityPrinter):
     def __init__ (self, community):
@@ -922,8 +1137,8 @@ class bigOneExtraImgCommunityPrinter(bigBasicCommunityPrinter):
         html_f.write('</div>\n')
         html_f.write('</div>\n')
     
-    def print_html (self, html_f, summary_html, backlink=''):     
-        super()._print_html_title(html_f, summary_html, backlink)
+    def print_html (self, html_f, summary_html, first_print, backlink=''):     
+        super()._print_html_title(html_f, summary_html, first_print, backlink )
         
         html_f.write('<div class="grid-container">\n')
         
@@ -936,10 +1151,10 @@ class bigOneExtraImgCommunityPrinter(bigBasicCommunityPrinter):
         super()._print_html_griditem4(html_f)
         
         html_f.write('</div>\n')
-        html_f.write('<hr>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
+        #html_f.write('<hr>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
 
 
 class bigOneDescTableCommunityPrinter(bigBasicCommunityPrinter):
@@ -958,8 +1173,8 @@ class bigOneDescTableCommunityPrinter(bigBasicCommunityPrinter):
         html_f.write('</div>\n')
         html_f.write('</div>\n')
     
-    def print_html (self, html_f, summary_html, backlink=''):
-        super()._print_html_title(html_f, summary_html, backlink)
+    def print_html (self, html_f, summary_html, first_print, backlink=''):
+        super()._print_html_title(html_f, summary_html, first_print, backlink)
         
         html_f.write('<div class="grid-container">\n')
         
@@ -972,10 +1187,10 @@ class bigOneDescTableCommunityPrinter(bigBasicCommunityPrinter):
         super()._print_html_griditem4(html_f)
         
         html_f.write('</div>\n')
-        html_f.write('<hr>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
+        #html_f.write('<hr>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
 
 
 class bigManyDescTableCommunityPrinter( bigBasicCommunityPrinter ):
@@ -1055,8 +1270,8 @@ class bigManyDescTableCommunityPrinter( bigBasicCommunityPrinter ):
         html_f.write('</div>\n')
         html_f.write('</div>\n')
     
-    def print_html (self, html_f, summary_html, backlink=''):      
-        super()._print_html_title(html_f, summary_html, backlink)
+    def print_html (self, html_f, summary_html, first_print, backlink=''):      
+        super()._print_html_title(html_f, summary_html, first_print, backlink)
         
         html_f.write('<div class="grid-container">\n')
         
@@ -1069,10 +1284,10 @@ class bigManyDescTableCommunityPrinter( bigBasicCommunityPrinter ):
         super()._print_html_griditem4(html_f)
         
         html_f.write('</div>\n')
-        html_f.write('<hr>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
+        #html_f.write('<hr>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
 
       
 class bigManyExtraImgCommunityPrinter(bigBasicCommunityPrinter):
@@ -1165,8 +1380,8 @@ class bigManyExtraImgCommunityPrinter(bigBasicCommunityPrinter):
         html_f.write('</div>\n')
         html_f.write('</div>\n')
     
-    def print_html (self, html_f, summary_html, backlink=''):        
-        super()._print_html_title(html_f, summary_html, backlink)
+    def print_html (self, html_f, summary_html, first_print, backlink=''):        
+        super()._print_html_title(html_f, summary_html, first_print, backlink)
         
         html_f.write('<div class="grid-container">\n')
         
@@ -1179,10 +1394,10 @@ class bigManyExtraImgCommunityPrinter(bigBasicCommunityPrinter):
         super()._print_html_griditem4(html_f)
         
         html_f.write('</div>\n')
-        html_f.write('<hr>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
+        #html_f.write('<hr>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
     
 
 class bigMixCommunityPrinter(bigBasicCommunityPrinter):
@@ -1297,9 +1512,9 @@ class bigMixCommunityPrinter(bigBasicCommunityPrinter):
         html_f.write('</div>\n')
         html_f.write('</div>\n')
     
-    def print_html (self, html_f, summary_html, backlink=''):
+    def print_html (self, html_f, summary_html, first_print, backlink='' ):
 
-        super()._print_html_title(html_f, summary_html, backlink)
+        super()._print_html_title(html_f, summary_html, first_print, backlink )
         
         html_f.write('<div class="grid-container">\n')
         
@@ -1312,10 +1527,10 @@ class bigMixCommunityPrinter(bigBasicCommunityPrinter):
         super()._print_html_griditem4(html_f)
         
         html_f.write('</div>\n')
-        html_f.write('<hr>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
+        #html_f.write('<hr>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
 
 
 # Community classes
@@ -1448,31 +1663,60 @@ class bigCommunity(community):
             for _t in self.terms:
                 for _g in sorted(self.term_genes_dict[ _t ]):
                     if( ( _e , _g ) in self.all_gene_qd.index ):
-                        _etg_data.append( ( _e , _t , _g , self.all_gene_qd.loc[ ( _e , _g ) ][0] , 1 ) )
+                        _etg_data.append( ( _e , _t , _g , self.all_gene_qd.loc[ ( _e , _g ) ].iloc[0] , 1 ) )
                         
         self.etg_df = pd.DataFrame.from_records( _etg_data , columns = [ 'Experiment' , 'Term' , 'Gene' , 'QD' , 'Present' ] )
         
-        self.gene_term_heatmap_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot( 'Term' , 'Gene' , 'Present' ).fillna( 0 ).reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_term_heatmap_fm_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot( 'Term' , 'Gene' , 'Present' ).reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_exp_heatmap_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).fillna( 0 ).reindex( index=self.exp_ids, columns = self.genes_sorted )
-        self.gene_exp_heatmap_fm_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_term_heatmap_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present', fill_value=0).reindex( index=self.terms, columns = self.genes_sorted )
+        self.gene_term_heatmap_fm_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present').reindex( index=self.terms, columns = self.genes_sorted )
+        self.gene_exp_heatmap_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD', fill_value=0).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_exp_heatmap_fm_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD').reindex( index=self.exp_ids, columns = self.genes_sorted )
         
         self.rows_cols = ( [] , [] )
-        if( len( self.genes ) > 25 and len( self.terms ) >= 4 ):
-            self.rows_cols = ( ( range( len( self.terms ) ) , self.gene_term_heatmap_df.sum() > len( self.terms )//4 ) )  
+        if( len( self.genes ) > 25 and len( self.terms ) >= 4 and 
+           (sum(self.gene_term_heatmap_df.sum() > 0) > sum(self.gene_term_heatmap_df.sum() > (len( self.terms )//4)))):
+            self.rows_cols = ( ( range( len( self.terms ) ) , self.gene_term_heatmap_df.sum() > 0 ) )
+            my_heatmapDrawer_full = heatmapDrawer( self )
+            
+            if( len(self.exp_ids) > 1 ):
+                ( heatmap_img_paths_list_full , heatmap_img_widths_list_full  , heatmap_img_titles_list_full  ) = my_heatmapDrawer_full.draw_heatmaps( postfix='full')
+            else:
+                ( heatmap_img_paths_list_full , heatmap_img_widths_list_full  , heatmap_img_titles_list_full  ) = my_heatmapDrawer_full.draw_heatmaps( ylabel2='', postfix='full' )
+            
+            
+            self.rows_cols = ( ( range( len( self.terms ) ) , self.gene_term_heatmap_df.sum() > len( self.terms )//4 ) )
+            my_heatmapDrawer_truncated = heatmapDrawer( self )
+            
+            if( len(self.exp_ids) > 1 ):
+                ( heatmap_img_paths_list_truncated , heatmap_img_widths_list_truncated , heatmap_img_titles_list_truncated ) = my_heatmapDrawer_truncated.draw_heatmaps( postfix='truncated')
+            else:
+                ( heatmap_img_paths_list_truncated , heatmap_img_widths_list_truncated , heatmap_img_titles_list_truncated ) = my_heatmapDrawer_truncated.draw_heatmaps( ylabel2='', postfix='truncated' )
+                
+                
+            self.heatmap_img_paths_list = heatmap_img_paths_list_truncated + heatmap_img_paths_list_full
+            self.heatmap_img_widths_list = heatmap_img_widths_list_truncated + heatmap_img_widths_list_full
+            self.heatmap_img_titles_list = heatmap_img_titles_list_truncated + heatmap_img_titles_list_full
+            
         else:
             self.rows_cols = ( ( range( len( self.terms ) ) , self.gene_term_heatmap_df.sum() > 0 ) )
-            
-        my_heatmapDrawer = heatmapDrawer( self )
+            my_heatmapDrawer = heatmapDrawer( self )
         
-        if( len(self.exp_ids) > 1 ):
-            ( self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps( )
-        else:
-            ( self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps( ylabel2 = '' )
+            if( len(self.exp_ids) > 1 ):
+                ( self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps( )
+            else:
+                ( self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps( ylabel2 = '' )
         
         # Before drawing the rest of the plots, extract the gene list that's shown in the heatmap:
         ( _ , s_cols ) = self.rows_cols
-        self.included_genes = [ self.genes_sorted[ i ] for i in range( len( self.genes_sorted ) ) if s_cols[ i ] ]
+        self.included_genes = [ self.genes_sorted[ i ] for i in range( len( self.genes_sorted ) ) if s_cols.iloc[i]]
+        
+        
+        #*****************************************************************************************
+        # Now draw the Circos plot. This will sit with UpSet plot, but is created here because needs information from heatmap generation
+        
+        # Draw Circos plot
+        my_circosDrawer = circosDrawer(self, rows_cols = (( range( len( self.terms ) ) , self.gene_term_heatmap_df.sum() > 0 )))
+        ( self.circos_img_path , self.circos_img_width ) = my_circosDrawer.draw_circos()
         
         #*****************************************************************************************
         
@@ -1607,8 +1851,8 @@ class bigCommunity(community):
         my_community_csv_printer = communityCsvPrinter(self)
         my_community_csv_printer.print_csv(csv_f)
     
-    def print_html ( self , html_f , summary_html , backlink = '' ):
-        self.bcprinter.print_html( html_f , summary_html , backlink )
+    def print_html ( self , html_f , summary_html , first_print, backlink = '' ):
+        self.bcprinter.print_html( html_f , summary_html , first_print, backlink )
           
     def set_meta_community_name ( self , meta_community_name ):
         self.meta_community_name = meta_community_name
@@ -1739,7 +1983,7 @@ class singletonCommunity( community ):
         for _e in self.exp_ids:
                 for _g in sorted(self.term_genes_dict[self.terms[0]]):
                     if( ( _e , _g ) in self.all_gene_qd.index ):
-                        _etg_data.append( ( '', '' , _e , self.term , _g , self.all_gene_qd.loc[ ( _e , _g ) ][0] ) )
+                        _etg_data.append( ( '', '' , _e , self.term , _g , self.all_gene_qd.loc[ ( _e , _g ) ].iloc[0] ) )
                         
         self.singleton_etg_df = pd.DataFrame.from_records( _etg_data , columns = ['Community', 'Meta-community', 'Experiment', 'Term', 'Gene', 'QD'] )
         
@@ -1768,14 +2012,14 @@ class singletonCommunity( community ):
             for _t in self.terms:
                 for _g in self.term_genes_dict[ _t ]:
                     if( ( _e , _g ) in self.all_gene_qd.index ):
-                        _etg_data.append( ( _e , _t , _g , self.all_gene_qd.loc[ ( _e , _g ) ][0] , 1 ) )
+                        _etg_data.append( ( _e , _t , _g , self.all_gene_qd.loc[ ( _e , _g ) ].iloc[0] , 1 ) )
                         
         _etg_df = pd.DataFrame.from_records( _etg_data , columns = [ 'Experiment' , 'Term' , 'Gene' , 'QD' , 'Present' ] )
         
-        self.gene_term_heatmap_df = _etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot(  'Term' , 'Gene' , 'Present' ).fillna( 0 ).reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_term_heatmap_fm_df = _etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot(  'Term' , 'Gene' , 'Present' ).reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_exp_heatmap_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).fillna( 0 ).reindex( index=self.exp_ids, columns = self.genes_sorted )
-        self.gene_exp_heatmap_fm_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_term_heatmap_df = _etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present', fill_value=0).reindex( index=self.terms, columns = self.genes_sorted )
+        self.gene_term_heatmap_fm_df = _etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present').reindex( index=self.terms, columns = self.genes_sorted )
+        self.gene_exp_heatmap_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD', fill_value=0).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_exp_heatmap_fm_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD').reindex( index=self.exp_ids, columns = self.genes_sorted )
     
         self.rows_cols = ( ( range( len( self.terms ) ) , self.gene_term_heatmap_df.sum() > 0 ) )
             
@@ -1790,32 +2034,45 @@ class singletonCommunity( community ):
         
         # Before continuing with HTML printing, extract the gene list that's shown in the heatmap:
         ( _ , s_cols ) = self.rows_cols
-        self.included_genes = [ self.genes_sorted[ i ] for i in range( len( self.genes_sorted ) ) if s_cols[ i ] ]
+        self.included_genes = [ self.genes_sorted[ i ] for i in range( len( self.genes_sorted ) ) if s_cols.iloc[i]]
     
     
-    def print_html ( self , html_f , summary_html , backlink = '' ):
+    def print_html ( self , html_f , summary_html , first_print, backlink = '' ):
         # get ready for printing...
         self.pre_print()
         
+        if(first_print):
+            html_f.write('<div style="height:110px" id="' + self.name +'"></div>\n')
+        else:
+            html_f.write('<div style="height:100px" id="' + self.name +'"></div>\n')
+            html_f.write('<hr>\n')
+        
         # gather some important data and make heatmap...
-        html_f.write('<table id="' + self.name + '">\n')
+        if(self.all_term_dotplot_dict):
+            html_f.write('<button type="button" class="collapsible3b">\n')
+        else:
+            html_f.write('<button type="button" class="collapsible3a">\n')
+            
+        html_f.write('<table>\n')
         html_f.write('<tr><td></td></tr>\n')
         html_f.write('<tr>\n')
         if( self.name == self.all_term_defs_dict[ self.name ] ):
-            html_f.write('<td><h5 class="title">' + self.name + ' ' + self.info_string + '</h5></td>\n')
+            html_f.write('<td><h5 class="title">' + self.name + '</h5></td>\n')
+            #html_f.write('<td><h5 class="title">' + self.name + ' ' + self.info_string + '</h5></td>\n')
         else:
-            html_f.write('<td><h5 class="title">' + self.name + ' ' + self.all_term_defs_dict[ self.name ] + ' ' + self.info_string + '</h5></td>\n')
+            html_f.write('<td><h5 class="title">' + self.name + ' ' + self.all_term_defs_dict[ self.name ] + '</h5></td>\n')
+            #html_f.write('<td><h5 class="title">' + self.name + ' ' + self.all_term_defs_dict[ self.name ] + ' ' + self.info_string + '</h5></td>\n')
         
-        html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + summary_html + '\'">Communities summary</button></td>\n' )
+        #html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + summary_html + '\'">Communities summary</button></td>\n' )
         
-        if( backlink ):
-            html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + backlink + '\'">Main page</button></td>\n' )
+        #if( backlink ):
+        #    html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + backlink + '\'">Main page</button></td>\n' )
         
         html_f.write('</tr>\n')
-        html_f.write('</table>\n')
+        html_f.write('</table></button>\n')
         
         if( self.all_term_dotplot_dict ):
-            html_f.write('<table style="font-size:small;white-space: nowrap;">\n')
+            html_f.write('<table class="content" style="font-size:small;white-space: nowrap;">\n')
             if( len(self.exp_ids) == 1 ):
                 gr,nlog10p,c,gr_string,bg_string = self.all_term_dotplot_dict[ (self.exp_ids[0], self.term) ]
                 html_f.write('<tr><td>' + 'gene ratio: ' + gr_string + ', Bg ratio: ' +  bg_string + ', -log10(padj): ' + str( nlog10p ) + '</td></tr>')
@@ -1938,12 +2195,17 @@ class singletonCommunity( community ):
         html_f.write('</div>\n')
                          
         
-        heatmap_img_paths_array_as_str = ','.join( self.heatmap_img_paths_list )
-        heatmap_widths_array_as_str = ','.join( map( str , self.heatmap_img_widths_list ) )
-        heatmap_img_titles_array_as_str = ','.join( self.heatmap_img_titles_list )
+        #heatmap_img_paths_array_as_str = ','.join( self.heatmap_img_paths_list )
+        #heatmap_widths_array_as_str = ','.join( map( str , self.heatmap_img_widths_list ) )
+        #heatmap_img_titles_array_as_str = ','.join( self.heatmap_img_titles_list )
         
         html_f.write('<div class="plot_buttons3">\n')
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + heatmap_img_paths_array_as_str + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heatmaps</button>\n' )
+        #html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + heatmap_img_paths_array_as_str + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heatmaps</button>\n' )
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\',\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A</button>\n' )
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\',\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B</button>\n' )
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\',\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C</button>\n' )
+        
+        
         html_f.write('<button class="view-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'heatmap\', true , \'Literature search\')">Literature search</button>\n' )
     
         if( len(self.exp_ids) > 1 and ( self.num_extra_images > 1 ) ):# only want a button to toggle through extra images if there is more than one such image... len(self.exp_ids) > 1
@@ -1980,10 +2242,10 @@ class singletonCommunity( community ):
         html_f.write('</div>\n')
         
         html_f.write('</div>\n')
-        html_f.write('<hr>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
+        #html_f.write('<hr>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
 
         
 class metaGroup( community ):
@@ -1993,7 +2255,8 @@ class metaGroup( community ):
         self.rel_images_dir = rel_images_dir
         self.extra_annotations_dict = extra_annotations_dict
         self.num_extra_annotations = num_extra_annotations
-        self.new_h = new_h
+#        self.new_h = new_h
+        self.new_h = new_h + 160
         self.heatmap_width_min = heatmap_width_min
         self.heatmap_height_min = heatmap_height_min
         self.heatmap_min = heatmap_min
@@ -2023,34 +2286,78 @@ class metaGroup( community ):
             for _com in self.communities:
                 for _g in _com.genes:
                     if( ( _e , _g ) in self.all_gene_qd.index ):
-                        _etg_data.append( ( _e , _com.name , _g , self.all_gene_qd.loc[ ( _e , _g ) ][0] , 1 ) )
+                        _etg_data.append( ( _e , _com.name , _g , self.all_gene_qd.loc[ ( _e , _g ) ].iloc[0] , 1 ) )
                         
         _etg_df = pd.DataFrame.from_records( _etg_data , columns = [ 'Experiment' , 'Community' , 'Gene' , 'QD' , 'Present' ] )
         
         # Note, we call this a gene_term_heatmap_df here, rather than a gene_community_heatmap_df, because that is what heatmapDrawer is expecting.
-        self.gene_term_heatmap_df = _etg_df[ [ 'Community' , 'Gene' , 'Present' ] ].drop_duplicates().pivot(  'Community' , 'Gene' , 'Present' ).fillna( 0 ).reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_term_heatmap_fm_df = _etg_df[ [ 'Community' , 'Gene' , 'Present' ] ].drop_duplicates().pivot(  'Community' , 'Gene' , 'Present' ).reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_exp_heatmap_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).fillna( 0 ).reindex( index=self.exp_ids, columns = self.genes_sorted )
-        self.gene_exp_heatmap_fm_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_term_heatmap_df = _etg_df[ [ 'Community' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Community', columns='Gene', values='Present', fill_value=0).reindex( index=self.terms, columns = self.genes_sorted )
+        self.gene_term_heatmap_fm_df = _etg_df[ [ 'Community' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Community', columns='Gene', values='Present').reindex( index=self.terms, columns = self.genes_sorted )
+        self.gene_exp_heatmap_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD', fill_value=0).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_exp_heatmap_fm_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD').reindex( index=self.exp_ids, columns = self.genes_sorted )
     
+#        self.rows_cols = ( [] , [] )
+#        if( len( self.genes ) > 50 and len( self.communities ) >= 3 ):
+#            self.rows_cols = ( ( range( len( self.communities ) ) , self.gene_term_heatmap_df.sum() > len( self.communities )//3 ) )  
+#        else:
+#            self.rows_cols = ( ( range( len( self.communities ) ) , self.gene_term_heatmap_df.sum() > 1 ) )
+#            
+#        my_heatmapDrawer = heatmapDrawer( self )
+#        
+#        if( len(self.exp_ids) > 1 ):
+#            (self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps(ylabel1 = 'Community')
+#        else:
+#            (self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps(ylabel1 = 'Community' , ylabel2 = '')
+            
+            
         self.rows_cols = ( [] , [] )
-        if( len( self.genes ) > 50 and len( self.communities ) >= 3 ):
+        if( len( self.genes ) > 50 and len( self.terms ) >= 3 and 
+           (sum(self.gene_term_heatmap_df.sum() > 1) > sum(self.gene_term_heatmap_df.sum() > (len( self.communities )//3)))):
+            self.rows_cols = ( ( range( len( self.communities ) ) , self.gene_term_heatmap_df.sum() > 1 ) )
+            my_heatmapDrawer_full = heatmapDrawer( self )
+            
+            if( len(self.exp_ids) > 1 ):
+                ( heatmap_img_paths_list_full , heatmap_img_widths_list_full  , heatmap_img_titles_list_full  ) = my_heatmapDrawer_full.draw_heatmaps( ylabel1='Community', postfix='full')
+            else:
+                ( heatmap_img_paths_list_full , heatmap_img_widths_list_full  , heatmap_img_titles_list_full  ) = my_heatmapDrawer_full.draw_heatmaps( ylabel1='Community' , ylabel2='', postfix='full' )
+            
+            
             self.rows_cols = ( ( range( len( self.communities ) ) , self.gene_term_heatmap_df.sum() > len( self.communities )//3 ) )  
+            my_heatmapDrawer_truncated = heatmapDrawer( self )
+            
+            if( len(self.exp_ids) > 1 ):
+                ( heatmap_img_paths_list_truncated , heatmap_img_widths_list_truncated , heatmap_img_titles_list_truncated ) = my_heatmapDrawer_truncated.draw_heatmaps( ylabel1='Community', postfix='truncated')
+            else:
+                ( heatmap_img_paths_list_truncated , heatmap_img_widths_list_truncated , heatmap_img_titles_list_truncated ) = my_heatmapDrawer_truncated.draw_heatmaps( ylabel1='Community', ylabel2='', postfix='truncated' )
+                
+                
+            self.heatmap_img_paths_list = heatmap_img_paths_list_truncated + heatmap_img_paths_list_full
+            self.heatmap_img_widths_list = heatmap_img_widths_list_truncated + heatmap_img_widths_list_full
+            self.heatmap_img_titles_list = heatmap_img_titles_list_truncated + heatmap_img_titles_list_full
+            
         else:
             self.rows_cols = ( ( range( len( self.communities ) ) , self.gene_term_heatmap_df.sum() > 1 ) )
+            my_heatmapDrawer = heatmapDrawer( self )
+        
+            if( len(self.exp_ids) > 1 ):
+                ( self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps( ylabel1 = 'Community' )
+            else:
+                ( self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps( ylabel1 = 'Community' , ylabel2 = '' )
             
-        my_heatmapDrawer = heatmapDrawer( self )
-        
-        if( len(self.exp_ids) > 1 ):
-            (self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps(ylabel1 = 'Community')
-        else:
-            (self.heatmap_img_paths_list , self.heatmap_img_widths_list , self.heatmap_img_titles_list ) = my_heatmapDrawer.draw_heatmaps(ylabel1 = 'Community' , ylabel2 = '')
-        
         
         # Now extract the gene list that's shown in the heatmap:
         ( _ , s_cols ) = self.rows_cols
-        self.included_genes = [ self.genes_sorted[ i ] for i in range( len( self.genes_sorted ) ) if s_cols[ i ] ]
-                        
+        self.included_genes = [ self.genes_sorted[ i ] for i in range( len( self.genes_sorted ) ) if s_cols.iloc[i]]
+
+
+        #*****************************************************************************************
+        # Now draw the Circos plot. This will sit with UpSet plot, but is created here because needs information from heatmap generation
+        
+        # Draw Circos plot
+        my_circosDrawer = circosDrawer(self, rows_cols = (( range( len( self.communities ) ) , self.gene_term_heatmap_df.sum() > 0 )), metaGroupCircosDrawer = True)
+        ( self.circos_img_path , self.circos_img_width ) = my_circosDrawer.draw_circos()
+        
+        #*****************************************************************************************                        
 
     def __make_community_genes_dict( self ):
         my_community_genes_dict = {}
@@ -2059,21 +2366,29 @@ class metaGroup( community ):
         return my_community_genes_dict
 
         
-    def print_html( self , html_f , summary_html , backlink = '' ):     
+    def print_html( self , html_f , summary_html , first_print, backlink = '' ):
         
-        html_f.write('<table id="' + self.name + '">\n')
+        if(first_print):
+            html_f.write('<div style="height:110px" id="' + self.name +'"></div>')
+        else:
+            html_f.write('<div style="height:100px" id="' + self.name +'"></div>')
+            html_f.write('<hr>\n')
+            
+        html_f.write('<button type="button" class="collapsible2"><table>\n')
         html_f.write('<tr><td></td></tr>\n')
         html_f.write('<tr>\n')
-        html_f.write('<td><h5 class="title">' + self.name + ' ' + self.info_string + '</h5></td>\n')
-        html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + summary_html + '\'">Communities summary</button></td>\n' )
-        if( backlink ):
-            html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + backlink + '\'">Main page</button></td>\n' )
+        html_f.write('<td><h5 class="title">' + self.name + '</h5></td>\n')
+        #html_f.write('<td><h5 class="title">' + self.name + ' ' + self.info_string + '</h5></td>\n')
+        #html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + summary_html + '\'">Communities summary</button></td>\n' )
+        #if( backlink ):
+        #    html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + backlink + '\'">Main page</button></td>\n' )
         html_f.write('</tr>\n')
-        html_f.write('</table>\n')
+        html_f.write('</table></button>\n')
         
         html_f.write('<div class="grid-container2">\n')
         
-        html_f.write('<div class="members2" style="max-height: ' + str( self.new_h + 25 ) + 'px;" >\n') 
+#        html_f.write('<div class="members2" style="max-height: ' + str( self.new_h + 25 ) + 'px;" >\n')
+        html_f.write('<div class="members2" style="max-height: ' + str( self.new_h + 90 ) + 'px;" >\n')
         html_f.write('<table style="font-size:small;white-space: nowrap;">\n')
         
         if ( len( self.communities ) > 0 ):
@@ -2106,19 +2421,30 @@ class metaGroup( community ):
         html_f.write('</div>\n') 
         
         
-        html_f.write('<div class="spacer2a">\n')
-        html_f.write('</div>\n')
-        html_f.write('<div class="spacer2b">\n')
+#        html_f.write('<div class="spacer2a">\n')
+#        html_f.write('</div>\n')
+#        html_f.write('<div class="spacer2b">\n')
+#        html_f.write('</div>\n')
+        
+        html_f.write('<div class="spacer2">\n')
         html_f.write('</div>\n')
         
         
-        html_f.write('<div class="heatmap2">\n')
+#        html_f.write('<div class="heatmap2">\n')
+#        html_f.write('<div style="width: 1200px;">\n')
+        
+#        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.name + '_heatmap_title">' + self.heatmap_img_titles_list[0]  + '</td></tr></table>\n')
+#        html_f.write('<img id="' + self.name + '_heatmap" src="' + self.heatmap_img_paths_list[0] + '" width="' + str( self.heatmap_img_widths_list[0] )  + '" height="' + str( self.new_h ) + '">\n')
+#        html_f.write('<div style="display:none;height:' + str( self.new_h + 3 ) + 'px;padding:0px;border:0px;margin:0px;" id="' +  self.name + '_heatmap_table_0">\n')
+#        html_f.write('<table style="font-size:small;white-space: nowrap;">\n')
+        
+        html_f.write('<div class="upset2">\n')
         html_f.write('<div style="width: 1200px;">\n')
-        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.name + '_heatmap_title">' + self.heatmap_img_titles_list[0]  + '</td></tr></table>\n')
-        html_f.write('<img id="' + self.name + '_heatmap" src="' + self.heatmap_img_paths_list[0] + '" width="' + str( self.heatmap_img_widths_list[0] )  + '" height="' + str( self.new_h ) + '">\n')
-        
-        html_f.write('<div style="display:none;height:' + str( self.new_h + 3 ) + 'px;padding:0px;border:0px;margin:0px;" id="' +  self.name + '_heatmap_table_0">\n')
+        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.name + '_upset_title">Circos plot</td></tr></table>\n')
+        html_f.write('<img id="' + self.name + '_upset" src="' + self.circos_img_path + '" width="' + str(self.circos_img_width) + '" height="' + str(self.new_h) + '">\n')
+        html_f.write('<div style="display:none;height:' + str( self.new_h + 3 ) + 'px;padding:0px;border:0px;margin:0px;" id="' +  self.name + '_upset_table_0">\n')
         html_f.write('<table style="font-size:small;white-space: nowrap;">\n')
+        
         
         html_f.write('<tr>\n')
         html_f.write('<td>\n')
@@ -2175,33 +2501,80 @@ class metaGroup( community ):
         html_f.write('</div>\n')
         html_f.write('</div>\n')
         
-        heatmap_img_paths_array_as_str = ','.join( self.heatmap_img_paths_list )
-        heatmap_widths_array_as_str = ','.join( map( str , self.heatmap_img_widths_list ) )
-        heatmap_img_titles_array_as_str = ','.join( self.heatmap_img_titles_list )
+        #heatmap_img_paths_array_as_str = ','.join( self.heatmap_img_paths_list )
+        #heatmap_widths_array_as_str = ','.join( map( str , self.heatmap_img_widths_list ) )
+        #heatmap_img_titles_array_as_str = ','.join( self.heatmap_img_titles_list )
         
         
         html_f.write('<div class="plot_buttons2">\n')
-        html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heatmaps</button>\n' )
-        html_f.write( '<button class="view-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'heatmap\', true , \'Literature search\')">Literature search</button>\n' )
+        
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.circos_img_path + '\' ,' + str(self.new_h) + ',\'' + str(self.circos_img_width) + '\' ,\'Circos plot\',1)">Circos plot</button>\n')
+        
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.upset_img_path + '\' ,' + str(self.new_h) + ',\'' + str(self.upset_img_width) + '\' ,\'UpSet plot\',1)">UpSet plot</button>\n')
+        
+        
+        if(len(self.heatmap_img_paths_list) == 3):
+#            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\' ,\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A</button>\n')
+#            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\' ,\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B</button>\n')
+#            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\' ,\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C</button>\n')
+        
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\' ,\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A</button>\n')
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\' ,\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B</button>\n')
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\' ,\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C</button>\n')
+        
+        else:
+            heatmap_img_paths_array_as_str_A = ','.join( [self.heatmap_img_paths_list[x] for x in [0,3]] )
+            heatmap_widths_array_as_str_A = ','.join( map( str , [self.heatmap_img_widths_list[x] for x in [0,3]] ) )
+            heatmap_img_titles_array_as_str_A = ','.join( [self.heatmap_img_titles_list[x] for x in [0,3]] )
+            
+            heatmap_img_paths_array_as_str_B = ','.join( [self.heatmap_img_paths_list[x] for x in [1,4]] )
+            heatmap_widths_array_as_str_B = ','.join( map( str , [self.heatmap_img_widths_list[x] for x in [1,4]] ) )
+            heatmap_img_titles_array_as_str_B = ','.join( [self.heatmap_img_titles_list[x] for x in [1,4]] )
+            
+            heatmap_img_paths_array_as_str_C = ','.join( [self.heatmap_img_paths_list[x] for x in [2,5]] )
+            heatmap_widths_array_as_str_C = ','.join( map( str , [self.heatmap_img_widths_list[x] for x in [2,5]] ) )
+            heatmap_img_titles_array_as_str_C = ','.join( [self.heatmap_img_titles_list[x] for x in [2,5]] )
+            
+#            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A</button>\n' )
+#            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B</button>\n' )
+#            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C</button>\n' )
+#        
+        
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A</button>\n' )
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B</button>\n' )
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C</button>\n' )
+        
+        
+        html_f.write( '<button class="view-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'upset\', true , \'Literature search\')">Literature search</button>\n' )
+
         html_f.write('</div>\n')
         
         
-        html_f.write('<div class="upset2">\n')
-        html_f.write('<div style="width: 1200px;">\n')
-        html_f.write('<table><tr><td style="font-weight: bold;">Upset plot</td></tr></table>\n')
-        html_f.write('<img src="' + self.upset_img_path + '" width="' + str( self.upset_img_width )  + '" height="' + str( self.new_h ) + '">\n')
-        html_f.write('</div>\n')
-        html_f.write('</div>\n')
+#        html_f.write('<div class="upset2">\n')
+#        html_f.write('<div style="width: 1200px;">\n')
+#        #html_f.write('<table><tr><td style="font-weight: bold;">UpSet plot</td></tr></table>\n')
+#        #html_f.write('<img src="' + self.upset_img_path + '" width="' + str( self.upset_img_width )  + '" height="' + str( self.new_h ) + '">\n')
+#        #html_f.write('<table><tr><td style="font-weight: bold;">Circos plot</td></tr></table>\n')
+#        #html_f.write('<img src="' + self.circos_img_path + '" width="' + str( self.circos_img_width )  + '" height="' + str( self.new_h ) + '">\n')
+#        
+#        html_f.write('<table><tr><td style="font-weight: bold;" id="' + self.name + '_upset_title">Circos plot</td></tr></table>\n')
+#        html_f.write('<img id="' + self.name + '_upset" src="' + self.circos_img_path + '" width="' + str(self.circos_img_width) + '" height="' + str(self.new_h) + '">\n')
+#        
+#        
+#        html_f.write('</div>\n')
+#        html_f.write('</div>\n')
         
         html_f.write('</div>\n')
         
-        html_f.write('<hr>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
-        html_f.write('<br>\n')
+        #html_f.write('<hr>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
+        #html_f.write('<br>\n')
 
 class etgContainer:
-    def __init__( self , etg_name , etg_text_details , key_i_str ,  output_dir , relative_main_html , meta_communities , singleton_meta_communities , singleton_communities , new_h ):
+    def __init__( self , etg_name , etg_text_details , key_i_str ,  output_dir , relative_main_html , rel_images_dir, meta_communities , singleton_meta_communities , singleton_communities , new_h, 
+                 silplot_img_path , silplot_img_width, silplot_img_height,
+                 comparisonplot_img_path , comparisonplot_img_width, comparisonplot_img_height):
         self.name = etg_name
         self.text_details = etg_text_details
         self.key_i_str = key_i_str
@@ -2210,10 +2583,17 @@ class etgContainer:
         self.csv_filename = key_i_str + '_report.csv'
         self.output_dir = output_dir
         self.relative_main_html = relative_main_html
+        self.rel_images_dir = rel_images_dir
         self.meta_communities = meta_communities
         self.singleton_meta_communities = singleton_meta_communities
         self.singleton_communities = singleton_communities
         self.new_h = new_h
+        self.silplot_img_path = silplot_img_path
+        self.silplot_img_width = silplot_img_width
+        self.silplot_img_height = silplot_img_height
+        self.comparisonplot_img_path = comparisonplot_img_path
+        self.comparisonplot_img_width = comparisonplot_img_width
+        self.comparisonplot_img_height = comparisonplot_img_height
         
     def print_csv(self):
         csv_f = open(self.output_dir + '/' + self.csv_filename , 'w')
@@ -2231,10 +2611,18 @@ class etgContainer:
     
     def get_summary_hyperlink( self ):
         return self.summary_hyperlink # used by external code
+    
 
-    def print_html( self ):
-        my_summaryPrinter = summaryPrinter( self.key_i_str , self.name + ' - ' + self.text_details , self.output_dir , self.hyperlink , self.meta_communities , self.singleton_meta_communities , self.singleton_communities , self.relative_main_html )
+    def print_html( self, etgContainers ):
+        # Can we refactor this to pass the etgContainer object, rather than all of its attributes? The question is, how will this affect instances of summaryPrinter not called by an etgContainer?
+        my_summaryPrinter = summaryPrinter( self.key_i_str , self.name + ': ' + self.text_details , self.output_dir , self.hyperlink , self.rel_images_dir, 
+                                            self.meta_communities , self.singleton_meta_communities , self.singleton_communities , 
+                                            self.silplot_img_path, self.silplot_img_width, self.silplot_img_height, 
+                                            self.comparisonplot_img_path, self.comparisonplot_img_width, self.comparisonplot_img_height, 
+                                            self.relative_main_html, etgContainers )
         my_summaryPrinter.print_html()
+        my_summaryPrinter.print_html('communities_silhouette')
+        my_summaryPrinter.print_html('communities_paramcomparison')
         
         html_f = open( self.output_dir + '/' + self.hyperlink , 'w' )
         html_f.write("<!DOCTYPE html>\n")
@@ -2251,28 +2639,29 @@ class etgContainer:
         html_f.write("}\n")
         
         html_f.write(".view-button {\n")
-        html_f.write("  padding: 5;\n")
+        html_f.write("  background-color: inherit;\n")
+        html_f.write("  float: left;\n")
         html_f.write("  border: none;\n")
-        html_f.write("  font: inherit;\n")
-        html_f.write("  color: white;\n")
+        html_f.write("  outline: none;\n")
         html_f.write("  cursor: pointer;\n")
-        html_f.write("  background-color: dodgerblue;\n")
-        html_f.write("  border-radius: 20px;\n")
-        html_f.write("  transition-duration: 0.1s;\n")
+        html_f.write("  padding: 4px 6px;\n")
+        html_f.write("  transition: 0.1s;\n")
+        html_f.write("  font-size: 16pxs;\n")
+        html_f.write("  margin: 2px;\n")
         html_f.write("}\n")
             
         html_f.write(".view-button:hover {\n")
-        html_f.write("  background-color: crimson;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
         html_f.write("  color: white;\n")
         html_f.write("}\n")
         
         html_f.write(".disabled-view-button {\n")
-        html_f.write("  padding: 5;\n")
+        html_f.write("  background-color: inherit;\n")
+        html_f.write("  float: left;\n")
         html_f.write("  border: none;\n")
-        html_f.write("  font: inherit;\n")
-        html_f.write("  color: white;\n")
-        html_f.write("  background-color: dodgerblue;\n")
-        html_f.write("  border-radius: 20px;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  padding: 4px 6px;\n")
+        html_f.write("  font-size: 16pxs;\n")
         html_f.write("  opacity: 0.3;\n")
         html_f.write("}\n")
         
@@ -2304,38 +2693,98 @@ class etgContainer:
         html_f.write("  text-align: left;\n")
         html_f.write("  padding: 15px;\n")
         html_f.write("  font-size: small;\n")
+        html_f.write("}\n")
+        
+        html_f.write(".collapsible {\n")
+        html_f.write("  background-color: rgba(33, 150, 243, 0.8);\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  cursor: pointer;\n")
+        html_f.write("  padding: 5px;\n")
+        html_f.write("  width: 100%;\n")
+        html_f.write("  border: none;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  font-size: 15px;\n")
+        html_f.write("}\n")
+        
+        html_f.write(".active, .collapsible:hover {\n")
+        html_f.write("  background-color: #2196F3;\n")
         html_f.write("}\n\n")
         
         #***********************************
         
+#        html_f.write(".grid-container2 {\n")
+#        html_f.write("  display: grid;\n")
+#        html_f.write("  grid-template-areas:\n")
+#        html_f.write("    'members2 upset2 upset2 upset2 upset2 upset2'\n")
+#        html_f.write("    'spacer2a plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2'\n")
+#        html_f.write("    'spacer2b heatmap2 heatmap2 heatmap2 heatmap2 heatmap2';\n")
+#        html_f.write("  grid-gap: 10px;\n")
+#        html_f.write("  background-color: #DC143C;\n")
+#        html_f.write("  padding: 10px;\n")
+#        html_f.write("}\n\n")
+        
         html_f.write(".grid-container2 {\n")
         html_f.write("  display: grid;\n")
         html_f.write("  grid-template-areas:\n")
-        html_f.write("    'members2 heatmap2 heatmap2 heatmap2 heatmap2 heatmap2'\n")
-        html_f.write("    'spacer2a plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2'\n")
-        html_f.write("    'spacer2b upset2 upset2 upset2 upset2 upset2';\n")
+        html_f.write("    'members2 upset2 upset2 upset2 upset2 upset2'\n")
+        html_f.write("    'spacer2 plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2 plot_buttons2';\n")
         html_f.write("  grid-gap: 10px;\n")
         html_f.write("  background-color: #DC143C;\n")
         html_f.write("  padding: 10px;\n")
-        html_f.write("}\n\n")
-        
-        html_f.write(".members2 { grid-area: members2; }\n")
-        html_f.write(".heatmap2 { grid-area: heatmap2;\n") 
+        html_f.write("}\n\n")    
+#        
+#        html_f.write(".members2 { grid-area: members2; }\n")
+#        html_f.write(".heatmap2 { grid-area: heatmap2;\n") 
+#        html_f.write("          overflow: scroll;}\n")
+#        html_f.write(".spacer2a{ grid-area: spacer2a;}\n")
+#        html_f.write(".plot_buttons2{ grid-area: plot_buttons2; }\n")
+#        html_f.write(".spacer2b{ grid-area: spacer2b;}\n")
+#        html_f.write(".upset2 { grid-area: upset2;\n")  
+#        html_f.write("          overflow: scroll;}\n")
+#        html_f.write("\n")
+            
+        html_f.write(".members2 { grid-area: members2;\n")
         html_f.write("          overflow: scroll;}\n")
-        html_f.write(".spacer2a{ grid-area: spacer2a;}\n")
+        html_f.write(".spacer2{ grid-area: spacer2;}\n")
         html_f.write(".plot_buttons2{ grid-area: plot_buttons2; }\n")
-        html_f.write(".spacer2b{ grid-area: spacer2b;}\n")
         html_f.write(".upset2 { grid-area: upset2;\n")  
         html_f.write("          overflow: scroll;}\n")
-        html_f.write("\n") 
-            
+        html_f.write("\n")         
+                
+#        html_f.write(".grid-container2 > div {\n")
+#        html_f.write("  max-height: "+ str( self.new_h + 30) +"px;\n")
+#        html_f.write("  overflow: scroll;\n")
+#        html_f.write("  background-color: rgba(255, 255, 255, 0.8);\n")
+#        html_f.write("  text-align: left;\n")
+#        html_f.write("  padding: 15px;\n")
+#        html_f.write("  font-size: small;\n")
+#        html_f.write("}\n")
+        
         html_f.write(".grid-container2 > div {\n")
-        html_f.write("  max-height: "+ str( self.new_h + 30) +"px;\n")
+        #html_f.write("  max-height: "+ str((self.new_h*2) + (30*3)) +"px;\n")
+        html_f.write("  max-height: "+ str(self.new_h + 160 + 80) +"px;\n")
         html_f.write("  overflow: scroll;\n")
         html_f.write("  background-color: rgba(255, 255, 255, 0.8);\n")
         html_f.write("  text-align: left;\n")
         html_f.write("  padding: 15px;\n")
         html_f.write("  font-size: small;\n")
+        html_f.write("}\n\n")
+            
+        html_f.write(".collapsible2 {\n")
+        html_f.write("  background-color: rgba(220, 20, 60, 0.8);\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  cursor: pointer;\n")
+        html_f.write("  padding: 5px;\n")
+        html_f.write("  width: 100%;\n")
+        html_f.write("  border: none;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  font-size: 15px;\n")
+        html_f.write("}\n")
+        
+        html_f.write(".active, .collapsible2:hover {\n")
+        html_f.write("  background-color: #DC143C;\n")
         html_f.write("}\n\n")
         
         #***********************************
@@ -2368,45 +2817,424 @@ class etgContainer:
         html_f.write("  text-align: left;\n")
         html_f.write("  padding: 15px;\n")
         html_f.write("  font-size: small;\n")
+        html_f.write("}\n")
+        
+        html_f.write(".collapsible3a {\n")
+        html_f.write("  background-color: rgba(255, 215, 0, 0.8);\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  cursor: pointer;\n")
+        html_f.write("  padding: 5px;\n")
+        html_f.write("  width: 100%;\n")
+        html_f.write("  border: none;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  font-size: 15px;\n")
+        html_f.write("}\n")
+        
+        html_f.write(".active, .collapsible3a:hover {\n")
+        html_f.write("  background-color: #FFD700;\n")
+        html_f.write("}\n\n")
+            
+        html_f.write(".collapsible3b {\n")
+        html_f.write("  background-color: rgba(255, 215, 0, 0.8);\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  cursor: pointer;\n")
+        html_f.write("  padding: 5px;\n")
+        html_f.write("  width: 100%;\n")
+        html_f.write("  border: none;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  font-size: 15px;\n")
+        html_f.write("}\n")
+        
+        html_f.write(".active, .collapsible3b:hover {\n")
+        html_f.write("  background-color: #FFD700;\n")
+        html_f.write("}\n\n")
+            
+        #html_f.write(".content {\n")
+        #html_f.write("display: none;\n")
+        #html_f.write("}\n")
+        
+        html_f.write(".content {\n")
+        html_f.write("display: grid;\n")
+        html_f.write("background-color: #FFD700;\n")
+        html_f.write("padding-left: 10px;\n")
+        html_f.write("padding-top: 10px;\n")
+        html_f.write("}\n")
+        
+        html_f.write(".navgrid-container {\n")
+        html_f.write("display: grid;\n")
+        html_f.write("grid-template-columns: auto;\n")
+        html_f.write("position: fixed; top: 0; left: 0; width:100%; height: 55px; z-index:1;\n")
+        html_f.write("}\n")
+
+        html_f.write("ul {\n")
+        html_f.write("list-style-type: none;\n")
+        html_f.write("margin: 0;\n")
+        html_f.write("padding: 0;\n")
+        html_f.write("background-color: #088F8F;\n")
+        html_f.write("top: 0; left: 0; width: 100%; height: 55px; z-index:1;\n")
+        html_f.write("}\n")
+
+        html_f.write("li {\n")
+        html_f.write("  float: left;\n")
+        html_f.write("}\n")
+
+
+        html_f.write("li a {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  font-weight: bold;\n")
+        html_f.write("  text-align: center;\n")
+        html_f.write("  padding: 14px 16px;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("}\n")
+
+        #html_f.write("li a:hover:not(.navactive) {\n")
+        #html_f.write("  color: black;\n")
+        #html_f.write("}\n")
+
+        html_f.write(".navactive {\n")
+        html_f.write("  text-decoration:underline;\n")
+        html_f.write("}\n")
+
+        html_f.write(".logo {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  color: yellow;\n")
+        html_f.write("  text-align: center;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  padding: 9px 16px;\n")
+        html_f.write("  padding-right: 75px;\n")
+        html_f.write("  font-family: arial black, sans-serif;\n") 
+        html_f.write("  font-size: 18px;\n")
+        html_f.write("}\n")
+
+        html_f.write(".rightlink {\n")
+        html_f.write("  float: right;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".subnav {\n")
+        html_f.write("  list-style-type: none;\n")
+        html_f.write("  margin: 0;\n")
+        html_f.write("  padding: 0;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropdown {\n")
+        html_f.write("  float: left;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropdown .dropbtn {\n")
+        html_f.write("  font-size: 16px;\n")  
+        html_f.write("  border: none;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  font-weight: bold;\n")
+        html_f.write("  padding: 14px 16px;\n")
+        html_f.write("  background-color: inherit;\n")
+        html_f.write("  font-family: inherit;\n")
+        html_f.write("  margin: 0;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropbtnactive {\n")
+        html_f.write("  font-size: 16px;\n")  
+        html_f.write("  border: none;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  text-decoration:underline;\n")
+        html_f.write("  font-weight: bold;\n")
+        html_f.write("  padding: 14px 16px;\n")
+        html_f.write("  background-color: inherit;\n")
+        html_f.write("  font-family: inherit;\n")
+        html_f.write("  margin: 0;\n")
+        html_f.write("}\n")
+    
+        #html_f.write(".navbar a:hover, .dropdown:hover .dropbtn {\n")
+        #html_f.write("  color: black;\n")
+        #html_f.write("}\n")
+    
+        html_f.write(".dropdown-content {\n")
+        html_f.write("  display: none;\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("  min-width: 160px;\n")
+        html_f.write("  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropdown-content a {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  padding: 12px 16px;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  font-size: small;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropdown-content a:hover {\n")
+        html_f.write("  background-color: #088F8F;\n")
+        html_f.write("}\n")
+            
+        html_f.write(".dropdown:hover .dropdown-content {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  position:fixed;\n")
+        html_f.write("  z-index: 9999;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+        html_f.write(".dropdownsub {\n")
+        html_f.write("  float: left;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+        html_f.write(".dropdown-content .dropdownsub {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsub-content{\n")
+        html_f.write("  display: none;\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("  min-width: 160px;\n")
+        html_f.write("  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsub-content a {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  padding: 12px 16px;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  font-size: small;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsub:hover .dropdownsub-content {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  position:absolute;\n")
+        html_f.write("  z-index: 9999;\n")
+        html_f.write("  left: 50%;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsubsub {\n")
+        html_f.write("  float: left;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+        html_f.write(".dropdownsub-content .dropdownsubsub {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsubsub-content{\n")
+        html_f.write("  display: none;\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("  min-width: 160px;\n")
+        html_f.write("  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsubsub-content a {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  padding: 12px 16px;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  font-size: small;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsubsub:hover .dropdownsubsub-content {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  position:absolute;\n")
+        html_f.write("  z-index: 9999;\n")
+        html_f.write("  left: 50%;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+    
+        html_f.write(".subtitlebanner {\n")
+        html_f.write("  list-style-type: none;\n")
+        html_f.write("  margin: 0;\n")
+        html_f.write("  padding: 0;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("  margin-top:110px;\n")
+        html_f.write("  z-index:1\n")
         html_f.write("}\n\n")
         
         html_f.write("</style>\n")
         html_f.write("</head>\n")
 
 
-        html_f.write("<body>\n")
+        html_f.write('<body style="background-color:#0aa8a8; font-family: arial, sans-serif;">\n')
         
+            
+        html_f.write('<div class="navgrid-container">\n')
+        html_f.write('<div>\n')
+        html_f.write('<ul>\n')
+        html_f.write('<li class="logo">GeneFEAST</li>\n')
+        
+        html_f.write('<li><a href="' + self.relative_main_html + '">Experiment term-set intersections</a></li>\n')
+        html_f.write('<li class="dropdown">\n')
+        html_f.write('<button class="dropbtnactive">Reports\n')
+        html_f.write('</button>\n')
+        html_f.write('<div class="dropdown-content">\n')
+        for etgContainer in etgContainers:
+            html_f.write('<a href="' + etgContainer.get_summary_hyperlink() + '">' + etgContainer.name + ': ' + etgContainer.text_details + '</a>\n')
+        html_f.write('</div>\n')
+        html_f.write('</li>\n')
+                
+        html_f.write('</ul>\n')
+        html_f.write('</div>\n')
+    
+    
+        html_f.write('<div>\n')
+        html_f.write('<ul class="subnav">\n')
+        html_f.write('<li class="dropdown">\n')
+        html_f.write('<button class="dropbtn" onclick="document.location=\'' + self.key_i_str + '_communities_summary.html\'">Communities overview</button>\n')
+        html_f.write('<div class="dropdown-content">\n')
+        html_f.write('<a href="' + self.key_i_str + '_communities_summary.html">List of communities</a>\n')
+        html_f.write('<a href="' + self.key_i_str + '_communities_silhouette.html">Silhouette plot</a>\n')
+        html_f.write('<a href="' + self.key_i_str + '_communities_paramcomparison.html">Community detection parameters: comparison</a>\n')
+        html_f.write('</div>\n')
+        html_f.write('</li> \n')
+        
+        
+        html_f.write('<li class="dropdown">\n')
+        html_f.write('<button class="dropbtnactive" onclick="document.location=\'' + self.hyperlink + '\'">Full report</button>\n')
+        html_f.write('<div class="dropdown-content">\n')
+        
+        if(len(self.meta_communities)==0):
+            html_f.write('<a href="#">Meta communities</a>\n')
+        else:
+            html_f.write('<div class="dropdownsub" style="width:300px">\n')
+            html_f.write('<a href="' + self.hyperlink + '#' + self.meta_communities[0].name + '">Meta communities</a>\n')
+            html_f.write('<div class="dropdownsub-content">\n')
+                         
+            for mg in self.meta_communities:
+                html_f.write('<div class="dropdownsubsub" style="width:300px">\n')
+                html_f.write('<a href="' + self.hyperlink + '#' + mg.name + '">' + mg.name + '</a>\n' )
+                
+                html_f.write('<div class="dropdownsubsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
+                for bc in mg.communities:
+                    html_f.write('<a href="' + self.hyperlink + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
+                
+                html_f.write('</div>\n')
+                    
+                html_f.write('</div>\n')
+            
+            html_f.write('</div>\n')
+            html_f.write('</div>\n')
+        
+        
+        if(len(self.singleton_meta_communities)==0):
+            html_f.write('<a href="javascript:;">Communities</a>\n')
+        else:
+            html_f.write('<div class="dropdownsub" style="width:300px">\n')
+            html_f.write('<a href="' + self.hyperlink + '#' + self.singleton_meta_communities[0].name + '">Communities</a>\n')
+            html_f.write('<div class="dropdownsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
+            for bc in self.singleton_meta_communities:
+                html_f.write('<a href="' + self.hyperlink + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
+            
+            html_f.write('</div>\n')
+            html_f.write('</div>\n')         
+        
+        if(len(self.singleton_communities)==0):
+            html_f.write('<a href="#">Terms</a>\n')
+        else:
+            html_f.write('<div class="dropdownsub" style="width:300px">\n')
+            html_f.write('<a href="' + self.hyperlink + '#' + self.singleton_communities[0].name + '">Terms</a>\n')
+            html_f.write('<div class="dropdownsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
+            for sc in self.singleton_communities:
+                if( sc.name == sc.all_term_defs_dict[ sc.name ] ):
+                    html_f.write('<a href="' + self.hyperlink + '#' + sc.name + '">' + sc.name + '</a>\n' )
+                else:
+                    html_f.write('<a href="' + self.hyperlink + '#' + sc.name + '">' + sc.name + ' - ' + sc.all_term_defs_dict[ sc.name ]  + '</a>\n' )
+            html_f.write('</div>\n')
+            html_f.write('</div>\n')  
+        
+        html_f.write('</div>\n')
+        html_f.write('</li>\n')
+        
+        
+        html_f.write('<li class="rightlink"><a style="color:white;">' + self.name + ': ' + self.text_details + '</a></li>\n')
+        html_f.write('</ul>\n')
+        html_f.write('</div>\n')
+        html_f.write('</div>\n')
+            
+        
+        first_print = True
         for mc in self.meta_communities:
-            mc.print_html( html_f , self.summary_hyperlink , backlink = self.relative_main_html )
+            mc.print_html( html_f , self.summary_hyperlink , first_print, backlink = self.relative_main_html )
+            first_print = False
             
             for bc in mc.communities:
-                bc.print_html( html_f , self.summary_hyperlink , backlink = self.relative_main_html )
+                bc.print_html( html_f , self.summary_hyperlink , first_print, backlink = self.relative_main_html )
                 
         for bc in self.singleton_meta_communities:
-            bc.print_html( html_f , self.summary_hyperlink , backlink = self.relative_main_html )
+            bc.print_html( html_f , self.summary_hyperlink , first_print, backlink = self.relative_main_html )
+            first_print = False
             
         for sc in self.singleton_communities:
-            sc.print_html( html_f , self.summary_hyperlink , backlink = self.relative_main_html )
+            sc.print_html( html_f , self.summary_hyperlink , first_print, backlink = self.relative_main_html )
+            first_print = False
 
+        jSPrinter.print_html_for_event_listeners( html_f )
         html_f.write("</body>\n")
         html_f.write("</html>\n")
         html_f.close()
 
 
 class summaryPrinter:
-    def __init__( self , summary_id , summary_title , output_dir , report_html , meta_communities , singleton_meta_communities , singleton_communities , backlink = '' ):
+    #Can we refactor this? See note and query in etgContainer object...
+    def __init__( self , summary_id , summary_title , output_dir , report_html , rel_images_dir, meta_communities , singleton_meta_communities , singleton_communities , 
+                  silplot_img_path, silplot_img_width, silplot_img_height, 
+                  comparisonplot_img_path, comparisonplot_img_width, comparisonplot_img_height, 
+                  backlink = '' , etgContainers = [] ):
         self.summary_id = summary_id
         self.summary_title = summary_title
         self.output_dir = output_dir
         self.report_html = report_html
+        self.rel_images_dir = rel_images_dir
         self.meta_communities = meta_communities
         self.singleton_meta_communities = singleton_meta_communities
         self.singleton_communities = singleton_communities
+        self.silplot_img_path = silplot_img_path
+        self.silplot_img_width = silplot_img_width
+        self.silplot_img_height = silplot_img_height
+        self.comparisonplot_img_path = comparisonplot_img_path
+        self.comparisonplot_img_width = comparisonplot_img_width
+        self.comparisonplot_img_height = comparisonplot_img_height
         self.backlink = backlink
+        self.etgContainers = etgContainers
         
     
-    def print_html( self ):
-        html_f = open( self.output_dir + '/' + self.summary_id + '_communities_summary.html', 'w' )
+    def print_html( self , summary_type="communities_summary" ):
+        html_f = open( self.output_dir + '/' + self.summary_id + '_' + summary_type + '.html', 'w' )
         html_f.write("<!DOCTYPE html>\n")
         html_f.write("<html>\n")
 
@@ -2436,7 +3264,7 @@ class summaryPrinter:
         html_f.write("    'singleton_meta_communities'\n")
         html_f.write("    'singleton_communities';\n")
         html_f.write("  grid-gap: 10px;\n")
-        html_f.write("  background-color: #04B404;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
         html_f.write("  padding: 10px;\n")
         html_f.write("}\n")
         
@@ -2455,61 +3283,399 @@ class summaryPrinter:
         html_f.write("  text-align: left;\n")
         html_f.write("  padding: 15px;\n")
         html_f.write("  font-size: small;\n")
+        html_f.write("  margin:0;\n")
         html_f.write("}\n")
+        
+        html_f.write(".navgrid-container {\n")
+        html_f.write("display: grid;\n")
+        html_f.write("grid-template-columns: auto;\n")
+        html_f.write("position: fixed; top: 0; left: 0; width:100%; height: 55px; z-index:1;\n")
+        html_f.write("}\n")
+
+        html_f.write("ul {\n")
+        html_f.write("list-style-type: none;\n")
+        html_f.write("margin: 0;\n")
+        html_f.write("padding: 0;\n")
+        html_f.write("background-color: #088F8F;\n")
+        html_f.write("top: 0; left: 0; width: 100%; height: 55px; z-index:1;\n")
+        html_f.write("}\n")
+
+        html_f.write("li {\n")
+        html_f.write("  float: left;\n")
+        html_f.write("}\n")
+
+
+        html_f.write("li a {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  font-weight: bold;\n")
+        html_f.write("  text-align: center;\n")
+        html_f.write("  padding: 14px 16px;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("}\n")
+
+        #html_f.write("li a:hover:not(.navactive) {\n")
+        #html_f.write("  color: black;\n")
+        #html_f.write("}\n")
+
+        html_f.write(".navactive {\n")
+        html_f.write("  text-decoration:underline;\n")
+        html_f.write("}\n")
+
+        html_f.write(".logo {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  color: yellow;\n")
+        html_f.write("  text-align: center;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  padding: 9px 16px;\n")
+        html_f.write("  padding-right: 75px;\n")
+        html_f.write("  font-family: arial black, sans-serif;\n") 
+        html_f.write("  font-size: 18px;\n")
+        html_f.write("}\n")
+
+        html_f.write(".rightlink {\n")
+        html_f.write("  float: right;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".subnav {\n")
+        html_f.write("  list-style-type: none;\n")
+        html_f.write("  margin: 0;\n")
+        html_f.write("  padding: 0;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropdown {\n")
+        html_f.write("  float: left;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropdown .dropbtn {\n")
+        html_f.write("  font-size: 16px;\n")  
+        html_f.write("  border: none;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  font-weight: bold;\n")
+        html_f.write("  padding: 14px 16px;\n")
+        html_f.write("  background-color: inherit;\n")
+        html_f.write("  font-family: inherit;\n")
+        html_f.write("  margin: 0;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropbtnactive {\n")
+        html_f.write("  font-size: 16px;\n")  
+        html_f.write("  border: none;\n")
+        html_f.write("  outline: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  text-decoration:underline;\n")
+        html_f.write("  font-weight: bold;\n")
+        html_f.write("  padding: 14px 16px;\n")
+        html_f.write("  background-color: inherit;\n")
+        html_f.write("  font-family: inherit;\n")
+        html_f.write("  margin: 0;\n")
+        html_f.write("}\n")
+    
+        #html_f.write(".navbar a:hover, .dropdown:hover .dropbtn {\n")
+        #html_f.write("  color: black;\n")
+        #html_f.write("}\n")
+    
+        html_f.write(".dropdown-content {\n")
+        html_f.write("  display: none;\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("  min-width: 160px;\n")
+        html_f.write("  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropdown-content a {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  padding: 12px 16px;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  font-size: small;\n")
+        html_f.write("}\n")
+    
+        html_f.write(".dropdown-content a:hover {\n")
+        html_f.write("  background-color: #088F8F;\n")
+        html_f.write("}\n")
+            
+        html_f.write(".dropdown:hover .dropdown-content {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  position:fixed;\n")
+        html_f.write("  z-index: 9999;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+        html_f.write(".dropdownsub {\n")
+        html_f.write("  float: left;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+        html_f.write(".dropdown-content .dropdownsub {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsub-content{\n")
+        html_f.write("  display: none;\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("  min-width: 160px;\n")
+        html_f.write("  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsub-content a {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  padding: 12px 16px;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  font-size: small;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsub:hover .dropdownsub-content {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  position:absolute;\n")
+        html_f.write("  z-index: 9999;\n")
+        html_f.write("  left: 50%;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsubsub {\n")
+        html_f.write("  float: left;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+        html_f.write(".dropdownsub-content .dropdownsubsub {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsubsub-content{\n")
+        html_f.write("  display: none;\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("  min-width: 160px;\n")
+        html_f.write("  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsubsub-content a {\n")
+        html_f.write("  float: none;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  padding: 12px 16px;\n")
+        html_f.write("  text-decoration: none;\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  text-align: left;\n")
+        html_f.write("  font-size: small;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+
+        html_f.write(".dropdownsubsub:hover .dropdownsubsub-content {\n")
+        html_f.write("  display: block;\n")
+        html_f.write("  position:absolute;\n")
+        html_f.write("  z-index: 9999;\n")
+        html_f.write("  left: 50%;\n")
+        html_f.write("}\n")
+        html_f.write("\n")
+
+    
+        html_f.write(".subtitlebanner {\n")
+        html_f.write("  list-style-type: none;\n")
+        html_f.write("  margin: 0;\n")
+        html_f.write("  padding: 0;\n")
+        html_f.write("  overflow: hidden;\n")
+        html_f.write("  background-color: #0aa8a8;\n")
+        html_f.write("  margin-top:110px;\n")
+        html_f.write("  z-index:1\n")
+        html_f.write("}\n\n")
+        
+        
         html_f.write("</style>\n")
         
         html_f.write("</head>\n")
 
 
-        html_f.write("<body>\n")
-        html_f.write('<div class="grid-container">\n')
-        
-        html_f.write('<div class="report_title" style="max-height: 30px;">\n')
-        html_f.write('<table>\n')
-        html_f.write('<tr>\n')
-        html_f.write('<td><h3 class="title" >Communities summary: ' + self.summary_title + '</h3></td>\n')
-        if( self.backlink ):
-            html_f.write('<td><button class="view-button" style="font-size:small;" onclick="document.location=\'' + self.backlink + '\'">Main page</button></td>\n' )
-        html_f.write('</tr>\n')
-        html_f.write('</table>\n')
+        html_f.write('<body style="background-color:#0aa8a8; font-family: arial, sans-serif;">\n')
+        html_f.write('<div class="navgrid-container">\n')
+        html_f.write('<div>\n')
+        html_f.write('<ul>\n')
+        html_f.write('<li class="logo">GeneFEAST</li>\n')
+        if(not(self.backlink=='')):
+            html_f.write('<li><a href="' + self.backlink + '">Experiment term-set intersections</a></li>\n')
+            html_f.write('<li class="dropdown">\n')
+            html_f.write('<button class="dropbtnactive">Reports\n')
+            html_f.write('</button>\n')
+            html_f.write('<div class="dropdown-content">\n')
+            for etgContainer in self.etgContainers:
+                html_f.write('<a href="' + etgContainer.get_summary_hyperlink() + '">' + etgContainer.name + ': ' + etgContainer.text_details + '</a>\n')
+            html_f.write('</div>\n')
+            html_f.write('</li>\n')
+        html_f.write('</ul>\n')
         html_f.write('</div>\n')
+    
+    
+        html_f.write('<div>\n')
+        html_f.write('<ul class="subnav">\n')
+        html_f.write('<li class="dropdown">\n')
+        html_f.write('<button class="dropbtnactive" onclick="document.location=\'' + self.summary_id + '_communities_summary.html\'">Communities overview</button>\n')
+        html_f.write('<div class="dropdown-content">\n')
+        html_f.write('<a href="' + self.summary_id + '_communities_summary.html">List of communities</a>\n')
+        html_f.write('<a href="' + self.summary_id + '_communities_silhouette.html">Silhouette plot</a>\n')
+        html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison.html">Community detection parameters: comparison</a>\n')
+        html_f.write('</div>\n')
+        html_f.write('</li> \n')
         
-        html_f.write('<div class="meta_communities">\n')
-        html_f.write('<table>\n')
-        html_f.write('<tr><td><b>Meta communities</b></td><td></td><td></td></tr>\n' )
-        for mg in self.meta_communities:
-            html_f.write('<tr><td><a href="' + self.report_html + '#' + mg.name + '">' + mg.name + '</a></td><td><a href="' + self.report_html + '#' + mg.communities[0].name + '">' + mg.communities[0].name + '</a></td><td>' + mg.communities[0].top_term + '</td></tr>\n' )
+        
+        html_f.write('<li class="dropdown">\n')
+        html_f.write('<button class="dropbtn" onclick="document.location=\'' + self.report_html + '\'">Full report</button>\n')
+        html_f.write('<div class="dropdown-content">\n')
+        
+        if(len(self.meta_communities)==0):
+            html_f.write('<a href="#">Meta communities</a>\n')
+        else:
+            html_f.write('<div class="dropdownsub" style="width:300px">\n')
+            html_f.write('<a href="' + self.report_html + '#' + self.meta_communities[0].name + '">Meta communities</a>\n')
+            html_f.write('<div class="dropdownsub-content">\n')
+                         
+            for mg in self.meta_communities:
+                html_f.write('<div class="dropdownsubsub" style="width:300px">\n')
+                html_f.write('<a href="' + self.report_html + '#' + mg.name + '">' + mg.name + '</a>\n' )
+                
+                html_f.write('<div class="dropdownsubsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
+                for bc in mg.communities:
+                    html_f.write('<a href="' + self.report_html + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
+                
+                html_f.write('</div>\n')
+                    
+                html_f.write('</div>\n')
             
-            for bc in mg.communities[ 1 : len(mg.communities) ]:
-                html_f.write('<tr><td></td><td><a href="' + self.report_html + '#' + bc.name + '">' + bc.name + '</a></td><td>' + bc.top_term + '</td></tr>\n' )
-            html_f.write('<tr><td></td><td></td><td></td></tr>\n' )
+            html_f.write('</div>\n')
+            html_f.write('</div>\n')
+        
+        
+        if(len(self.singleton_meta_communities)==0):
+            html_f.write('<a href="javascript:;">Communities</a>\n')
+        else:
+            html_f.write('<div class="dropdownsub" style="width:300px">\n')
+            html_f.write('<a href="' + self.report_html + '#' + self.singleton_meta_communities[0].name + '">Communities</a>\n')
+            html_f.write('<div class="dropdownsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
+            for bc in self.singleton_meta_communities:
+                html_f.write('<a href="' + self.report_html + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
             
-        html_f.write('</table>\n')
-        html_f.write('</div>\n')
+            html_f.write('</div>\n')
+            html_f.write('</div>\n')         
         
-        html_f.write('<div class="singleton_meta_communities">\n')
-        html_f.write('<table>\n')
-        html_f.write('<tr><td><b>Communities</b></td><td></td></tr>\n' )
-        for bc in self.singleton_meta_communities:
-            html_f.write('<tr><td><a href="' + self.report_html + '#' + bc.name + '">' + bc.name + '</a></td><td>' + bc.top_term + '</td></tr>\n' )
-            html_f.write('<tr><td></td><td></td></tr>\n' )
-        
-        html_f.write('</table>\n')    
-        html_f.write('</div>\n')
-        
-        html_f.write('<div class="singleton_communities">\n')
-        html_f.write('<table>\n')
-        html_f.write('<tr><td><b>Terms</b></td></tr>\n' )
-        for sc in self.singleton_communities:
-            if( sc.name == sc.all_term_defs_dict[ sc.name ] ):
-                html_f.write('<tr><td><a href="' + self.report_html + '#' + sc.name + '">' + sc.name + '</a></td></tr>\n' )
-            else:
-                html_f.write('<tr><td><a href="' + self.report_html + '#' + sc.name + '">' + sc.name + ' - ' + sc.all_term_defs_dict[ sc.name ]  + '</a></td></tr>\n' )
-            html_f.write('<tr><td></td></tr>\n' )
-        html_f.write('</table>\n')
-        html_f.write('</div>\n')
+        if(len(self.singleton_communities)==0):
+            html_f.write('<a href="#">Terms</a>\n')
+        else:
+            html_f.write('<div class="dropdownsub" style="width:300px">\n')
+            html_f.write('<a href="' + self.report_html + '#' + self.singleton_communities[0].name + '">Terms</a>\n')
+            html_f.write('<div class="dropdownsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
+            for sc in self.singleton_communities:
+                if( sc.name == sc.all_term_defs_dict[ sc.name ] ):
+                    html_f.write('<a href="' + self.report_html + '#' + sc.name + '">' + sc.name + '</a>\n' )
+                else:
+                    html_f.write('<a href="' + self.report_html + '#' + sc.name + '">' + sc.name + ' - ' + sc.all_term_defs_dict[ sc.name ]  + '</a>\n' )
+            html_f.write('</div>\n')
+            html_f.write('</div>\n')  
         
         html_f.write('</div>\n')
+        html_f.write('</li>\n')
+        
+        
+        html_f.write('<li class="rightlink"><a style="color:white;">' + self.summary_title + '</a></li>\n')
+        html_f.write('</ul>\n')
+        html_f.write('</div>\n')
+        html_f.write('</div>\n')
+        
+        
+        if(summary_type == "communities_summary"):
+            html_f.write('<div class="subtitlebanner">\n')
+            html_f.write('<li><a style="color:black;">List of communities</a></li>\n')
+            html_f.write('</div>\n')
+            html_f.write('<div class="grid-container">\n')
+            
+            
+            html_f.write('<div class="meta_communities">\n')
+            html_f.write('<table>\n')
+            html_f.write('<tr><td><b>Meta communities</b></td><td></td><td></td></tr>\n' )
+            for mg in self.meta_communities:
+                html_f.write('<tr><td><a href="' + self.report_html + '#' + mg.name + '">' + mg.name + '</a></td><td><a href="' + self.report_html + '#' + mg.communities[0].name + '">' + mg.communities[0].name + '</a></td><td>' + mg.communities[0].top_term + '</td></tr>\n' )
+                
+                for bc in mg.communities[ 1 : len(mg.communities) ]:
+                    html_f.write('<tr><td></td><td><a href="' + self.report_html + '#' + bc.name + '">' + bc.name + '</a></td><td>' + bc.top_term + '</td></tr>\n' )
+                html_f.write('<tr><td></td><td></td><td></td></tr>\n' )
+                
+            html_f.write('</table>\n')
+            html_f.write('</div>\n')
+            
+            html_f.write('<div class="singleton_meta_communities">\n')
+            html_f.write('<table>\n')
+            html_f.write('<tr><td><b>Communities</b></td><td></td></tr>\n' )
+            for bc in self.singleton_meta_communities:
+                html_f.write('<tr><td><a href="' + self.report_html + '#' + bc.name + '">' + bc.name + '</a></td><td>' + bc.top_term + '</td></tr>\n' )
+                html_f.write('<tr><td></td><td></td></tr>\n' )
+            
+            html_f.write('</table>\n')    
+            html_f.write('</div>\n')
+            
+            html_f.write('<div class="singleton_communities">\n')
+            html_f.write('<table>\n')
+            html_f.write('<tr><td><b>Terms</b></td></tr>\n' )
+            for sc in self.singleton_communities:
+                if( sc.name == sc.all_term_defs_dict[ sc.name ] ):
+                    html_f.write('<tr><td><a href="' + self.report_html + '#' + sc.name + '">' + sc.name + '</a></td></tr>\n' )
+                else:
+                    html_f.write('<tr><td><a href="' + self.report_html + '#' + sc.name + '">' + sc.name + ' - ' + sc.all_term_defs_dict[ sc.name ]  + '</a></td></tr>\n' )
+                html_f.write('<tr><td></td></tr>\n' )
+            html_f.write('</table>\n')
+            html_f.write('</div>\n')
+            
+            html_f.write('</div>\n')
+            
+        elif(summary_type == "communities_paramcomparison"):
+            html_f.write('<div class="subtitlebanner">\n')
+            html_f.write('<li><a style="color:black;">Community detection parameters: comparison</a></li>\n')
+            html_f.write('</div>\n')
+            html_f.write('<div class="grid-container">\n')
+            html_f.write('<div class="figure">\n')
+            html_f.write('<img src="' + self.comparisonplot_img_path + '" width="' + str(self.comparisonplot_img_width) + '" height="' + str(self.comparisonplot_img_height) + '">\n')
+            #html_f.write('<img src="' + self.rel_images_dir + 'sil_violinplots.svg">\n')
+            html_f.write('</div>\n')
+            html_f.write('</div>\n')
+            
+        elif(summary_type == "communities_silhouette"):
+            html_f.write('<div class="subtitlebanner">\n')
+            html_f.write('<li><a style="color:black;">Silhouette plot</a></li>\n')
+            html_f.write('</div>\n')
+            html_f.write('<div class="grid-container">\n')
+            html_f.write('<div class="figure">\n')
+            html_f.write('<img src="' + self.silplot_img_path + '" width="' + str(self.silplot_img_width) + '" height="' + str(self.silplot_img_height) + '">\n')
+            html_f.write('</div>\n')
+            html_f.write('</div>\n')
+        
+        
         html_f.write("</body>\n")
         html_f.write("</html>\n")
         html_f.close()
@@ -2581,6 +3747,80 @@ class javaScriptPrinter:
         html_f.write("  }\n")
         html_f.write("}\n")
         html_f.write("</script>\n")
+        
+    def print_html_for_event_listeners( self , html_f ):
+        html_f.write("<script>\n")
+        html_f.write('var coll = document.getElementsByClassName("collapsible");\n')
+        html_f.write('var i;\n')
+        html_f.write('for (i = 0; i < coll.length; i++) {\n')
+        html_f.write('  coll[i].addEventListener("click", function() {\n')
+        html_f.write('    var content = this.nextElementSibling;\n')
+        html_f.write('    if (content.style.display == "grid" || content.style.display == "") {\n')
+        html_f.write('      content.style.display = "none";\n')
+        #html_f.write('      content.nextElementSibling.style.display = "none";\n')
+        html_f.write('    } else {\n')
+        html_f.write('      content.style.display = "grid";\n')
+        #html_f.write('      content.nextElementSibling.style.display = "grid";\n')
+        html_f.write('    }\n')
+        html_f.write(' });\n')
+        html_f.write('}\n')
+        html_f.write("</script>\n")
+        
+        html_f.write("<script>\n")
+        html_f.write('var coll = document.getElementsByClassName("collapsible2");\n')
+        html_f.write('var i;\n')
+        html_f.write('for (i = 0; i < coll.length; i++) {\n')
+        html_f.write('  coll[i].addEventListener("click", function() {\n')
+        html_f.write('    var content = this.nextElementSibling;\n')
+        html_f.write('    if (content.style.display == "grid" || content.style.display == "") {\n')
+        html_f.write('      content.style.display = "none";\n')
+        #html_f.write('      content.nextElementSibling.style.display = "none";\n')
+        html_f.write('    } else {\n')
+        html_f.write('      content.style.display = "grid";\n')
+        #html_f.write('      content.nextElementSibling.style.display = "grid";\n')
+        html_f.write('    }\n')
+        html_f.write(' });\n')
+        html_f.write('}\n')
+        html_f.write("</script>\n")
+        
+        html_f.write("<script>\n")
+        html_f.write('var coll = document.getElementsByClassName("collapsible3a");\n')
+        html_f.write('var i;\n')
+        html_f.write('for (i = 0; i < coll.length; i++) {\n')
+        html_f.write('  coll[i].addEventListener("click", function() {\n')
+        html_f.write('    var content = this.nextElementSibling;\n')
+        html_f.write('    if (content.style.display == "grid" || content.style.display == "") {\n')
+        html_f.write('      content.style.display = "none";\n')
+        #html_f.write('      content.nextElementSibling.style.display = "none";\n')
+        html_f.write('    } else {\n')
+        html_f.write('      content.style.display = "grid";\n')
+        #html_f.write('      content.nextElementSibling.style.display = "grid";\n')
+        html_f.write('    }\n')
+        html_f.write(' });\n')
+        html_f.write('}\n')
+        html_f.write("</script>\n")
+        
+        html_f.write("<script>\n")
+        html_f.write('var coll = document.getElementsByClassName("collapsible3b");\n')
+        html_f.write('var i;\n')
+        html_f.write('for (i = 0; i < coll.length; i++) {\n')
+        html_f.write('  coll[i].addEventListener("click", function() {\n')
+        #html_f.write('    var content = this.nextElementSibling.nextElementSibling;\n')
+        html_f.write('    var content = this.nextElementSibling;\n')
+        html_f.write('    if (content.style.display == "grid" || content.style.display == "") {\n')
+        html_f.write('      content.style.display = "none";\n')
+        html_f.write('      content.nextElementSibling.style.display = "none";\n')
+        #html_f.write('      content.nextElementSibling.nextElementSibling.style.display = "none";\n')
+        html_f.write('    } else {\n')
+        html_f.write('      content.style.display = "grid";\n')
+        html_f.write('      content.nextElementSibling.style.display = "grid";\n')
+        #html_f.write('      content.nextElementSibling.nextElementSibling.style.display = "grid";\n')
+        html_f.write('    }\n')
+        html_f.write(' });\n')
+        html_f.write('}\n')
+        html_f.write("</script>\n")
+        
+
 
 # END CLASSES *****************************************************************
 
@@ -2624,10 +3864,10 @@ class heatmapDrawerUser:
                         
         self.etg_df = pd.DataFrame.from_records( _etg_data , columns = [ 'Experiment' , 'Term' , 'Gene' , 'QD' , 'Present' ] )
         
-        self.gene_term_heatmap_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot( 'Term' , 'Gene' , 'Present' ).fillna( 0 ).reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_term_heatmap_fm_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot( 'Term' , 'Gene' , 'Present' ).reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_exp_heatmap_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).fillna( 0 ).reindex( index=self.exp_ids, columns = self.genes_sorted )
-        self.gene_exp_heatmap_fm_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot( 'Experiment' , 'Gene' , 'QD' ).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_term_heatmap_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present', fill_value=0).reindex( index=self.terms, columns = self.genes_sorted )
+        self.gene_term_heatmap_fm_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present').reindex( index=self.terms, columns = self.genes_sorted )
+        self.gene_exp_heatmap_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD', fill_value=0).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_exp_heatmap_fm_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD').reindex( index=self.exp_ids, columns = self.genes_sorted )
         
         self.rows_cols = ( [] , [] )
         
