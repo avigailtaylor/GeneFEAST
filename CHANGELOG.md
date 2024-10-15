@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [0.0.24] - 2024-10-15
 
-## Added
+### Added
 
 - New plots including silhouette plots, plots for comparing clusters with different settings, circos plots for meta community and community overlaps.
 - Redesigned HTML report.
