@@ -7,7 +7,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 jobs:
-  container:
+  publish-container:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -49,3 +49,16 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           bodyFile: "CHANGELOG.md"
+  publish-pypi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: python3 -m pip install --upgrade build pip setuptools && python3 -m build && rm dist/genefeast-*-py3-none-any.whl
+      - name: Publish package
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
