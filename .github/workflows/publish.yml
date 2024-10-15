@@ -1,14 +1,11 @@
 name: publish
-
 on:
   push:
     tags:
       - v*
-
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-
 jobs:
   container:
     runs-on: ubuntu-latest
@@ -17,7 +14,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
