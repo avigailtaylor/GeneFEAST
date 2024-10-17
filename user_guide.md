@@ -98,13 +98,17 @@ Once you have created and activated your virtual environment, you can install th
 #### Running GeneFEAST through a ready-to-use [docker](https://docs.docker.com/get-docker/) container:
 
 If you are running GeneFEAST through its [docker](https://docs.docker.com/get-docker/) container, then, to summarize results from a single FEA, type the following on the command line:
-```
-docker run --volume $HOME:$HOME --workdir $(pwd) ghcr.io/avigailtaylor/genefeast:latest gf <META_INPUT_FILE> <OUTPUT_DIR> <YAML_CONFIG_FILE>
+
+```bash
+# assuming that the input YAML and data files are located in ${PWD}.
+docker run --rm -v ${PWD}:/data -w /data ghcr.io/avigailtaylor/genefeast gf <YAML_CONFIG_FILE> <OUTPUT_DIR> 
 ```
 
 Or, to summarize results from multiple FEAs, type the following on the command line:
-```
-docker run --volume $HOME:$HOME --workdir $(pwd) ghcr.io/avigailtaylor/genefeast:latest gf_multi <META_INPUT_FILE> <OUTPUT_DIR> <YAML_CONFIG_FILE>
+
+```bash
+# assuming that the input YAML and data files are located in ${PWD}.
+docker run --rm -v ${PWD}:/data -w /data ghcr.io/avigailtaylor/genefeast gf_multi <YAML_CONFIG_FILE> <OUTPUT_DIR> 
 ```
 
 ---
@@ -115,10 +119,8 @@ If you have installed GeneFEAST, then you can either run it on the command line,
 
 To use GeneFEAST to summarize results from a single FEA, type the following on the command line:
 
-```
-    $ gf <META_INPUT_FILE> \
-         <OUTPUT_DIR> \
-         <YAML_CONFIG_FILE>
+```bash
+gf <YAML_CONFIG_FILE> <OUTPUT_DIR> 
 ```
 
 Alternatively, in Python:
@@ -126,15 +128,13 @@ Alternatively, in Python:
 ```python
 from genefeast import gf
 
-gf.gf(<META_INPUT_FILE>, <OUTPUT_DIR>, <YAML_CONFIG_FILE>)
+gf.gf(<YAML_CONFIG_FILE>, <OUTPUT_DIR>)
 ```
 
 To use GeneFEAST to summarize results from multiple FEAs, type the following on the command line:
 
-```
-    $ gf_multi <META_INPUT_FILE> \
-               <OUTPUT_DIR> \
-               <YAML_CONFIG_FILE>
+```bash
+gf_multi <YAML_CONFIG_FILE> <OUTPUT_DIR>
 ```
 
 Alternatively, in Python:
@@ -142,8 +142,9 @@ Alternatively, in Python:
 ```python
 from genefeast import gf_multi
 
-gf_multi.gf_multi(<META_INPUT_FILE>, <OUTPUT_DIR>, <YAML_CONFIG_FILE>)
+gf_multi.gf_multi(<YAML_CONFIG_FILE>, <OUTPUT_DIR>)
 ```
+
 ***
 
 #### Viewing the GeneFEAST report
