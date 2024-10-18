@@ -26,15 +26,16 @@
 ### Now run GeneFEAST in one of the following three ways:
 
 Through its [docker](https://docs.docker.com/get-docker/) container:
-```
-docker run --volume $HOME:$HOME --workdir $(pwd) ghcr.io/avigailtaylor/genefeast:latest gf <full/path/to/meta_3h.txt> <OUTPUT_DIR> <full/path/to/mmc2_3h_config.yml>
+
+```bash
+# assuming that the input YAML and data files are located in ${PWD}.
+docker run --rm -v ${PWD}:/data -w /data ghcr.io/avigailtaylor/genefeast gf mmc2_3h_setup.yml gf_output 
 ```
 
 Through the command line:
-```
-    $ gf <full/path/to/meta_3h.txt> \
-         <OUTPUT_DIR> \
-         <full/path/to/mmc2_3h_config.yml>
+
+```bash
+gf <full/path/to/mmc2_3h_setup.yml> <OUTPUT_DIR>
 ```
 
 In Python:
@@ -42,8 +43,9 @@ In Python:
 ```python
 from genefeast import gf
 
-gf.gf(<full/path/to/meta_3h.txt>, <OUTPUT_DIR>, <full/path/to/mmc2_3h_config.yml>)
+gf.gf(<full/path/to/mmc2_3h_setup.yml>, <OUTPUT_DIR>)
 ```
+
 > In all three of these examples, `<OUTPUT_DIR>` can be whatever you want it to be, so long as it does not already exist.
 
 ---
