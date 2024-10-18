@@ -404,7 +404,7 @@ def gf_multi(setup_yaml_path, output_dir):
         _exp_gene_qd_dict.update(exp_gene_qd_dict_sub)
                 
     
-    # Remove terms that do not have more than MIN_NUM_GENES total gene annotations across all experiments
+    # Remove terms that do not have more than MIN_NUM_GENES total gene annotations across all FEAs
     (_, terms_to_remove) = gfb.find_terms_to_remove(_exp_term_genes_dict, MIN_NUM_GENES)
     for del_term in terms_to_remove:
         del _term_types_dict[del_term]
@@ -419,16 +419,16 @@ def gf_multi(setup_yaml_path, output_dir):
                     del _exp_term_dotplot_dict[(exp_id, del_term)]
     
     
-    # Make the dataframe that contains the quantitative data (usually log2 FC) for each gene, in each experiment
+    # Make the dataframe that contains the quantitative data (usually log2 FC) for each gene, in each FEA
     _exp_gene_qd = pd.DataFrame.from_records([(e, g, v) for ((e, g), v) in list(_exp_gene_qd_dict.items())], 
-                                                columns = ['Experiment', 'Gene', 'QD']).set_index(['Experiment', 'Gene'])
+                                                columns = ['FEA', 'Gene', 'QD']).set_index(['FEA', 'Gene'])
     # Sort the indices for faster access later on...
     _exp_gene_qd = _exp_gene_qd.sort_index()
      
     # *****************************************************************************
     
     # 6. MAKE OVERALL UPSET DF ****************************************************
-    print("\nFinding overlaps in FEA results between experiments")
+    print("\nFinding overlaps in FEAs")
     exp_term_upset_df = from_contents(_exp_terms_dict)
     
     exp_term_upset_for_image_df = exp_term_upset_df.reorder_levels(_exp_ids[:: -1]) 
@@ -443,12 +443,12 @@ def gf_multi(setup_yaml_path, output_dir):
     # *****************************************************************************
     
     # 7. GO THROUGH EACH SET OF TERMS, GROUPED TOGETHER BECAUSE THEY ARE OVER-REPRESENTED,
-    # IN THE SAME SET OF EXPERIMENTS, AND CLUSTER THEM BY GENE-SET OVERLAP.
+    # IN THE SAME SET OF FEAs, AND CLUSTER THEM BY GENE-SET OVERLAP.
     exp_term_upset_grouped = exp_term_upset_final_df.groupby(level=list(range(exp_term_upset_final_df.index.nlevels)))
     etgContainers = []
     
     for key_i in range(len(ud.upset.intersections.keys())):
-        print("\nFinding communities of terms in Experiment term-set intersection " + str(key_i+1))
+        print("\nFinding communities of terms in FEA term-set intersection " + str(key_i+1))
         key = ud.upset.intersections.keys()[key_i]
         exp_term_group = exp_term_upset_grouped.get_group(key)
         _etg_exp_ids = [exp_term_group.index.names[i] for i in range(len(exp_term_group.index.names)) if key[i]]
@@ -459,7 +459,7 @@ def gf_multi(setup_yaml_path, output_dir):
         else:
             _key_i_str = str(key_i + 1)
             
-        _etg_name = "ETSI " + _key_i_str # (ETSI stands for Experiment term-set intersection)
+        _etg_name = "FEATSI " + _key_i_str # (FEATSI stands for FEA term-set intersection)
         _etg_info_string = '__' + '__'.join(_etg_exp_ids) + '__'
         #_etg_text_details = ', '.join(_etg_exp_ids) ', '.join(_etg_exp_ids[0:-1]) + ' and ' + _etg_exp_ids[-1]
         _etg_text_details = ', '.join(_etg_exp_ids[0:-1]) + ' and ' + _etg_exp_ids[-1]
@@ -842,7 +842,7 @@ def gf_multi(setup_yaml_path, output_dir):
     html_f.write('<div>\n')
     html_f.write('<ul>\n')
     html_f.write('<li class="logo">GeneFEAST</li>\n')
-    html_f.write('<li><a href="' + relative_main_html + '" class="navactive">Experiment term-set intersections</a></li>\n')
+    html_f.write('<li><a href="' + relative_main_html + '" class="navactive">FEA term-set intersections</a></li>\n')
     html_f.write('<li class="dropdown">\n')
     html_f.write('<button class="dropbtn">Reports\n')
     html_f.write('</button>\n')
@@ -857,7 +857,7 @@ def gf_multi(setup_yaml_path, output_dir):
     
     html_f.write('<div>\n')
     html_f.write('<ul class="subnav">\n')
-    html_f.write('<li class="rightlink"><a style="color:white;">Experiment term-set intersections for ' + ', '.join(_exp_ids[0:-1]) + ' and ' + _exp_ids[-1] + '</a></li>\n')
+    html_f.write('<li class="rightlink"><a style="color:white;">FEA term-set intersections for ' + ', '.join(_exp_ids[0:-1]) + ' and ' + _exp_ids[-1] + '</a></li>\n')
     html_f.write('</ul>\n')
     html_f.write('</div>\n')
     html_f.write('</div>\n')

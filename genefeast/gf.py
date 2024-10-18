@@ -322,7 +322,7 @@ def gf(setup_yaml_path, output_dir):
     # *****************************************************************************
     
     # 5 READ IN DATA FOR SUMMARISING HERE*****************************
-    print("\nReading in FEA results for summarization")
+    print("\nReading in FEA for summarization")
     # Store input image directory and extensions
     _exp_img_dir_paths_dict = {}
     _exp_img_dir_paths_dict[exp_id] = input_img_dir
@@ -343,9 +343,9 @@ def gf(setup_yaml_path, output_dir):
     if(status > 0):
         sys.exit()
     
-    # Make the dataframe that contains the quantitative data (usually log2 FC) for each gene, in each experiment
+    # Make the dataframe that contains the quantitative data (usually log2 FC) for each gene, in each FEA
     _exp_gene_qd = pd.DataFrame.from_records([(e, g, v) for ((e, g), v) in list(_exp_gene_qd_dict.items())], 
-                                                columns = ['Experiment', 'Gene', 'QD']).set_index(['Experiment', 'Gene'])
+                                                columns = ['FEA', 'Gene', 'QD']).set_index(['FEA', 'Gene'])
     # Sort the indices for faster access later on...
     _exp_gene_qd = _exp_gene_qd.sort_index()
     

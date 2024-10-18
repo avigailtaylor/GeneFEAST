@@ -109,20 +109,20 @@ def get_meta_info_from_setup(setup_yaml_path):
         with open(setup_yaml_path, "r") as ymlfile:
             setup = yaml.safe_load(ymlfile)
             
-            if(setup.get("Experiments") is None):
+            if(setup.get("FEAs") is None):
                 status = 2
-                message = ('*** ERROR: No experiments have been listed in setup YAML file. ***')
+                message = ('*** ERROR: No FEAs have been listed in setup YAML file. ***')
                 return(status, message, collections.OrderedDict(), [])
             else:
-                mi_list = setup.get("Experiments")
+                mi_list = setup.get("FEAs")
                 for exp_mi in mi_list:
                     if(not("id" in exp_mi.keys()) 
                         or not("gene_qd_file_path" in exp_mi.keys()) 
-                        or not("ora_file_path" in exp_mi.keys())):
+                        or not("fea_file_path" in exp_mi.keys())):
                         
                         status = 3
-                        message = ('*** ERROR: One of the experiments listed in setup YAML file is '
-                                   'missing one or more of "id", "gene_qd_file_path", or "ora_file_path." ***')
+                        message = ('*** ERROR: One of the FEAs listed in setup YAML file is '
+                                   'missing one or more of "id", "gene_qd_file_path", or "fea_file_path." ***')
                         return(status, message, collections.OrderedDict(), [])
                     else:
                         if("input_img_dir" in exp_mi.keys()):
@@ -133,11 +133,11 @@ def get_meta_info_from_setup(setup_yaml_path):
                         
                         exp_id = exp_mi["id"]
                         gene_qd_file_path = exp_mi["gene_qd_file_path"]
-                        ora_file_path = exp_mi["ora_file_path"]
+                        ora_file_path = exp_mi["fea_file_path"]
                         
                         if(exp_id in mi_dict):
                             status = 4
-                            message = ('*** ERROR: Two or more experiments have the same ID. '
+                            message = ('*** ERROR: Two or more FEAs have the same ID. '
                                        'Please check your meta input file for repeated '
                                        'lines and/ or naming errors. ***')
                             return(status, message, collections.OrderedDict(), [])

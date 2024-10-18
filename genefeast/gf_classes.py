@@ -35,7 +35,7 @@ def trim_term(term, strong_trim=False):
             else:
                 return term.split('(')[0]
         
-        elif term.find('ETSI') == 0: #(ETSI stands for Experiment term-set intersection)
+        elif term.find('FEATSI') == 0: #(FEATSI stands for FEA term-set intersection)
             
             if(strong_trim):
                 return term.split('_')[1].split(' ')[1]
@@ -74,7 +74,7 @@ def build_searches(gene, search_words):
 class my_UpSet(up.UpSet):
     # This is copied directly from the original - the only change is the value
     # of MAGIC_MARGIN, from 10 to 50, so that there is enough space in the 
-    # plot for the experiment labels.
+    # plot for the FEA labels.
     def make_grid(self, fig=None):
         """Get a SubplotSpec for each Axes, accounting for label text width
         """
@@ -388,7 +388,7 @@ class heatmapDrawer:
             return pd.concat([extra_annotation_df, gene_term_heatmap_df], ignore_index=False)
         
         
-    def draw_heatmaps(self, ylabel1='Term', ylabel2='Experiment', postfix=''):
+    def draw_heatmaps(self, ylabel1='Term', ylabel2='FEA', postfix=''):
         
         #NOTE: The 'fm' in heatmap_fm stands for 'for masking'
         
@@ -798,14 +798,14 @@ class communityCsvPrinter():
         expanded_info_df = self.community.etg_df.copy()
         expanded_info_df['Community'] = self.community.name
         expanded_info_df['Meta-community'] = self.community.meta_community_name
-        expanded_info_df.to_csv(csv_f, columns=['Community', 'Meta-community', 'Experiment', 'Term', 'Gene', 'QD'], index=False, header=False)
+        expanded_info_df.to_csv(csv_f, columns=['Community', 'Meta-community', 'FEA', 'Term', 'Gene', 'QD'], index=False, header=False)
         
 class singletonCommunityCsvPrinter():
     def __init__(self, singletonCommunity):
         self.singletonCommunity = singletonCommunity
     
     def print_csv(self, csv_f):
-        self.singletonCommunity.singleton_etg_df.to_csv(csv_f, columns=['Community', 'Meta-community', 'Experiment', 'Term', 'Gene', 'QD'], index=False, header=False)
+        self.singletonCommunity.singleton_etg_df.to_csv(csv_f, columns=['Community', 'Meta-community', 'FEA', 'Term', 'Gene', 'QD'], index=False, header=False)
 
 
 # HTML printers
@@ -959,9 +959,9 @@ class bigBasicCommunityPrinter():
         
         
         if(len(self.community.heatmap_img_paths_list) == 3):
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[0] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[0]) + '\' ,\'' + self.community.heatmap_img_titles_list[0] + '\',1)">Heatmap A</button>\n')
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[1] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[1]) + '\' ,\'' + self.community.heatmap_img_titles_list[1] + '\',1)">Heatmap B</button>\n')
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[2] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[2]) + '\' ,\'' + self.community.heatmap_img_titles_list[2] + '\',1)">Heatmap C</button>\n')
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[0] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[0]) + '\' ,\'' + self.community.heatmap_img_titles_list[0] + '\',1)">Heatmap A (' + self.community.quant_data_type +')</button>\n')
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[1] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[1]) + '\' ,\'' + self.community.heatmap_img_titles_list[1] + '\',1)">Heatmap B (annotations x ' + self.community.quant_data_type +')</button>\n')
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[2] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[2]) + '\' ,\'' + self.community.heatmap_img_titles_list[2] + '\',1)">Heatmap C (alphabetical)</button>\n')
         else:
             heatmap_img_paths_array_as_str_A = ','.join( [self.community.heatmap_img_paths_list[x] for x in [0,3]] )
             heatmap_widths_array_as_str_A = ','.join( map( str , [self.community.heatmap_img_widths_list[x] for x in [0,3]] ) )
@@ -975,9 +975,9 @@ class bigBasicCommunityPrinter():
             heatmap_widths_array_as_str_C = ','.join( map( str , [self.community.heatmap_img_widths_list[x] for x in [2,5]] ) )
             heatmap_img_titles_array_as_str_C = ','.join( [self.community.heatmap_img_titles_list[x] for x in [2,5]] )
             
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A</button>\n' )
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B</button>\n' )
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C</button>\n' )
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A (' + self.community.quant_data_type +')</button>\n' )
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B (annotations x ' + self.community.quant_data_type +')</button>\n' )
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C (alphabetical)</button>\n' )
         
         
         
@@ -1665,12 +1665,12 @@ class bigCommunity(community):
                     if( ( _e , _g ) in self.all_gene_qd.index ):
                         _etg_data.append( ( _e , _t , _g , self.all_gene_qd.loc[ ( _e , _g ) ].iloc[0] , 1 ) )
                         
-        self.etg_df = pd.DataFrame.from_records( _etg_data , columns = [ 'Experiment' , 'Term' , 'Gene' , 'QD' , 'Present' ] )
+        self.etg_df = pd.DataFrame.from_records( _etg_data , columns = [ 'FEA' , 'Term' , 'Gene' , 'QD' , 'Present' ] )
         
         self.gene_term_heatmap_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present', fill_value=0).reindex( index=self.terms, columns = self.genes_sorted )
         self.gene_term_heatmap_fm_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present').reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_exp_heatmap_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD', fill_value=0).reindex( index=self.exp_ids, columns = self.genes_sorted )
-        self.gene_exp_heatmap_fm_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD').reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_exp_heatmap_df = self.etg_df[ [ 'FEA' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='FEA', columns='Gene', values='QD', fill_value=0).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_exp_heatmap_fm_df = self.etg_df[ [ 'FEA' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='FEA', columns='Gene', values='QD').reindex( index=self.exp_ids, columns = self.genes_sorted )
         
         self.rows_cols = ( [] , [] )
         if( len( self.genes ) > 25 and len( self.terms ) >= 4 and 
@@ -1985,7 +1985,7 @@ class singletonCommunity( community ):
                     if( ( _e , _g ) in self.all_gene_qd.index ):
                         _etg_data.append( ( '', '' , _e , self.term , _g , self.all_gene_qd.loc[ ( _e , _g ) ].iloc[0] ) )
                         
-        self.singleton_etg_df = pd.DataFrame.from_records( _etg_data , columns = ['Community', 'Meta-community', 'Experiment', 'Term', 'Gene', 'QD'] )
+        self.singleton_etg_df = pd.DataFrame.from_records( _etg_data , columns = ['Community', 'Meta-community', 'FEA', 'Term', 'Gene', 'QD'] )
         
         my_singleton_community_csv_printer.print_csv(csv_f)
 
@@ -2014,12 +2014,12 @@ class singletonCommunity( community ):
                     if( ( _e , _g ) in self.all_gene_qd.index ):
                         _etg_data.append( ( _e , _t , _g , self.all_gene_qd.loc[ ( _e , _g ) ].iloc[0] , 1 ) )
                         
-        _etg_df = pd.DataFrame.from_records( _etg_data , columns = [ 'Experiment' , 'Term' , 'Gene' , 'QD' , 'Present' ] )
+        _etg_df = pd.DataFrame.from_records( _etg_data , columns = [ 'FEA' , 'Term' , 'Gene' , 'QD' , 'Present' ] )
         
         self.gene_term_heatmap_df = _etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present', fill_value=0).reindex( index=self.terms, columns = self.genes_sorted )
         self.gene_term_heatmap_fm_df = _etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present').reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_exp_heatmap_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD', fill_value=0).reindex( index=self.exp_ids, columns = self.genes_sorted )
-        self.gene_exp_heatmap_fm_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD').reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_exp_heatmap_df = _etg_df[ [ 'FEA' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='FEA', columns='Gene', values='QD', fill_value=0).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_exp_heatmap_fm_df = _etg_df[ [ 'FEA' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='FEA', columns='Gene', values='QD').reindex( index=self.exp_ids, columns = self.genes_sorted )
     
         self.rows_cols = ( ( range( len( self.terms ) ) , self.gene_term_heatmap_df.sum() > 0 ) )
             
@@ -2201,9 +2201,9 @@ class singletonCommunity( community ):
         
         html_f.write('<div class="plot_buttons3">\n')
         #html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + heatmap_img_paths_array_as_str + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heatmaps</button>\n' )
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\',\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A</button>\n' )
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\',\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B</button>\n' )
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\',\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C</button>\n' )
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\',\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A (' + self.quant_data_type +')</button>\n' )
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\',\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B (annotations x ' + self.quant_data_type +')</button>\n' )
+        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\',\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C (alphabetical)</button>\n' )
         
         
         html_f.write('<button class="view-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'heatmap\', true , \'Literature search\')">Literature search</button>\n' )
@@ -2288,13 +2288,13 @@ class metaGroup( community ):
                     if( ( _e , _g ) in self.all_gene_qd.index ):
                         _etg_data.append( ( _e , _com.name , _g , self.all_gene_qd.loc[ ( _e , _g ) ].iloc[0] , 1 ) )
                         
-        _etg_df = pd.DataFrame.from_records( _etg_data , columns = [ 'Experiment' , 'Community' , 'Gene' , 'QD' , 'Present' ] )
+        _etg_df = pd.DataFrame.from_records( _etg_data , columns = [ 'FEA' , 'Community' , 'Gene' , 'QD' , 'Present' ] )
         
         # Note, we call this a gene_term_heatmap_df here, rather than a gene_community_heatmap_df, because that is what heatmapDrawer is expecting.
         self.gene_term_heatmap_df = _etg_df[ [ 'Community' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Community', columns='Gene', values='Present', fill_value=0).reindex( index=self.terms, columns = self.genes_sorted )
         self.gene_term_heatmap_fm_df = _etg_df[ [ 'Community' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Community', columns='Gene', values='Present').reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_exp_heatmap_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD', fill_value=0).reindex( index=self.exp_ids, columns = self.genes_sorted )
-        self.gene_exp_heatmap_fm_df = _etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD').reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_exp_heatmap_df = _etg_df[ [ 'FEA' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='FEA', columns='Gene', values='QD', fill_value=0).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_exp_heatmap_fm_df = _etg_df[ [ 'FEA' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='FEA', columns='Gene', values='QD').reindex( index=self.exp_ids, columns = self.genes_sorted )
     
 #        self.rows_cols = ( [] , [] )
 #        if( len( self.genes ) > 50 and len( self.communities ) >= 3 ):
@@ -2513,14 +2513,15 @@ class metaGroup( community ):
         html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.upset_img_path + '\' ,' + str(self.new_h) + ',\'' + str(self.upset_img_width) + '\' ,\'UpSet plot\',1)">UpSet plot</button>\n')
         
         
+        
         if(len(self.heatmap_img_paths_list) == 3):
 #            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\' ,\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A</button>\n')
 #            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\' ,\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B</button>\n')
 #            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\' ,\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C</button>\n')
         
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\' ,\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A</button>\n')
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\' ,\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B</button>\n')
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\' ,\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C</button>\n')
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\' ,\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A (' + self.quant_data_type +')</button>\n')
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\' ,\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B (annotations x ' + self.quant_data_type +')</button>\n')
+            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\' ,\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C (alphabetical)</button>\n')
         
         else:
             heatmap_img_paths_array_as_str_A = ','.join( [self.heatmap_img_paths_list[x] for x in [0,3]] )
@@ -2540,9 +2541,9 @@ class metaGroup( community ):
 #            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C</button>\n' )
 #        
         
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A</button>\n' )
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B</button>\n' )
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C</button>\n' )
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A (' + self.quant_data_type +')</button>\n')
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B (annotations x ' + self.quant_data_type +')</button>\n')
+            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C (alphabetical)</button>\n')
         
         
         html_f.write( '<button class="view-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'upset\', true , \'Literature search\')">Literature search</button>\n' )
@@ -3098,7 +3099,7 @@ class etgContainer:
         html_f.write('<ul>\n')
         html_f.write('<li class="logo">GeneFEAST</li>\n')
         
-        html_f.write('<li><a href="' + self.relative_main_html + '">Experiment term-set intersections</a></li>\n')
+        html_f.write('<li><a href="' + self.relative_main_html + '">FEA term-set intersections</a></li>\n')
         html_f.write('<li class="dropdown">\n')
         html_f.write('<button class="dropbtnactive">Reports\n')
         html_f.write('</button>\n')
@@ -3522,7 +3523,7 @@ class summaryPrinter:
         html_f.write('<ul>\n')
         html_f.write('<li class="logo">GeneFEAST</li>\n')
         if(not(self.backlink=='')):
-            html_f.write('<li><a href="' + self.backlink + '">Experiment term-set intersections</a></li>\n')
+            html_f.write('<li><a href="' + self.backlink + '">FEA term-set intersections</a></li>\n')
             html_f.write('<li class="dropdown">\n')
             html_f.write('<button class="dropbtnactive">Reports\n')
             html_f.write('</button>\n')
@@ -3862,12 +3863,12 @@ class heatmapDrawerUser:
                     if( ( _e , _g ) in self.all_gene_qd.index ):
                         _etg_data.append( ( _e , _t , _g , self.all_gene_qd.loc[ ( _e , _g ) ][0] , 1 ) )
                         
-        self.etg_df = pd.DataFrame.from_records( _etg_data , columns = [ 'Experiment' , 'Term' , 'Gene' , 'QD' , 'Present' ] )
+        self.etg_df = pd.DataFrame.from_records( _etg_data , columns = [ 'FEA' , 'Term' , 'Gene' , 'QD' , 'Present' ] )
         
         self.gene_term_heatmap_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present', fill_value=0).reindex( index=self.terms, columns = self.genes_sorted )
         self.gene_term_heatmap_fm_df = self.etg_df[ [ 'Term' , 'Gene' , 'Present' ] ].drop_duplicates().pivot_table(index='Term', columns='Gene', values='Present').reindex( index=self.terms, columns = self.genes_sorted )
-        self.gene_exp_heatmap_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD', fill_value=0).reindex( index=self.exp_ids, columns = self.genes_sorted )
-        self.gene_exp_heatmap_fm_df = self.etg_df[ [ 'Experiment' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='Experiment', columns='Gene', values='QD').reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_exp_heatmap_df = self.etg_df[ [ 'FEA' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='FEA', columns='Gene', values='QD', fill_value=0).reindex( index=self.exp_ids, columns = self.genes_sorted )
+        self.gene_exp_heatmap_fm_df = self.etg_df[ [ 'FEA' , 'Gene' , 'QD' ] ].drop_duplicates().pivot_table(index='FEA', columns='Gene', values='QD').reindex( index=self.exp_ids, columns = self.genes_sorted )
         
         self.rows_cols = ( [] , [] )
         
