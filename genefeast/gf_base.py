@@ -879,7 +879,7 @@ def make_sil_violinplots(min_weight_tt_edge, max_community_size_thresh, combine_
                 if(min_weight_tt_edge_try_i < (len(min_weight_tt_edge_trials)-1)):
                     axis.set_xlabel("")
                     
-                axis.set_title(str(min_weight_tt_edge_try) + ", " + str(max_community_size_thresh_try))
+                axis.set_title("GSO=" + str(min_weight_tt_edge_try) + ", MCS=" + str(max_community_size_thresh_try))
                 
                 axis.set_xticks(axis.get_xticks()[::2])
                 

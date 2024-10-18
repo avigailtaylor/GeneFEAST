@@ -3120,7 +3120,7 @@ class etgContainer:
         html_f.write('<div class="dropdown-content">\n')
         html_f.write('<a href="' + self.key_i_str + '_communities_summary.html">List of communities</a>\n')
         html_f.write('<a href="' + self.key_i_str + '_communities_silhouette.html">Silhouette plot</a>\n')
-        html_f.write('<a href="' + self.key_i_str + '_communities_paramcomparison.html">Community detection parameters: comparison</a>\n')
+        html_f.write('<a href="' + self.key_i_str + '_communities_paramcomparison.html">Graphical grid search of community detection parameters</a>\n')
         html_f.write('</div>\n')
         html_f.write('</li> \n')
         
@@ -3543,7 +3543,7 @@ class summaryPrinter:
         html_f.write('<div class="dropdown-content">\n')
         html_f.write('<a href="' + self.summary_id + '_communities_summary.html">List of communities</a>\n')
         html_f.write('<a href="' + self.summary_id + '_communities_silhouette.html">Silhouette plot</a>\n')
-        html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison.html">Community detection parameters: comparison</a>\n')
+        html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison.html">Graphical grid search of community detection parameters</a>\n')
         html_f.write('</div>\n')
         html_f.write('</li> \n')
         
