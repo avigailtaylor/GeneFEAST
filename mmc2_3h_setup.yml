@@ -1,11 +1,11 @@
-Experiments:
+FEAs:
     - id: "mmc2_3h"
       gene_qd_file_path: "mmc2_goi_3h.csv"
-      ora_file_path: "GO_BP_3h_0.001_4GF.csv"
+      fea_file_path: "GO_BP_3h_0.001_4GF.csv"
 
 
 MAX_META_COMMUNITY_SIZE_THRESH: 12
 MIN_WEIGHT_TT_EDGE: 0.6
       
 ENRICHR: True
-DOTPLOTS: True
+DOTPLOTS: False

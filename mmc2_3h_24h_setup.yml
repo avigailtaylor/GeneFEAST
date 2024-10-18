@@ -1,11 +1,11 @@
-Experiments:
+FEAs:
     - id: "mmc2_3h"
       gene_qd_file_path: "mmc2_goi_3h.csv"
-      ora_file_path: "GO_BP_3h_0.0001_4GF.csv"
+      fea_file_path: "GO_BP_3h_0.0001_4GF.csv"
       
     - id: "mmc2_24h"
       gene_qd_file_path: "mmc2_goi_24h.csv"
-      ora_file_path: "GO_BP_24h_0.0001_4GF.csv"
+      fea_file_path: "GO_BP_24h_0.0001_4GF.csv"
 
 SEARCH_WORDS:
 - Covid 19
