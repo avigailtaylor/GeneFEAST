@@ -4,38 +4,25 @@
 
 ### Option 1: Don't install! Instead, download the GeneFEAST ready-to-use [docker](https://docs.docker.com/get-docker/) container!
 
-To download the latest container from the [repository](https://github.com/avigailtaylor/GeneFEAST/pkgs/container/genefeast)
+To download the latest container from the [repository](https://github.com/avigailtaylor/GeneFEAST/pkgs/container/genefeast):
 ```
 docker pull ghcr.io/avigailtaylor/genefeast:latest
 ```
 
-### Option 2:  Install the package and its dependencies locally via pip
-<mark>If you decide to install GeneFEAST, then we **strongly recommend** installing it in a **virtual environment** because the library has several [dependencies and requirements](dependencies_and_requirements.md).</mark>
-
+### Option 2:  Locally install the package and its dependencies
 
 1. Install Python 3.12
 2. Install Graphviz
-3. [Create and activate a virtual environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) 
-4. 
-
-If you decide to install GeneFEAST, then we **strongly recommend** installing it in a **virtual environment** because the library has several [dependencies and requirements](dependencies_and_requirements.md).
-
-
-> Please follow the instructions at the top of **[this guide](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment)** to create and activate a virtual environment. Please only follow the instructions to the end of section **Activating a virtual environment** and then **come back here**.
-
-
-> **IMPORTANT**
-> If you do not have Python 3.7 installed on your computer, you will need to install it first, ***before*** creating a virtual environment.
-> 
-> (As an example, to install Python 3.7 on Ubuntu you would follow **[these instructions](https://vegastack.com/tutorials/how-to-install-python-3-7-on-ubuntu-20-04)**.)
->
-> Once this is done, make sure to create the virtual environment using Python 3.7 explicitly (i.e. not just the default Python used by your computer).
-
-
-Once you have created and activated your virtual environment, you can install the library using pip:
-
-```$ pip install genefeast```
-
+3. [Create and activate a virtual Python environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment).
+* <mark>If you decide to install GeneFEAST, then we **strongly recommend** installing it in a **virtual environment** because the library has several [dependencies and requirements](dependencies_and_requirements.md).</mark>
+* <mark>Make sure to create a virtual environment using Python 3.12 explicitly, and not the default Python used on your computer.</mark>
+4. Install the most recent version of setuptools:
+* Unix/macOS: `pip install --upgrade setuptools`
+* Windows: `py -m pip install --upgrade setuptools`
+5. Install GeneFEAST:
+* Unix/macOS: `pip install genefeast`
+* Windows: `py -m pip install genefeast`
+   
 ## Usage
 
 #### To run GeneFEAST you will need:
