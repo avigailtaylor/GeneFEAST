@@ -6,6 +6,8 @@ Python 3.12
 
 ## Python packages
 
+> **When using PyPI to install GeneFEAST, these packages will be automatically installed.**
+
 - matplotlib == 3.8.4
 - numpy == 1.26.4
 - pandas == 2.2.2
@@ -22,12 +24,9 @@ Python 3.12
 - python-circos == 0.3.0
 - pydot == 3.0.2
 
-```
-NOTE: When using PyPI to install GeneFEAST, these packages will be automatically installed.
-```
+
 ## System Dependencies
-```
-NOTE: You will need to install Graphviz separately from GeneFEAST.
-```
 [Graphviz](http://www.graphviz.org/), for graph visualization.
-```
+> **You will need to [install Graphviz separately](https://graphviz.org/download/) from GeneFEAST.**
+
+
