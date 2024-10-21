@@ -1,35 +1,67 @@
 # User Guide
 
-## Installation
+<mark><b>October 2024: This user guide is being edited to reflect changes in GeneFEAST!! It is incomplete and cannot be used as-is. The user guide should be finished by the end of the month.</b></mark>
 
-### Option 1: Don't install! Instead, download the GeneFEAST ready-to-use [docker](https://docs.docker.com/get-docker/) container!
+### Installation
+
+#### Option 1: Don't install! Instead, download the GeneFEAST ready-to-use [docker](https://docs.docker.com/get-docker/) container!
 
 To download the latest container from the [repository](https://github.com/avigailtaylor/GeneFEAST/pkgs/container/genefeast):
 ```
 docker pull ghcr.io/avigailtaylor/genefeast:latest
 ```
 
-### Option 2:  Locally install the package and its dependencies
+
+#### Option 2:  Locally install the package and its dependencies
 
 1. Install Python 3.12
 2. Install Graphviz
 3. [Create and activate a virtual Python environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment).
-* <mark>If you decide to install GeneFEAST, then we **strongly recommend** installing it in a **virtual environment** because the library has several [dependencies and requirements](dependencies_and_requirements.md).</mark>
-* <mark>Make sure to create a virtual environment using Python 3.12 explicitly, and not the default Python used on your computer.</mark>
+* <mark>We **strongly recommend** installing GeneFEAST in a **virtual environment** because of its [dependencies and requirements](dependencies_and_requirements.md).</mark>
+* <mark>**NOTE:** Create a virtual environment using Python 3.12 explicitly, rather than your computer's default version.</mark>
 4. Install the most recent version of setuptools:
 * Unix/macOS: `pip install --upgrade setuptools`
 * Windows: `py -m pip install --upgrade setuptools`
 5. Install GeneFEAST:
 * Unix/macOS: `pip install genefeast`
 * Windows: `py -m pip install genefeast`
-   
-## Usage
 
-#### To run GeneFEAST you will need:
-- **FEA results file**. This is a comma-separated file containing the results of a functional enrichment analysis (FEA) that has been run on a list of genes of interest (GoI) identified via a high-throughput 'omics experiment. (For example, an RNA-Seq experiment used to identify the set of genes differentially expressed between an experimental condition and a control condition).  GeneFEAST expects a file containing the following ten columns, in this order:
-  - Type (**Required**. This refers to the type of the term and can be, e.g., GO, KEGG, MSIGDB, etc.)
-  - ID (**Required**)
-  - Description (**Required**)
+
+### Usage
+
+##### To run GeneFEAST, you will need:
+
+<details>
+<summary>FEA results file</summary>
+<br>
+CSV file containing the results of a functional enrichment analysis (FEA) that has been run on a list of genes of interest (GoI).
+
+The file should have the following four columns, in this order:
+
+|Type|ID |Description|GeneID|
+|----|---|-----------|------|
+  
+    - Type: Term type/ originating database
+    - ID: Term ID in database
+    - Description: Term description
+    - GeneID: "/"-separated list of gene IDs corresponding to GoIs annotated by the term
+
+<details>
+   <summary>Example</summary>
+
+   
+   |Type|ID|Description|GeneID|
+   |----|---|-----------|------|
+   |"GO"|"GO:0071774"|"response to fibroblast growth factor"|"CCN2/THBS1/EGR3/FGF2/SPRY4/<br>NDST1/CCL2/IER2/FLRT3/PRKD2/<br>CXCL8/SPRY2/FRS2/FGFR1/SPRY1/<br>RUNX2/HYAL1/KDM5B/NOG/ZFP36L1/<br>COL1A1/CASR/FGFR3/FGF1/EXT1/<br>FGFBP1/GATA3/NR4A1"|
+   |"GO"|"GO:0002294"|"CD4-positive alpha-beta T cell differentiation involved in immune response"|"RARA/BCL6/SMAD7/SOCS3/PTGER4/<br>JUNB/ZC3H12A/FOXP1/ENTPD7/NFKBIZ/<br>NLRP3/RC3H1/RORC/RIPK2/ANXA1/<br>RELB/MYB/IL6/LGALS9/GATA3"|
+   |"GO"|"GO:2000514"|"regulation of CD4-positive alpha-beta T cell activation"|"RARA/BCL6/SMAD7/JUNB/RUNX1/<br>ZC3H12A/NFKBIZ/NLRP3/RC3H1/CD274/<br>CBLB/RIPK2/ANXA1/AGER/RUNX3/<br>SOCS1/VSIR/PRKCQ/LGALS9/GATA3"|
+</details>
+
+
+<details>
+<summary>Optional/ Advanced: Format <a href=https://cran.r-project.org/web/packages/enrichR/vignettes/enrichR.html>enrichR</a> output for use with GeneFEAST</summary>
+<br>
+   
   - GeneRatio (Required only when dot plots are switched on)
   - BgRatio (Required only when dot plots are switched on)
   - pvalue (Optional; field can be empty) 
@@ -37,14 +69,25 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
   - qvalue (Optional; field can be empty)
   - geneID (**Required**. This should be a list of gene IDs separated using the "/" symbol. The gene IDs ***must match*** those used in the genes of interest file (see next))
   - count (Required only when dot plots are switched on. This is the number of genes of interest annotated with the term. This should match the length of the list of genes given in the geneID column.)
-    
-- **Genes of interest file**: A file containing the list of GoI that were the input for the FEA being summarised. The file should contain one GoI per line, each with its corresponding quantitative data measured in the high-throughput 'omics experiment in which the GoI were identified. For example, in an RNA-Seq experiment this could be the log2 fold change observed between an experimental condition and a control condition. Please note: 
+
+</details>
+</details>
+
+<details>
+<summary>Genes of interest file</summary>
+   <br>
+   A file containing the list of GoI that were the input for the FEA being summarised. The file should contain one GoI per line, each with its corresponding quantitative data measured in the high-throughput 'omics experiment in which the GoI were identified. For example, in an RNA-Seq experiment this could be the log2 fold change observed between an experimental condition and a control condition. Please note: 
   - GoI ***must*** be listed using ***IDs that match those used in the FEA results file***.
   - You will use the [config file](config_template.yml) to tell GeneFEAST which column contains gene IDs, and which column contains quantitative data.
   - If you do not have quantitative data, you can just provide a dummy column with the same *numerical* value entered for each gene.
   - There can be other columns in the file - these will be ignored.
- 
-- **A YAML config file**. You can create one using [this template](config_template.yml).
+</details>
+
+<details>
+   <summary>A YAML config file</summary>
+   <br>
+   You can create one using [this template](config_template.yml).
+</details>
 
 #### In addition, you can also provide GeneFEAST with:
 - Pre-made PNG images for significantly enriched/ over-represented terms. One example might be KEGG pathway images generated as part of the FEA.
