@@ -1,7 +1,12 @@
 # Dependencies and Requirements
 
+## Python version
+Python 3.12
 
 
+## Python packages
+
+```
 'matplotlib == 3.8.4',
 'numpy == 1.26.4',
 'pandas == 2.2.2',
@@ -17,3 +22,9 @@
 'scikit-learn == 1.5.2',
 'python-circos == 0.3.0',
 'pydot == 3.0.2'
+```
+
+## System Dependencies
+```
+[Graphviz](http://www.graphviz.org/), for graph visualization.
+```
