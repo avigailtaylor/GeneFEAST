@@ -10,21 +10,15 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
 ```
 
 ### Option 2:  Install the package and its dependencies locally via pip
+<mark>If you decide to install GeneFEAST, then we **strongly recommend** installing it in a **virtual environment** because the library has several [dependencies and requirements](dependencies_and_requirements.md).</mark>
 
-If you decide to install GeneFEAST, then we **strongly recommend** installing it in a **virtual environment** because the library has several dependencies and requirements:
 
-- python == 3.7
-- matplotlib <= 3.3.3
-- numpy <= 1.17.2
-- pandas <= 0.25.2
-- upsetplot <= 0.4.1
-- goatools <= 1.0.14
-- scipy <= 1.3.2
-- networkx <= 2.5
-- lxml <= 4.4.1
-- beautifulsoup4 <= 4.8.0
-- pillow <= 6.2.0
-- PyYAML <= 5.1.2
+1. Install Python 3.12
+2. Install Graphviz
+3. [Create and activate a virtual environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) 
+4. 
+
+If you decide to install GeneFEAST, then we **strongly recommend** installing it in a **virtual environment** because the library has several [dependencies and requirements](dependencies_and_requirements.md).
 
 
 > Please follow the instructions at the top of **[this guide](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment)** to create and activate a virtual environment. Please only follow the instructions to the end of section **Activating a virtual environment** and then **come back here**.
