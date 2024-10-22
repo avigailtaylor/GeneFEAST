@@ -32,11 +32,10 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
 ##### To run GeneFEAST, you will need:
 
 <details>
-<summary>FEA results file</summary>
-<br>
-CSV file containing the results of a functional enrichment analysis (FEA) that has been run on a list of genes of interest (GoI).
+<summary>Functional enrichment analysis (FEA) results file</summary>
 
-The file should have the following four columns, in this order:
+- CSV file containing the results of a functional enrichment analysis (FEA) that has been run on a list of genes of interest (GoI).
+- The file should have the following four columns, in this order:
 
 |Type|ID |Description|GeneID|
 |----|---|-----------|------|
@@ -48,13 +47,24 @@ The file should have the following four columns, in this order:
 
 <details>
    <summary>Example</summary>
-
+  
    
    |Type|ID|Description|GeneID|
    |----|---|-----------|------|
    |"GO"|"GO:0071774"|"response to fibroblast growth factor"|"CCN2/THBS1/EGR3/FGF2/SPRY4/<br>NDST1/CCL2/IER2/FLRT3/PRKD2/<br>CXCL8/SPRY2/FRS2/FGFR1/SPRY1/<br>RUNX2/HYAL1/KDM5B/NOG/ZFP36L1/<br>COL1A1/CASR/FGFR3/FGF1/EXT1/<br>FGFBP1/GATA3/NR4A1"|
    |"GO"|"GO:0002294"|"CD4-positive alpha-beta T cell differentiation involved in immune response"|"RARA/BCL6/SMAD7/SOCS3/PTGER4/<br>JUNB/ZC3H12A/FOXP1/ENTPD7/NFKBIZ/<br>NLRP3/RC3H1/RORC/RIPK2/ANXA1/<br>RELB/MYB/IL6/LGALS9/GATA3"|
    |"GO"|"GO:2000514"|"regulation of CD4-positive alpha-beta T cell activation"|"RARA/BCL6/SMAD7/JUNB/RUNX1/<br>ZC3H12A/NFKBIZ/NLRP3/RC3H1/CD274/<br>CBLB/RIPK2/ANXA1/AGER/RUNX3/<br>SOCS1/VSIR/PRKCQ/LGALS9/GATA3"|
+
+   This table corresponds to this CSV format:
+```
+Type,ID,Description,GeneID
+    
+"GO","GO:0071774","response to fibroblast growth factor","CCN2/THBS1/EGR3/FGF2/SPRY4/NDST1/CCL2/IER2/FLRT3/PRKD2/CXCL8/SPRY2/FRS2/FGFR1/SPRY1/RUNX2/HYAL1/KDM5B/NOG/ZFP36L1/COL1A1/CASR/FGFR3/FGF1/EXT1/FGFBP1/GATA3/NR4A1"
+"GO","GO:0002294","CD4-positive alpha-beta T cell differentiation involved in immune response","RARA/BCL6/SMAD7/SOCS3/PTGER4/JUNB/ZC3H12A/FOXP1/ENTPD7/NFKBIZ/NLRP3/RC3H1/RORC/RIPK2/ANXA1/RELB/MYB/IL6/LGALS9/GATA3"
+"GO","GO:2000514","regulation of CD4-positive alpha-beta T cell activation","RARA/BCL6/SMAD7/JUNB/RUNX1/ZC3H12A/NFKBIZ/NLRP3/RC3H1/CD274/CBLB/RIPK2/ANXA1/AGER/RUNX3/SOCS1/VSIR/PRKCQ/LGALS9/GATA3"
+``` 
+
+</details>
 </details>
 
 
@@ -74,18 +84,64 @@ The file should have the following four columns, in this order:
 </details>
 
 <details>
-<summary>Genes of interest file</summary>
-   <br>
-   A file containing the list of GoI that were the input for the FEA being summarised. The file should contain one GoI per line, each with its corresponding quantitative data measured in the high-throughput 'omics experiment in which the GoI were identified. For example, in an RNA-Seq experiment this could be the log2 fold change observed between an experimental condition and a control condition. Please note: 
-  - GoI ***must*** be listed using ***IDs that match those used in the FEA results file***.
-  - You will use the [config file](config_template.yml) to tell GeneFEAST which column contains gene IDs, and which column contains quantitative data.
-  - If you do not have quantitative data, you can just provide a dummy column with the same *numerical* value entered for each gene.
-  - There can be other columns in the file - these will be ignored.
+<summary>Genes of interest (GoI) file</summary>
+  
+- CSV file containing the list of Genes of Interest (GoI) that were the input for the FEA being summarised. 
+- The file should contain one GoI per line, each with its corresponding quantitative data as measured in the high-throughput 'omics experiment in which the GoI were identified. 
+  
+  <details>
+   <summary>Example</summary>
+
+   
+   |GeneID|log2FC|
+   |------|------|
+   |PDGFB|2.845276684|
+   |GTPBP4|1.396754262|
+   |C12orf49|1.469143469|
+   |SLC2A1|1.618759309|
+   |CCN2|2.593769464|
+   |CXCR4|2.528192609|
+   |NCOA5|2.137989231|
+   |CDKN1A|3.154969844|
+   |RARA|1.444539048|
+
+  <mark>**NOTE:**</mark>
+  - <mark>GoI ***must*** be listed using ***IDs that match those used in the FEA results file***.</mark>
+  - <mark>If you do not have quantitative data, you can just provide a dummy column with the same *numerical* value entered for each gene.</mark>
+
+</details>
 </details>
 
 <details>
-   <summary>A YAML config file</summary>
+   <summary>A YAML setup file</summary>
    <br>
+You will use your setup file to tell GeneFEAST the id(s) of the FEA(s) to summarise, the location(s) of the FEA file(s), and the location(s) of the GoI file(s).
+<br>
+To summarise a single FEA:
+
+```
+FEAs:
+    - id: "FEA_1"
+      goi_file_path: "full/file/path/to/goi_file_for_FEA_1"
+      fea_file_path: "full/file/path/to/FEA_1_results_file"
+```
+
+To summarise a multiple FEAs (e.g. three FEAs):
+```
+FEAs:
+    - id: "FEA_1"
+      goi_file_path: "full/file/path/to/goi_file_for_FEA_1"
+      fea_file_path: "full/file/path/to/FEA_1_results_file"
+
+    - id: "FEA_2"
+      goi_file_path: "full/file/path/to/goi_file_for_FEA_2"
+      fea_file_path: "full/file/path/to/FEA_2_results_file"
+
+    - id: "FEA_3"
+      goi_file_path: "full/file/path/to/goi_file_for_FEA_3"
+      fea_file_path: "full/file/path/to/FEA_3_results_file"
+```
+  
    You can create one using [this template](config_template.yml).
 </details>
 
