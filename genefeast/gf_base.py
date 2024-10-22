@@ -117,12 +117,12 @@ def get_meta_info_from_setup(setup_yaml_path):
                 mi_list = setup.get("FEAs")
                 for exp_mi in mi_list:
                     if(not("id" in exp_mi.keys()) 
-                        or not("gene_qd_file_path" in exp_mi.keys()) 
+                        or not("goi_file_path" in exp_mi.keys()) 
                         or not("fea_file_path" in exp_mi.keys())):
                         
                         status = 3
                         message = ('*** ERROR: One of the FEAs listed in setup YAML file is '
-                                   'missing one or more of "id", "gene_qd_file_path", or "fea_file_path." ***')
+                                   'missing one or more of "id", "goi_file_path", or "fea_file_path." ***')
                         return(status, message, collections.OrderedDict(), [])
                     else:
                         if("input_img_dir" in exp_mi.keys()):
@@ -132,7 +132,7 @@ def get_meta_info_from_setup(setup_yaml_path):
                         
                         
                         exp_id = exp_mi["id"]
-                        gene_qd_file_path = exp_mi["gene_qd_file_path"]
+                        gene_qd_file_path = exp_mi["goi_file_path"]
                         ora_file_path = exp_mi["fea_file_path"]
                         
                         if(exp_id in mi_dict):
