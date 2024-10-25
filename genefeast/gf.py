@@ -22,7 +22,7 @@ from networkx.algorithms.community import greedy_modularity_communities
 
 from genefeast import gf_base as gfb
 from genefeast import gf_classes as gfc
-
+from genefeast import gf_multi
 
 def main():
     warnings.filterwarnings("ignore", category=FutureWarning)
@@ -42,7 +42,18 @@ def main():
 #        setup = yaml.safe_load(ymlfile)
         
     #gf(args.setup_yaml_path, args.output_dir, setup["cfg_yaml_path"])
-    gf(args.setup_yaml_path, args.output_dir)
+    (status, message, _mi_dict, _exp_ids) = gfb.get_meta_info_from_setup(args.setup_yaml_path) # mi short for meta input
+    if(status > 0):
+        print(message)
+        sys.exit()
+        
+    if(len(_exp_ids)>1):
+        print("**********\nMultiple FEAs detected. Proceeding with multi FEA report generation.\n**********")
+        gf_multi.gf_multi(args.setup_yaml_path, args.output_dir)
+    else:
+        print("**********\nSingle FEA detected. Proceeding with single FEA report generation.\n**********")
+        gf(args.setup_yaml_path, args.output_dir)
+    
 
 
 #def gf(mif_path, output_dir, cfg_yaml_path):

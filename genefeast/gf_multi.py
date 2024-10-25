@@ -27,7 +27,7 @@ from upsetplot import from_contents
 
 from genefeast import gf_base as gfb
 from genefeast import gf_classes as gfc
-
+#from genefeast import gf
 
 def main():
     warnings.filterwarnings("ignore", category=FutureWarning)
@@ -47,7 +47,17 @@ def main():
 #        setup = yaml.safe_load(ymlfile)
         
     #gf_multi(args.setup_yaml_path, args.output_dir, setup["cfg_yaml_path"])
-    gf_multi(args.setup_yaml_path, args.output_dir)
+    
+    (status, message, _mi_dict, _exp_ids) = gfb.get_meta_info_from_setup(args.setup_yaml_path) # mi short for meta input
+    if(status > 0):
+        print(message)
+        sys.exit()
+    
+    if(len(_exp_ids)==1):
+        print("**********\nSingle FEA detected. Exiting now. Please use gf instead of gf_multi.\n**********")
+        sys.exit()
+    else:
+        gf_multi(args.setup_yaml_path, args.output_dir)
 
 
 #def gf_multi(mif_path, output_dir, cfg_yaml_path):
