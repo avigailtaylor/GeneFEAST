@@ -26,10 +26,11 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
 * Unix/macOS: `pip install genefeast`
 * Windows: `py -m pip install genefeast`
 
+---
 
 ### Usage
 
-##### To run GeneFEAST, you will need:
+#### To run GeneFEAST, you will need:
 
 <details>
 <summary>Functional enrichment analysis (FEA) results file</summary>
@@ -71,6 +72,9 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
   </tr>
 </table>
 
+<br>
+This table corresponds to this CSV format:
+
 ```
 Type,ID,Description,GeneID
     
@@ -80,6 +84,7 @@ Type,ID,Description,GeneID
 ``` 
 
 </details>
+<hr>
 </details>
 
 <details>
@@ -91,24 +96,24 @@ Type,ID,Description,GeneID
   <details>
    <summary>Example</summary>
 
-<table>
-   <tr><td><b>GeneID</b></td><td><b>log2FC</b></td></tr>
-   <tr><td>PDGFB</td><td>2.845276684</td></tr>
-   <tr><td>GTPBP4</td><td>1.396754262</td></tr>
-   <tr><td>C12orf49</td><td>1.469143469</td></tr>
-   <tr><td>SLC2A1</td><td>1.618759309</td></tr>
-   <tr><td>CCN2</td><td>2.593769464</td></tr>
-   <tr><td>CXCR4</td><td>2.528192609</td></tr>
-   <tr><td>NCOA5</td><td>2.137989231</td></tr>
-   <tr><td>CDKN1A</td><td>3.154969844</td></tr>
-   <tr><td>RARA</td><td>1.444539048</td></tr>
-</table>
+  <table>
+      <tr><td><b>GeneID</b></td><td><b>log2FC</b></td></tr>
+       <tr><td>PDGFB</td><td>2.845276684</td></tr>
+       <tr><td>GTPBP4</td><td>1.396754262</td></tr>
+       <tr><td>C12orf49</td><td>1.469143469</td></tr>
+       <tr><td>SLC2A1</td><td>1.618759309</td></tr>
+       <tr><td>CCN2</td><td>2.593769464</td></tr>
+       <tr><td>CXCR4</td><td>2.528192609</td></tr>
+       <tr><td>NCOA5</td><td>2.137989231</td></tr>
+       <tr><td>CDKN1A</td><td>3.154969844</td></tr>
+       <tr><td>RARA</td><td>1.444539048</td></tr>
+  </table>
 
   <mark>**NOTE:**</mark>
   - <mark>GoI ***must*** be listed using ***IDs that match those used in the FEA results file***.</mark>
   - <mark>If you do not have quantitative data, you can just provide a dummy column with the same *numerical* value entered for each gene.</mark>
-
-</details>
+  </details>
+<hr>
 </details>
 
 <details>
@@ -142,6 +147,7 @@ FEAs:
 ```
   
    You can create one using [this template](setup_template.yml).
+<hr>
 </details>
 
 <br>
@@ -175,11 +181,12 @@ DOTPLOTS: True
 ```
 You can create a setup YAML file with these additional lines of code using [this template](setup_template_2.yml).
 
+<hr>
 </details>
 
 
 <details>
-  <summary>Search terms for to be searched for alongside your GoI</summary>
+  <summary>Search terms for to be searched for alongside your GoI.</summary>
   <br>
 
 As part of the report generation process, GeneFEAST conducts a literature search for each GoI, via the National Center for Biotechnology Information's Gene and PubMed services (Sayers, et al., 2021). This literature search can incorporate additional search terms, which you can specify in your YAML setup file using the following code:
@@ -192,10 +199,39 @@ SEARCH_WORDS:
 ```
 You can create a setup YAML file with these additional lines of code using [this template](setup_template_3.yml).
 
+<hr>
 </details>
 
+<details>
+  <summary>Extra annotations for genes</summary>
+  <br>
 
+Sometimes, you may wish to keep track of an *a priori* set of genes relevant to your study, for example those that are members of a particular biological signature, throughout the GeneFEAST report.
 
+<br>
+
+To do this, first make an extra annotation (EA) file. The EA file is a headerless CSV file with one EA per row, and two columns:
+
+- The first column is the extra annotation name.
+- The second column is a "/"-separated list of gene IDs to be labelled with the EA.
+
+Example EA file:
+
+```
+RNA_DRG_IFN,STAT1/IFI16/SP110/MX1/IFIT5/PARP12/EIF2AK2/IFI44/PARP14/TRIM21/DDX60L/IFI127/ADAR/HERC6/IFI35/ISG20/LGALS9/UBE2L6/DHX58/STAT2/OAS3/ISG15/IRF7/IFI6/IFI44L/IFITM1/OAS1/D$
+Proteome_DRG_IFN,IFIT2/IFIT1/IFIT3/OAS2/MX2/OASL/IFIH1/ISG15/MX1/SP110/IFI44/CMPK2/IFI44L/OAS1/DDX58/STAT1/IFIT5/DDX60/PARP12/IFI16/DDX60L/OAS3/EIF2AK2/ISG20/ADAR/IFI35/STAT2/LGAL$
+```
+
+Then, add this line of code to your setup YAML file:
+
+```
+EA_FILE: full/path/to/ea_file
+```
+
+You can create a setup YAML file with these additional lines of code using [this template](setup_template_4.yml).
+
+<hr>
+</details>
 
 
 
@@ -216,15 +252,6 @@ You can create a setup YAML file with these additional lines of code using [this
 - MSIGDB HTML file.
   - GeneFEAST ships with an MSIGDB HTML file containing an HTML tabular summary of each MSIGDB term, but if you want to provide a more recent version of this yourself, you can provide a path to this file in the [config file](config_template.yml).
 
-#### Finally, before running GeneFEAST, create a meta-input file:
-- Headerless, comma-separated file.
-- One row per FEA to be summarised.
-- Four fields per row:
-  - FEA name/ identifier. (**Required**)
-    - This should **match**, or somehow make reference to, the **'omics experiment** used to identify the GoI that were input into the FEA. **Must be unique**.
-  - Path to FEA results file. (**Required**)
-  - Path to Genes of interest file. (**Required**)
-  - Path to additional images directory. (Optional. You can leave this field blank.)
 
 ---
 
