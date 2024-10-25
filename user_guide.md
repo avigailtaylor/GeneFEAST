@@ -172,7 +172,7 @@ FEAs:
   - <mark>Columns GeneRatio through count are output by enrichR, however, you will need to add the "Type" column using e.g. Excel or VIM.</mark>
 
 <br>
-When using enrichR, you will need to add the following line to your YAML setup file:
+When using enrichR formatted FEA results, you will need to add the following line to your YAML setup file:
 
 <pre><code>
 ENRICHR: True
