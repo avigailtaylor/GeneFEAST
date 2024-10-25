@@ -160,6 +160,33 @@ FEAs:
 </details>
 
 #### In addition, you can also provide GeneFEAST with:
+<details>
+  <summary>An <a href="https://cran.r-project.org/web/packages/enrichR/vignettes/enrichR.html">enrichR</a> formatted FEA results file.</summary>
+  <br>
+  
+<table>
+  <tr>
+    <td><b>Type</b></td><td><b>GeneRatio</b></td><td><b>BgRatio</b></td><td><b>pvalue</b></td>
+    <td><b>p.adjust</b></td><td><b>qvalue</b></td><td><b>geneID</b></td><td><b>count</b></td>
+  </tr>
+</table>
+
+<mark>**NOTE:**</mark>
+  - <mark>Columns GeneRatio through count are output by enrichR, however, you will need to add the "Type" column using e.g. Excel or VIM.</mark>
+
+<br>
+When using enrichR, you will need to add the following line to your YAML setup file:
+```
+ENRICHR: True
+```
+You can then also add this line if you want GeneFEAST to output dot plots of your FEA results:
+```
+DOTPLOTS: True
+```
+You can create a setup YAML file with these additional lines of code using [this template](setup_template_2.yml).
+
+</details>
+- An <a href="https://cran.r-project.org/web/packages/enrichR/vignettes/enrichR.html">enrichR</a> formatted FEA results file
 - Pre-made PNG images for significantly enriched/ over-represented terms. One example might be KEGG pathway images generated as part of the FEA.
   - For each FEA being summarised you have the option of providing a directory (folder) containing at most one image for each enriched/ over-represented term identified in that FEA.
   - The path for this directory will be given along with the FEA results and genes of interest files (described above), when the main call to GeneFEAST is made. Note that these paths will be provided in a simple **meta-input** file which you will need to compose prior to running GeneFEAST. Instructions for writing this file are in the next section, below.
