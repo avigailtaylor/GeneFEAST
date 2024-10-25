@@ -75,7 +75,7 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
 <br>
 This table corresponds to this CSV format:
 
-```
+````
 
 Type,ID,Description,GeneID
     
@@ -83,7 +83,7 @@ Type,ID,Description,GeneID
 "GO","GO:0002294","CD4-positive alpha-beta T cell differentiation involved in immune response","RARA/BCL6/SMAD7/SOCS3/PTGER4/JUNB/ZC3H12A/FOXP1/ENTPD7/NFKBIZ/NLRP3/RC3H1/RORC/RIPK2/ANXA1/RELB/MYB/IL6/LGALS9/GATA3"
 "GO","GO:2000514","regulation of CD4-positive alpha-beta T cell activation","RARA/BCL6/SMAD7/JUNB/RUNX1/ZC3H12A/NFKBIZ/NLRP3/RC3H1/CD274/CBLB/RIPK2/ANXA1/AGER/RUNX3/SOCS1/VSIR/PRKCQ/LGALS9/GATA3"
 
-``` 
+````
 
 </details>
 <hr>
