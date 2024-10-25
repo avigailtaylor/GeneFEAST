@@ -310,6 +310,85 @@ However, all of these parameters can be over-written by the user to potentially 
 
 ```
 
+# **************************************************************************************************************************
+# *** Parameters for filtering terms prior to summarisation ***
+# **************************************************************************************************************************
+
+MIN_NUM_GENES: 5
+# Number of genes of interest that a term must annotate in order to be included in the GeneFEAST report.
+
+MAX_DCNT: 50
+MIN_LEVEL: 3
+# These parameters pertain to GO terms. 
+# MAX_DCNT means maximum descendant count allowed for a GO term to be included in the GeneFEAST summary report.
+# MIN_LEVEL means the minimum level in the GO hierarchy that GO term must have to be included in the GeneFEAST summary report.
+# Please refer to article https://doi.org/10.1038/s41598-018-28948-z for further explanation of these terms.
+
+# **************************************************************************************************************************
+# *** Parameters affecting how terms and communities are clustered into communities and meta communities, respectively ***
+# **************************************************************************************************************************
+
+TT_OVERLAP_MEASURE: OC
+# Overlap measure to use when calculating the gene set overlap between terms. Two values are recognised:
+# OC (Overlap Coefficient)
+# J (Jaccard Index)
+# We recommend using OC here.
+
+MIN_WEIGHT_TT_EDGE: 0.5
+# Minimum gene set overlap between terms (as measured using TT_OVERLAP_MEASURE) required for two terms to be
+# connected (i.e. to have an edge between them) in the term-term network that GeneFEAST constructs prior to finding
+# communities of terms. (Please see GeneFEAST paper for further details).
+
+SC_BC_OVERLAP_MEASURE: OC
+# Overlap measure to use when calculating the gene set overlap between a term and a community of terms. Two values are recognised:
+# OC (Overlap Coefficient)
+# J (Jaccard Index)
+# We recommend using OC here.
+
+MIN_WEIGHT_SC_BC: 0.25
+# Minimum gene set overlap required between a term and a community of terms for that term to be considered weakly connected
+# to the community of terms (i.e. having some connectivtity to the community, but not enough to be considered part of that community).
+
+BC_BC_OVERLAP_MEASURE: J
+# Overlap measure to use when calculating the gene set overlap between two communities of terms. Two values are recognised:
+# OC (Overlap Coefficient)
+# J (Jaccard Index)
+
+MIN_WEIGHT_BC_BC: 0.1
+# Minimum gene set overlap required between two communities of terms for those two communities to be connected (i.e. to 
+# have an edge between them) in the community-community network that GeneFEAST constructs prior to finding
+# meta-communities of communities. (Please see GeneFEAST paper for further details).
+
+MAX_CLUSTER_SIZE_THRESH: 15
+MAX_META_COMMUNITY_SIZE_THRESH: 15
+# In GeneFEAST, the size communities and meta communities is attenuated using an adaptive algorithm (see main paper for details).
+# These two values are parameters for the adaptive algorithm, which will ensure that community and meta-community sizes do
+# not exceed these thresholds.
+
+COMBINE_TERM_TYPES: False
+# If you are using GeneFEAST to summarize terms from multiple databases, such that the set of terms to be summarised contains more than one type,
+# then you can choose either to only allow clustering of terms when terms are from the same database/ share their type (COMBINE_TERM_TYPES: False),
+# or to allow the clustering of terms into communities comprised of terms from different databases (COMBINE_TERM_TYPES: True).
+
+
+# **************************************************************************************************************************
+# *** Parameters affecting display of heatmaps and dot plots ***
+# **************************************************************************************************************************
+
+QUANT_DATA_TYPE: log2 FC
+# This is the label for the colourmap legend in the split heatmaps
+
+HEATMAP_WIDTH_MIN: 10
+HEATMAP_HEIGHT_MIN: 5
+# These parameters control the size of the split heatmaps. These may need adjusting depending on the size of your display.
+
+HEATMAP_MIN: -4
+HEATMAP_MAX: 4
+# These parameters give the range of values expected for the provided quantitative data type, and will be used to set the scale
+# for the colourmap used in the split heatmap. You should adjust these to match your data. In the case that you do not have 
+# quantitative data for your genes of interest and have replaced this column with a singular, dummy, variable, you should set these
+# values so that your dummy value is in the range.
+
 ```
   
 </details>
