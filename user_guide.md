@@ -38,11 +38,8 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
 - The file should have the following four columns, in this order:
 
 <table>
-  <tr><td><b>Type</b></td><td>ID</td><td>Description</td><td>GeneID</td></tr>
+  <tr><td><b>Type</b></td><td><b>ID</b></td><td><b>Description</b></td><td><b>GeneID</b></td></tr>
 </table>
-
-|Type|ID |Description|GeneID|
-|----|---|-----------|------|
   
     - Type: Term type/ originating database
     - ID: Term ID in database
@@ -52,6 +49,28 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
 <details>
    <summary>Example</summary>
   
+<table>
+  <tr><td><b>Type</b></td><td><b>ID</b></td><td><b>Description</b></td><td><b>GeneID</b></td></tr>
+  <tr>
+    <td>"GO"</td>
+    <td>"GO:0071774"</td>
+    <td>"response to fibroblast growth factor"</td>
+    <td>"CCN2/THBS1/EGR3/FGF2/SPRY4/<br>NDST1/CCL2/IER2/FLRT3/PRKD2/<br>CXCL8/SPRY2/FRS2/FGFR1/SPRY1/<br>RUNX2/HYAL1/KDM5B/NOG/ZFP36L1/<br>COL1A1/CASR/FGFR3/FGF1/EXT1/<br>FGFBP1/GATA3/NR4A1"</td>
+  </tr>
+  <tr>
+    <td>"GO"</td>
+    <td>"GO:0002294"</td>
+    <td>"CD4-positive alpha-beta T cell differentiation involved in immune response"</td>
+    <td>"RARA/BCL6/SMAD7/SOCS3/PTGER4/<br>JUNB/ZC3H12A/FOXP1/ENTPD7/NFKBIZ/<br>NLRP3/RC3H1/RORC/RIPK2/ANXA1/<br>RELB/MYB/IL6/LGALS9/GATA3"</td>
+  </tr>
+  <tr>
+    <td>"GO"</td>
+    <td>"GO:2000514"</td>
+    <td>"regulation of CD4-positive alpha-beta T cell activation"</td>
+    <td>"RARA/BCL6/SMAD7/JUNB/RUNX1/<br>ZC3H12A/NFKBIZ/NLRP3/RC3H1/CD274/<br>CBLB/RIPK2/ANXA1/AGER/RUNX3/<br>SOCS1/VSIR/PRKCQ/LGALS9/GATA3"</td>
+  </tr>
+</table>
+
    
    |Type|ID|Description|GeneID|
    |----|---|-----------|------|
@@ -84,7 +103,6 @@ Type,ID,Description,GeneID
   - geneID (**Required**. This should be a list of gene IDs separated using the "/" symbol. The gene IDs ***must match*** those used in the genes of interest file (see next))
   - count (Required only when dot plots are switched on. This is the number of genes of interest annotated with the term. This should match the length of the list of genes given in the geneID column.)
 
-</details>
 </details>
 
 <details>
