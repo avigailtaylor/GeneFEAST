@@ -156,7 +156,7 @@ FEAs:
       fea_file_path: "full/file/path/to/FEA_3_results_file"
 ```
   
-   You can create one using [this template](config_template.yml).
+   You can create one using [this template](setup_template.yml).
 </details>
 
 #### In addition, you can also provide GeneFEAST with:
