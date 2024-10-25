@@ -71,14 +71,6 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
   </tr>
 </table>
 
-   
-   |Type|ID|Description|GeneID|
-   |----|---|-----------|------|
-   |"GO"|"GO:0071774"|"response to fibroblast growth factor"|"CCN2/THBS1/EGR3/FGF2/SPRY4/<br>NDST1/CCL2/IER2/FLRT3/PRKD2/<br>CXCL8/SPRY2/FRS2/FGFR1/SPRY1/<br>RUNX2/HYAL1/KDM5B/NOG/ZFP36L1/<br>COL1A1/CASR/FGFR3/FGF1/EXT1/<br>FGFBP1/GATA3/NR4A1"|
-   |"GO"|"GO:0002294"|"CD4-positive alpha-beta T cell differentiation involved in immune response"|"RARA/BCL6/SMAD7/SOCS3/PTGER4/<br>JUNB/ZC3H12A/FOXP1/ENTPD7/NFKBIZ/<br>NLRP3/RC3H1/RORC/RIPK2/ANXA1/<br>RELB/MYB/IL6/LGALS9/GATA3"|
-   |"GO"|"GO:2000514"|"regulation of CD4-positive alpha-beta T cell activation"|"RARA/BCL6/SMAD7/JUNB/RUNX1/<br>ZC3H12A/NFKBIZ/NLRP3/RC3H1/CD274/<br>CBLB/RIPK2/ANXA1/AGER/RUNX3/<br>SOCS1/VSIR/PRKCQ/LGALS9/GATA3"|
-
-   This table corresponds to this CSV format:
 ```
 Type,ID,Description,GeneID
     
