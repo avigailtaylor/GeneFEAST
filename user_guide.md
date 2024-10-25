@@ -210,6 +210,11 @@ Sometimes, you may wish to keep track of an *a priori* set of genes relevant to 
 
 <br>
 
+Each extra annotation will be displayed as an additional row at the top of the term-GoI heatmap panel in the [split heatmap](split_heatmaps.md) created for each community of terms 
+(similarly for each meta community of communities).
+
+<br>
+
 To do this, first make an extra annotation (EA) file. The EA file is a headerless CSV file with one EA per row, and two columns:
 
 - The first column is the extra annotation name.
@@ -225,7 +230,7 @@ Proteome_DRG_IFN,IFIT2/IFIT1/IFIT3/OAS2/MX2/OASL/IFIH1/ISG15/MX1/SP110/IFI44/CMP
 Then, add this line of code to your setup YAML file:
 
 ```
-EA_FILE: full/path/to/ea_file
+EA_FILE: full/path/to/EA_file
 ```
 
 You can create a setup YAML file with these additional lines of code using [this template](setup_template_4.yml).
@@ -233,20 +238,31 @@ You can create a setup YAML file with these additional lines of code using [this
 <hr>
 </details>
 
+<details>
+<summary>Pre-made PNG images for significantly enriched/ over-represented terms. One example might be KEGG pathway images generated as part of the FEA.</summary>
+<br>
+For each FEA being summarised you have the option of providing a directory (folder) containing <b>at most one image</b> for each enriched term identified in that FEA.
+<br>
+In the setup YAML file, do this by specifying the path to the image directory for an FEA by adding the field "input_image_dir" to that FEA's record:
 
+```
+FEAs:
+    - id: "FEA_1"
+      goi_file_path: "full/file/path/to/goi_file_for_FEA_1"
+      fea_file_path: "full/file/path/to/FEA_1_results_file"
+      input_img_dir: "full/path/to/image_directory_for_FEA_1"
+```
 
-- Pre-made PNG images for significantly enriched/ over-represented terms. One example might be KEGG pathway images generated as part of the FEA.
-  - For each FEA being summarised you have the option of providing a directory (folder) containing at most one image for each enriched/ over-represented term identified in that FEA.
-  - The path for this directory will be given along with the FEA results and genes of interest files (described above), when the main call to GeneFEAST is made. Note that these paths will be provided in a simple **meta-input** file which you will need to compose prior to running GeneFEAST. Instructions for writing this file are in the next section, below.
-  - > **IMPORTANT**
+You can create a setup YAML file with this additional lines of code using [this template](setup_template_5.yml).
+
+- > **IMPORTANT**
     > - GeneFEAST automatically generates a GO hierarchy for all terms with a Type string starting "GO" (or "go", "Go", and "gO"; case is ignored). So, if you provide a corresponding image for such a term, this will be ignored. The work around here, should you wish to provide alternative images for GO terms, is to change their Type field in the FEA file to be something other than a string starting with "GO" (or "go", "Go", and "gO").
     > - Similarly, for MSIGDB terms, GeneFEAST will always try to include an HTML tabular description of the term, and any provided image will be ignored. As for GO terms, the work around here is to change the Type field in the FEA file to be something other than a string starting with "MSIGDB" (or any other case variant).
-- Search terms for to be searched for alongside your GoI.
-  - As part of the report generation process, GeneFEAST conducts a literature search for each GoI, via the National Center for Biotechnology Information's Gene and PubMed services (Sayers, et al., 2021). You can provide a list of search terms via the [config file](config_template.yml), and the literature search will incorporate them.
-- Extra annotations for genes.
-  - Sometimes, you may wish to keep track of an *a priori* set of genes relevant to your study, for example those that are members of a particular biological signature, throughout the GeneFEAST report. To do this, you can provide GeneFEAST with an extra annotation (EA) file. The EA file is a headerless, comma-separated file with one extra annotation per row, and two columns: The first column is the extra annotation name, and the second column is the list of genes to be labelled with the extra annotation. Note that this list must be delimited using the "/" symbol.
-  - Each extra annotation will be displayed as an additional row at the top of the term-GoI heatmap panel in the [split heatmap](split_heatmaps.md) created for each community of terms (similarly for each meta community of communities).
-  - In order for GeneFEAST to use the EA file, you need to provide a path to it in the  [config file](config_template.yml).
+
+<hr>
+</details>
+
+
 - A GO OBO file
   - GeneFEAST ships with a GO OBO file, but if you want to provide a more recent version of this yourself, you can provide a path to this file in the [config file](config_template.yml).
 - MSIGDB HTML file.
