@@ -82,21 +82,6 @@ Type,ID,Description,GeneID
 </details>
 </details>
 
-
-<details>
-<summary>Optional/ Advanced: Format <a href="https://cran.r-project.org/web/packages/enrichR/vignettes/enrichR.html">enrichR</a> output for use with GeneFEAST</summary>
-<br>
-   
-  - GeneRatio (Required only when dot plots are switched on)
-  - BgRatio (Required only when dot plots are switched on)
-  - pvalue (Optional; field can be empty) 
-  - p.adjust (Required only when dot plots are switched on)
-  - qvalue (Optional; field can be empty)
-  - geneID (**Required**. This should be a list of gene IDs separated using the "/" symbol. The gene IDs ***must match*** those used in the genes of interest file (see next))
-  - count (Required only when dot plots are switched on. This is the number of genes of interest annotated with the term. This should match the length of the list of genes given in the geneID column.)
-
-</details>
-
 <details>
 <summary>Genes of interest (GoI) file</summary>
   
@@ -159,15 +144,18 @@ FEAs:
    You can create one using [this template](setup_template.yml).
 </details>
 
+<br>
+
 #### In addition, you can also provide GeneFEAST with:
 <details>
-  <summary>An <a href="https://cran.r-project.org/web/packages/enrichR/vignettes/enrichR.html">enrichR</a> formatted FEA results file.</summary>
+  <summary>An <a href="https://cran.r-project.org/web/packages/enrichR/vignettes/enrichR.html">enrichR</a> formatted FEA results file <b>instead of</b> the basic FEA results file described above. This is useful if you want GeneFEAST to create dot plots of your FEA results.</summary>
   <br>
   
 <table>
   <tr>
-    <td><b>Type</b></td><td><b>GeneRatio</b></td><td><b>BgRatio</b></td><td><b>pvalue</b></td>
-    <td><b>p.adjust</b></td><td><b>qvalue</b></td><td><b>geneID</b></td><td><b>count</b></td>
+    <td><b>Type</b></td><td><b>ID</b></td><td><b>Description</b></td>
+    <td><b>GeneRatio</b></td><td><b>BgRatio</b></td><td><b>pvalue</b></td>
+    <td><b>p.adjust</b></td><td><b>qvalue</b></td><td><b>GeneID</b></td><td><b>count</b></td>
   </tr>
 </table>
 
@@ -176,17 +164,41 @@ FEAs:
 
 <br>
 When using enrichR, you will need to add the following line to your YAML setup file:
+
 ```
 ENRICHR: True
 ```
 You can then also add this line if you want GeneFEAST to output dot plots of your FEA results:
+
 ```
 DOTPLOTS: True
 ```
 You can create a setup YAML file with these additional lines of code using [this template](setup_template_2.yml).
 
 </details>
-- An <a href="https://cran.r-project.org/web/packages/enrichR/vignettes/enrichR.html">enrichR</a> formatted FEA results file
+
+
+<details>
+  <summary>Search terms for to be searched for alongside your GoI</summary>
+  <br>
+
+As part of the report generation process, GeneFEAST conducts a literature search for each GoI, via the National Center for Biotechnology Information's Gene and PubMed services (Sayers, et al., 2021). This literature search can incorporate additional search terms, which you can specify in your YAML setup file using the following code:
+
+```
+SEARCH_WORDS:
+- search term 1
+- search term 2
+- etc.
+```
+You can create a setup YAML file with these additional lines of code using [this template](setup_template_3.yml).
+
+</details>
+
+
+
+
+
+
 - Pre-made PNG images for significantly enriched/ over-represented terms. One example might be KEGG pathway images generated as part of the FEA.
   - For each FEA being summarised you have the option of providing a directory (folder) containing at most one image for each enriched/ over-represented term identified in that FEA.
   - The path for this directory will be given along with the FEA results and genes of interest files (described above), when the main call to GeneFEAST is made. Note that these paths will be provided in a simple **meta-input** file which you will need to compose prior to running GeneFEAST. Instructions for writing this file are in the next section, below.
