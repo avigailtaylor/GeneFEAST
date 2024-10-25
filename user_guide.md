@@ -125,15 +125,16 @@ You will use your setup file to tell GeneFEAST the id(s) of the FEA(s) to summar
 <br>
 To summarise a single FEA:
 
-```
+<pre><code>
 FEAs:
     - id: "FEA_1"
       goi_file_path: "full/file/path/to/goi_file_for_FEA_1"
       fea_file_path: "full/file/path/to/FEA_1_results_file"
-```
+</code></pre>
 
 To summarise a multiple FEAs (e.g. three FEAs):
-```
+
+<pre><code>
 FEAs:
     - id: "FEA_1"
       goi_file_path: "full/file/path/to/goi_file_for_FEA_1"
@@ -146,7 +147,7 @@ FEAs:
     - id: "FEA_3"
       goi_file_path: "full/file/path/to/goi_file_for_FEA_3"
       fea_file_path: "full/file/path/to/FEA_3_results_file"
-```
+</code></pre>
   
    You can create one using [this template](setup_template.yml).
 <hr>
@@ -173,14 +174,14 @@ FEAs:
 <br>
 When using enrichR, you will need to add the following line to your YAML setup file:
 
-```
+<pre><code>
 ENRICHR: True
-```
+</code></pre>
 You can then also add this line if you want GeneFEAST to output dot plots of your FEA results:
 
-```
+<pre><code>
 DOTPLOTS: True
-```
+</code></pre>
 You can create a setup YAML file with these additional lines of code using [this template](setup_template_2.yml).
 
 <hr>
@@ -193,12 +194,12 @@ You can create a setup YAML file with these additional lines of code using [this
 
 As part of the report generation process, GeneFEAST conducts a literature search for each GoI, via the National Center for Biotechnology Information's Gene and PubMed services (Sayers, et al., 2021). This literature search can incorporate additional search terms, which you can specify in your YAML setup file using the following code:
 
-```
+<pre><code>
 SEARCH_WORDS:
 - search term 1
 - search term 2
 - etc.
-```
+</code></pre>
 You can create a setup YAML file with these additional lines of code using [this template](setup_template_3.yml).
 
 <hr>
@@ -226,16 +227,16 @@ To do this, first make an extra annotation (EA) file. The EA file is a headerles
 
 Example EA file:
 
-```
+<pre><code>
 RNA_DRG_IFN,STAT1/IFI16/SP110/MX1/IFIT5/PARP12/EIF2AK2/IFI44/PARP14/TRIM21/DDX60L/IFI127/ADAR/HERC6/IFI35/ISG20/LGALS9/UBE2L6/DHX58/STAT2/OAS3/ISG15/IRF7/IFI6/IFI44L/IFITM1/OAS1/D$
 Proteome_DRG_IFN,IFIT2/IFIT1/IFIT3/OAS2/MX2/OASL/IFIH1/ISG15/MX1/SP110/IFI44/CMPK2/IFI44L/OAS1/DDX58/STAT1/IFIT5/DDX60/PARP12/IFI16/DDX60L/OAS3/EIF2AK2/ISG20/ADAR/IFI35/STAT2/LGAL$
-```
+</code></pre>
 
 Then, add this line of code to your setup YAML file:
 
-```
+<pre><code>
 EA_FILE: full/path/to/EA_file
-```
+</code></pre>
 
 You can create a setup YAML file with these additional lines of code using [this template](setup_template_4.yml).
 
@@ -243,20 +244,25 @@ You can create a setup YAML file with these additional lines of code using [this
 </details>
 
 <details>
+
+  
 <summary>Pre-made PNG images for significantly enriched/ over-represented terms. One example might be KEGG pathway images generated as part of the FEA.</summary>
+
 <br>
+
 For each FEA being summarised you have the option of providing a directory (folder) containing <b>at most one image</b> for each enriched term identified in that FEA.
 
 <br>
+
 In the setup YAML file, do this by specifying the path to the image directory for an FEA by adding the field "input_image_dir" to that FEA's record:
 
-```
+<pre><code>
 FEAs:
     - id: "FEA_1"
       goi_file_path: "full/file/path/to/goi_file_for_FEA_1"
       fea_file_path: "full/file/path/to/FEA_1_results_file"
       input_img_dir: "full/path/to/image_directory_for_FEA_1"
-```
+</code></pre>
 
 You can create a setup YAML file with this additional lines of code using [this template](setup_template_5.yml).
 
@@ -272,9 +278,9 @@ You can create a setup YAML file with this additional lines of code using [this 
 <br>
 GeneFEAST ships with a GO OBO file, but if you want to provide a more recent version of this yourself, you can do so in the setup YAML file by adding this line of code:
 
-```
+<pre><code>
 OBO_FILE: "full/path/to/GO_OBO_file"
-```
+</code></pre>
 
 <hr>
 </details>
@@ -285,9 +291,9 @@ OBO_FILE: "full/path/to/GO_OBO_file"
 <br>
 GeneFEAST ships with an MSIGDB HTML file containing an HTML tabular summary of each MSIGDB term, but if you want to provide a more recent version of this yourself, you can do so in the setup YAML file by adding this line of code:
 
-```
+<pre><code>
 MSIGDB_HTML: "full/path/to/MSIGDB_HTML_file"
-```
+</code></pre>
 
 <hr>
 </details>
@@ -310,7 +316,7 @@ However, all of these parameters can be over-written by the user to potentially 
 
 <summary>The user can over-write these parameters by setting them in the setup YAML file:</summary>
 
-```
+<pre><code>
 
 # **************************************************************************************************************************
 # *** Parameters for filtering terms prior to summarisation ***
@@ -391,7 +397,7 @@ HEATMAP_MAX: 4
 # quantitative data for your genes of interest and have replaced this column with a singular, dummy, variable, you should set these
 # values so that your dummy value is in the range.
 
-```
+</code></pre>
   
 </details>
 
