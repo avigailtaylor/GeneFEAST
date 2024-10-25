@@ -186,7 +186,7 @@ You can create a setup YAML file with these additional lines of code using [this
 
 
 <details>
-  <summary>Search terms for to be searched for alongside your GoI.</summary>
+  <summary>Search terms to be searched for alongside your GoI.</summary>
   <br>
 
 As part of the report generation process, GeneFEAST conducts a literature search for each GoI, via the National Center for Biotechnology Information's Gene and PubMed services (Sayers, et al., 2021). This literature search can incorporate additional search terms, which you can specify in your YAML setup file using the following code:
