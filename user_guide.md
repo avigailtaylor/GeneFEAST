@@ -203,7 +203,7 @@ You can create a setup YAML file with these additional lines of code using [this
 </details>
 
 <details>
-  <summary>Extra annotations for genes</summary>
+  <summary>Extra annotations for genes.</summary>
   <br>
 
 Sometimes, you may wish to keep track of an *a priori* set of genes relevant to your study, for example those that are members of a particular biological signature, throughout the GeneFEAST report.
@@ -265,14 +265,60 @@ You can create a setup YAML file with this additional lines of code using [this 
 <hr>
 </details>
 
+<details>
+<summary>A GO OBO file.</summary>
+<br>
+GeneFEAST ships with a GO OBO file, but if you want to provide a more recent version of this yourself, you can do so in the setup YAML file by adding this line of code:
 
-- A GO OBO file
-  - GeneFEAST ships with a GO OBO file, but if you want to provide a more recent version of this yourself, you can provide a path to this file in the [config file](config_template.yml).
-- MSIGDB HTML file.
-  - GeneFEAST ships with an MSIGDB HTML file containing an HTML tabular summary of each MSIGDB term, but if you want to provide a more recent version of this yourself, you can provide a path to this file in the [config file](config_template.yml).
+```
+OBO_FILE: "full/path/to/GO_OBO_file"
+```
+
+<hr>
+</details>
 
 
----
+<details>
+<summary>MSIGDB HTML file.</summary>
+<br>
+GeneFEAST ships with an MSIGDB HTML file containing an HTML tabular summary of each MSIGDB term, but if you want to provide a more recent version of this yourself, you can do so in the setup YAML file by adding this line of code:
+
+```
+MSIGDB_HTML: "full/path/to/MSIGDB_HTML_file"
+```
+
+<hr>
+</details>
+
+
+<details>
+<summary>GeneFEAST parameters</summary>
+
+<br>
+
+GeneFEAST runs with preconfigured parameter settings for summarising and visualising FEA results from bulk RNASeq experiments. 
+
+<br>
+
+However, all of these parameters can be over-written by the user to potentially get better performance tailored to the user's FEA(s).
+
+<br>
+
+<details>
+
+<summary>The user can over-write these parameters by setting them in the setup YAML file:</summary>
+
+```
+
+```
+  
+</details>
+
+
+<hr>
+</details>
+
+<br>
 
 #### Running GeneFEAST through a ready-to-use [docker](https://docs.docker.com/get-docker/) container:
 
