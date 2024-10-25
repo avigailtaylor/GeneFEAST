@@ -2,3 +2,4 @@ FEAs:
     - id: "FEA_1"
       goi_file_path: "full/file/path/to/goi_file_for_FEA_1"
       fea_file_path: "full/file/path/to/FEA_1_results_file"
+      input_img_dir: "full/path/to/image_directory_for_FEA_1"
