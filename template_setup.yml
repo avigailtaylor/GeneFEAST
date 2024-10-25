@@ -1,0 +1,4 @@
+FEAs:
+    - id: "FEA_1"
+      goi_file_path: "full/path/to/goi_1_file.csv"
+      fea_file_path: "full/path/to/fea_1_file.csv"
