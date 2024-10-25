@@ -220,6 +220,8 @@ To do this, first make an extra annotation (EA) file. The EA file is a headerles
 - The first column is the extra annotation name.
 - The second column is a "/"-separated list of gene IDs to be labelled with the EA.
 
+<br>
+
 Example EA file:
 
 ```
@@ -242,6 +244,7 @@ You can create a setup YAML file with these additional lines of code using [this
 <summary>Pre-made PNG images for significantly enriched/ over-represented terms. One example might be KEGG pathway images generated as part of the FEA.</summary>
 <br>
 For each FEA being summarised you have the option of providing a directory (folder) containing <b>at most one image</b> for each enriched term identified in that FEA.
+
 <br>
 In the setup YAML file, do this by specifying the path to the image directory for an FEA by adding the field "input_image_dir" to that FEA's record:
 
