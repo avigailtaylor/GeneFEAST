@@ -106,18 +106,18 @@ Type,ID,Description,GeneID
   <details>
    <summary>Example</summary>
 
-   
-   |GeneID|log2FC|
-   |------|------|
-   |PDGFB|2.845276684|
-   |GTPBP4|1.396754262|
-   |C12orf49|1.469143469|
-   |SLC2A1|1.618759309|
-   |CCN2|2.593769464|
-   |CXCR4|2.528192609|
-   |NCOA5|2.137989231|
-   |CDKN1A|3.154969844|
-   |RARA|1.444539048|
+<table>
+   <tr><td><b>GeneID</b></td><td><b>log2FC</b></td></tr>
+   <tr><td>PDGFB</td><td>2.845276684</td></tr>
+   <tr><td>GTPBP4</td><td>1.396754262</td></tr>
+   <tr><td>C12orf49</td><td>1.469143469</td></tr>
+   <tr><td>SLC2A1</td><td>1.618759309</td></tr>
+   <tr><td>CCN2</td><td>2.593769464</td></tr>
+   <tr><td>CXCR4</td><td>2.528192609</td></tr>
+   <tr><td>NCOA5</td><td>2.137989231</td></tr>
+   <tr><td>CDKN1A</td><td>3.154969844</td></tr>
+   <tr><td>RARA</td><td>1.444539048</td></tr>
+</table>
 
   <mark>**NOTE:**</mark>
   - <mark>GoI ***must*** be listed using ***IDs that match those used in the FEA results file***.</mark>
