@@ -73,7 +73,7 @@ Type,ID,Description,GeneID
 
 
 <details>
-<summary>Optional/ Advanced: Format <a href=https://cran.r-project.org/web/packages/enrichR/vignettes/enrichR.html>enrichR</a> output for use with GeneFEAST</summary>
+<summary>Optional/ Advanced: Format <a href="https://cran.r-project.org/web/packages/enrichR/vignettes/enrichR.html">enrichR</a> output for use with GeneFEAST</summary>
 <br>
    
   - GeneRatio (Required only when dot plots are switched on)
