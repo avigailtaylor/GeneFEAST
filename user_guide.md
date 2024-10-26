@@ -268,7 +268,7 @@ You can create a setup YAML file with this additional lines of code using <a hre
 
 <br>
 
-<blockquote style="border-left: 3px solid #ccc;">
+<blockquote>
 <b>IMPORTANT</b>
 <ul>
   <li>GeneFEAST automatically generates a GO hierarchy for all terms with a Type string starting "GO" (or "go", "Go", and "gO"; case is ignored). So, if you provide a corresponding image for such a term, this will be ignored. The work around here, should you wish to provide alternative images for GO terms, is to change their Type field in the FEA file to be something other than a string starting with "GO" (or "go", "Go", and "gO").</li>
