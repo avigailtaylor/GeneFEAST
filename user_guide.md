@@ -266,6 +266,8 @@ FEAs:
 
 You can create a setup YAML file with this additional lines of code using <a href="https://avigailtaylor.github.io/GeneFEAST/setup_template_5.yml">this template</a>
 
+<br>
+
 <blockquote style="border-left: 3px solid #ccc;">
 <b>IMPORTANT</b>
 <ul>
