@@ -119,7 +119,7 @@ Type,ID,Description,GeneID
 <li>CSV file containing the list of Genes of Interest (GoI) that were the input for the FEA being summarised.</li>
 <li>The file should contain one GoI per line, each with its corresponding quantitative data as measured in the high-throughput 'omics experiment in which the GoI were identified.</li>
 </ul>
-</br>
+<br>
   <details>
    <summary>Example</summary>
 <br>
@@ -151,8 +151,8 @@ Type,ID,Description,GeneID
 <details>
    <summary>A YAML setup file</summary>
    <br>
-You will use your setup file to tell GeneFEAST the id(s) of the FEA(s) to summarise, the location(s) of the FEA file(s), and the location(s) of the GoI file(s).
-<br>
+   <p>You will use your setup file to tell GeneFEAST the id(s) of the FEA(s) to summarise, the location(s) of the FEA file(s), and the location(s) of the GoI file(s).</p>
+
 To summarise a single FEA:
 
 <pre><code>
@@ -162,7 +162,8 @@ FEAs:
       fea_file_path: "full/file/path/to/FEA_1_results_file"
 </code></pre>
 
-To summarise a multiple FEAs (e.g. three FEAs):
+<br>
+To summarise multiple FEAs (e.g. three FEAs):
 
 <pre><code>
 FEAs:
@@ -179,7 +180,7 @@ FEAs:
       fea_file_path: "full/file/path/to/FEA_3_results_file"
 </code></pre>
   
-   You can create one using [this template](setup_template.yml).
+   You can create a YAML setup file using <a href="https://avigailtaylor.github.io/GeneFEAST/setup_template.yml">this template</a>.
 <hr>
 </details>
 
@@ -198,21 +199,35 @@ FEAs:
   </tr>
 </table>
 
-<mark>**NOTE:**</mark>
-  - <mark>Columns GeneRatio through count are output by enrichR, however, you will need to add the "Type" column using e.g. Excel or VIM.</mark>
+<br>
+<blockquote>
+<b>IMPORTANT</b>
+<ul>
+  <li>Columns ID through to count are output by enrichR.</li>
+  <li>However, <b>you will need to add the "Type" column</b> using, e.g., Excel or VIM.</li>
+</ul>
+</blockquote>
+
 
 <br>
+
 When using enrichR formatted FEA results, you will need to add the following line to your YAML setup file:
 
 <pre><code>
 ENRICHR: True
 </code></pre>
+
+<br>
+
 You can then also add this line if you want GeneFEAST to output dot plots of your FEA results:
 
 <pre><code>
 DOTPLOTS: True
 </code></pre>
-You can create a setup YAML file with these additional lines of code using [this template](setup_template_2.yml).
+
+<br>
+
+<p>You can create a setup YAML file with these additional lines of code using <a href="https://avigailtaylor.github.io/GeneFEAST/setup_template_2.yml">this template</a>.</p>
 
 <hr>
 </details>
@@ -222,7 +237,10 @@ You can create a setup YAML file with these additional lines of code using [this
   <summary>Search terms to be searched for alongside your GoI.</summary>
   <br>
 
-As part of the report generation process, GeneFEAST conducts a literature search for each GoI, via the National Center for Biotechnology Information's Gene and PubMed services (Sayers, et al., 2021). This literature search can incorporate additional search terms, which you can specify in your YAML setup file using the following code:
+<p>As part of the report generation process, GeneFEAST conducts a literature search for each GoI via the National Center for Biotechnology Information's Gene and PubMed services (Sayers, et al., 2021).</p> 
+<br>
+<p>This literature search can incorporate additional search terms, which you can specify in your YAML setup file using the following code:</p>
+<br>
 
 <pre><code>
 SEARCH_WORDS:
@@ -230,7 +248,9 @@ SEARCH_WORDS:
 - search term 2
 - etc.
 </code></pre>
-You can create a setup YAML file with these additional lines of code using [this template](setup_template_3.yml).
+
+<br>
+<p>You can create a setup YAML file with these additional lines of code using <a href="https://avigailtaylor.github.io/GeneFEAST/setup_template_3.yml">this template</a>.</p>
 
 <hr>
 </details>
