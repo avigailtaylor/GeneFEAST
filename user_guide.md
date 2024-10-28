@@ -4,7 +4,7 @@
 
 ### Installation
 
-#### Option 1: Don't install! Instead, download the GeneFEAST ready-to-use [docker](https://docs.docker.com/get-docker/) container!
+#### Option 1: Don't install! Instead, download the GeneFEAST ready-to-use [Docker](https://docs.docker.com/get-docker/) container!
 
 To download the latest container from the [repository](https://github.com/avigailtaylor/GeneFEAST/pkgs/container/genefeast):
 ```
@@ -49,11 +49,12 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
 #### To run GeneFEAST, you will need:
 
 <details>
-<summary>Functional enrichment analysis (FEA) results file</summary>
+<summary>Functional enrichment analysis (FEA) results file(s)</summary>
 <br>
 <ul>
-<li>CSV file containing the results of a functional enrichment analysis (FEA) that has been run on a list of genes of interest (GoI).</li>
-<li>The file should have the following four columns, in this order:</li>
+<li>FEA files contain the results of a FEA conducted on a list of genes of interest (GoI).</li>
+<li>FEA files should be in CSV file format.</li>
+<li>FEA files should have the following four columns, in this order:</li>
 </ul>
 
 <br>
@@ -113,12 +114,22 @@ Type,ID,Description,GeneID
 </details>
 
 <details>
-<summary>Genes of interest (GoI) file</summary>
+<summary>Genes of interest (GoI) file(s)</summary>
 <br>
 <ul>
-<li>CSV file containing the list of Genes of Interest (GoI) that were the input for the FEA being summarised.</li>
-<li>The file should contain one GoI per line, each with its corresponding quantitative data as measured in the high-throughput 'omics experiment in which the GoI were identified.</li>
+<li>GoI files contain the list of GoI that were the input for the FEA being summarised.</li>
+<li>GoI files should be in CSV file format.</li>
+<li>GoI files should contain one GoI per line, each with its corresponding quantitative data as measured in the high-throughput 'omics experiment in which the GoI were identified.</li>
 </ul>
+<br>
+<blockquote>
+<b>IMPORTANT</b>
+<ul>
+  <li>GoI <b>must</b> be listed using <b>IDs that match those used in the FEA results file</b>.</li>
+  <li>If you do not have quantitative data, you can just provide a dummy column with the same <i>numerical</i> value entered for each gene.</li>
+</ul>
+</blockquote>
+
 <br>
   <details>
    <summary>Example</summary>
@@ -136,15 +147,25 @@ Type,ID,Description,GeneID
        <tr><td>RARA</td><td>1.444539048</td></tr>
   </table>
 <br>
+    
+This table corresponds to this CSV format:
 
-<blockquote>
-<b>IMPORTANT</b>
-<ul>
-  <li>GoI <b>must</b> be listed using <b>IDs that match those used in the FEA results file</b>.</li>
-  <li>If you do not have quantitative data, you can just provide a dummy column with the same <i>numerical</i> value entered for each gene.</li>
-</ul>
-</blockquote>
-  </details>
+<pre>
+<code>
+GeneID,log2FC
+PDGFB,2.845276684
+GTPBP4,1.396754262
+C12orf49,1.469143469
+SLC2A1,1.618759309
+CCN2,2.593769464
+CXCR4,2.528192609
+NCOA5,2.137989231
+CDKN1A,3.154969844
+RARA,1.444539048
+</code>
+</pre>
+
+</details>
 <hr>
 </details>
 
@@ -458,32 +479,25 @@ HEATMAP_MAX: 4
 # values so that your dummy value is in the range.
 
 </code></pre>
-  
+
 </details>
-
-
-<hr>
 </details>
 
 <br>
 
-#### Running GeneFEAST through a ready-to-use [docker](https://docs.docker.com/get-docker/) container:
+#### Running GeneFEAST
 
-If you are running GeneFEAST through its [docker](https://docs.docker.com/get-docker/) container, then, to summarize results from a single FEA, type the following on the command line:
+<details>
+  <summary>GeneFEAST Docker container</summary>
+  <pre>
+  <code>
+  # assuming that the setup YAML file and data files are located in ${PWD}.
+  docker run --rm -v ${PWD}:/data -w /data ghcr.io/avigailtaylor/genefeast gf &lt;SETUP_YAML_FILE&gt; &lt;OUTPUT_DIR&gt;   
+  </code>
+  </pre>
 
-```bash
-# assuming that the input YAML and data files are located in ${PWD}.
-docker run --rm -v ${PWD}:/data -w /data ghcr.io/avigailtaylor/genefeast gf <YAML_CONFIG_FILE> <OUTPUT_DIR> 
-```
+</details>
 
-Or, to summarize results from multiple FEAs, type the following on the command line:
-
-```bash
-# assuming that the input YAML and data files are located in ${PWD}.
-docker run --rm -v ${PWD}:/data -w /data ghcr.io/avigailtaylor/genefeast gf_multi <YAML_CONFIG_FILE> <OUTPUT_DIR> 
-```
-
----
 
 #### Running an installed copy of GeneFEAST:
 
