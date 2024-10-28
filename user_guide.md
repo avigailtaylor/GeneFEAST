@@ -259,20 +259,21 @@ SEARCH_WORDS:
   <summary>Extra annotations for genes.</summary>
   <br>
 
-Sometimes, you may wish to keep track of an *a priori* set of genes relevant to your study, for example those that are members of a particular biological signature, throughout the GeneFEAST report.
+<p>Sometimes, you may wish to keep track of an <i>a priori</i> set of genes relevant to your study, for example those that are members of a particular biological signature, throughout the GeneFEAST report.</p>
 
 <br>
 
-Each extra annotation will be displayed as an additional row at the top of the term-GoI heatmap panel in the [split heatmap](split_heatmaps.md) created for each community of terms 
-(similarly for each meta community of communities).
+<p>Each extra annotation will be displayed as an additional row at the top of the term-GoI heatmap panel in the <a href="https://avigailtaylor.github.io/GeneFEAST/split_heatmaps.md">split heatmap</a> created for each community of terms 
+(similarly for each meta community of communities).</p>
 
 <br>
 
-To do this, first make an extra annotation (EA) file. The EA file is a headerless CSV file with one EA per row, and two columns:
+<p>To do this, first make an extra annotation (EA) file. The EA file is a headerless CSV file, with one EA per row, and two columns:</p>
 
-- The first column is the extra annotation name.
-- The second column is a "/"-separated list of gene IDs to be labelled with the EA.
-
+<ol>
+<li>Extra annotation name.</li>
+<li>"/"-separated list of gene IDs to be labelled with the EA.</li>
+</ol>
 <br>
 
 Example EA file:
@@ -282,13 +283,14 @@ RNA_DRG_IFN,STAT1/IFI16/SP110/MX1/IFIT5/PARP12/EIF2AK2/IFI44/PARP14/TRIM21/DDX60
 Proteome_DRG_IFN,IFIT2/IFIT1/IFIT3/OAS2/MX2/OASL/IFIH1/ISG15/MX1/SP110/IFI44/CMPK2/IFI44L/OAS1/DDX58/STAT1/IFIT5/DDX60/PARP12/IFI16/DDX60L/OAS3/EIF2AK2/ISG20/ADAR/IFI35/STAT2/LGAL$
 </code></pre>
 
-Then, add this line of code to your setup YAML file:
+<br>
+<p>Then, add this line of code to your setup YAML file:</p>
 
 <pre><code>
 EA_FILE: full/path/to/EA_file
 </code></pre>
 
-You can create a setup YAML file with these additional lines of code using [this template](setup_template_4.yml).
+You can create a setup YAML file with these additional lines of code using <a href="https://avigailtaylor.github.io/GeneFEAST/setup_template_4.yml">this template</a>..
 
 <hr>
 </details>
@@ -296,16 +298,17 @@ You can create a setup YAML file with these additional lines of code using [this
 <details>
 
   
-<summary>Pre-made PNG images for significantly enriched/ over-represented terms. One example might be KEGG pathway images generated as part of the FEA.</summary>
+<summary>Pre-made PNG images for significantly enriched/ over-represented terms.</summary>
+<br>
+<p>One example might be KEGG pathway images generated as part of the FEA.</p>
+
+<br>
+<p>For each FEA being summarised you have the option of providing a directory (folder) containing <b>at most one image</b> for each enriched term identified in that FEA.</p>
 
 <br>
 
-For each FEA being summarised you have the option of providing a directory (folder) containing <b>at most one image</b> for each enriched term identified in that FEA.
-
+<p>In the setup YAML file, do this by specifying the path to the image directory for an FEA by adding the field "input_image_dir" to that FEA's record:</p>
 <br>
-
-In the setup YAML file, do this by specifying the path to the image directory for an FEA by adding the field "input_image_dir" to that FEA's record:
-
 <pre><code>
 FEAs:
     - id: "FEA_1"
@@ -314,7 +317,8 @@ FEAs:
       input_img_dir: "full/path/to/image_directory_for_FEA_1"
 </code></pre>
 
-You can create a setup YAML file with this additional lines of code using <a href="https://avigailtaylor.github.io/GeneFEAST/setup_template_5.yml">this template</a>
+<br>
+<p>You can create a setup YAML file with this additional lines of code using <a href="https://avigailtaylor.github.io/GeneFEAST/setup_template_5.yml">this template</a></p>
 
 <br>
 
@@ -332,8 +336,8 @@ You can create a setup YAML file with this additional lines of code using <a hre
 <details>
 <summary>A GO OBO file.</summary>
 <br>
-GeneFEAST ships with a GO OBO file, but if you want to provide a more recent version of this yourself, you can do so in the setup YAML file by adding this line of code:
-
+<p>GeneFEAST ships with a GO OBO file, but if you want to provide a more recent version of this yourself, you can do so in the setup YAML file by adding this line of code:</p>
+<br>
 <pre><code>
 OBO_FILE: "full/path/to/GO_OBO_file"
 </code></pre>
@@ -345,8 +349,8 @@ OBO_FILE: "full/path/to/GO_OBO_file"
 <details>
 <summary>MSIGDB HTML file.</summary>
 <br>
-GeneFEAST ships with an MSIGDB HTML file containing an HTML tabular summary of each MSIGDB term, but if you want to provide a more recent version of this yourself, you can do so in the setup YAML file by adding this line of code:
-
+<p>GeneFEAST ships with an MSIGDB HTML file containing an HTML tabular summary of each MSIGDB term, but if you want to provide a more recent version of this yourself, you can do so in the setup YAML file by adding this line of code:</p>
+<br>
 <pre><code>
 MSIGDB_HTML: "full/path/to/MSIGDB_HTML_file"
 </code></pre>
@@ -360,11 +364,11 @@ MSIGDB_HTML: "full/path/to/MSIGDB_HTML_file"
 
 <br>
 
-GeneFEAST runs with preconfigured parameter settings for summarising and visualising FEA results from bulk RNASeq experiments. 
+<p>GeneFEAST runs with preconfigured parameter settings for summarising and visualising FEA results from bulk RNASeq experiments.</p>
 
 <br>
 
-However, all of these parameters can be over-written by the user to potentially get better performance tailored to the user's FEA(s).
+<p>However, all of these parameters can be over-written by the user to potentially get better performance tailored to the user's FEA(s).</p>
 
 <br>
 
