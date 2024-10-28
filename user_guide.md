@@ -44,7 +44,7 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
 <hr>
 
 
-### Usage
+### Setup
 
 #### To run GeneFEAST, you will need:
 
@@ -321,7 +321,7 @@ You can create a setup YAML file with these additional lines of code using <a hr
   
 <summary>Pre-made PNG images for significantly enriched/ over-represented terms.</summary>
 <br>
-<p>One example might be KEGG pathway images generated as part of the FEA.</p>
+<p>For example, if KEGG pathway images have been generated as part of the FEA, these images can be incorporated into the report.</p>
 
 <br>
 <p>For each FEA being summarised you have the option of providing a directory (folder) containing <b>at most one image</b> for each enriched term identified in that FEA.</p>
@@ -385,17 +385,13 @@ MSIGDB_HTML: "full/path/to/MSIGDB_HTML_file"
 
 <br>
 
-<p>GeneFEAST runs with preconfigured parameter settings for summarising and visualising FEA results from bulk RNASeq experiments.</p>
-
-<br>
-
-<p>However, parameters can be over-written to potentially get better performance tailored to the user's FEA(s).</p>
+<p>GeneFEAST runs with preconfigured parameter settings for summarising and visualising FEA results from bulk RNASeq experiments. However, parameters can be over-written to potentially get better performance tailored to the user's FEA(s).</p>
 
 <br>
 
 <details>
 
-<summary>The user can over-write the following parameters by setting their values in the setup YAML file:</summary>
+<summary>The user can over-write these parameters by setting their values in the setup YAML file:</summary>
 
 <pre><code>
 
@@ -484,32 +480,37 @@ HEATMAP_MAX: 4
 </details>
 
 <br>
+<hr>
 
-#### Running GeneFEAST
+### Running GeneFEAST
 
-<details>
-  <summary>GeneFEAST Docker container</summary>
-  <pre>
-  <code>
-  # assuming that the setup YAML file and data files are located in ${PWD}.
-  docker run --rm -v ${PWD}:/data -w /data ghcr.io/avigailtaylor/genefeast gf &lt;SETUP_YAML_FILE&gt; &lt;OUTPUT_DIR&gt;   
-  </code>
-  </pre>
+<br>
 
-</details>
+#### Running GeneFEAST from a Docker container
 
+<br>
 
-#### Running an installed copy of GeneFEAST:
+Assuming that the setup YAML file and data files are located in ```${PWD}```, run GeneFEAST from a Docker container as follows:
+```bash
+  docker run --rm -v ${PWD}:/data -w /data ghcr.io/avigailtaylor/genefeast gf <SETUP_YAML_FILE> <OUTPUT_DIR> 
+```
+<br>
+    
+#### Running GeneFEAST from installation
 
-If you have installed GeneFEAST, then you can either run it on the command line, or you can run it from inside Python.
+<br>
 
-To use GeneFEAST to summarize results from a single FEA, type the following on the command line:
+If you have installed GeneFEAST, then you can run it on the command line or from inside a Python session.
+
+##### Command line:
 
 ```bash
-gf <YAML_CONFIG_FILE> <OUTPUT_DIR> 
+gf <SETUP_YAML_FILE> <OUTPUT_DIR> 
 ```
 
-Alternatively, in Python:
+<br>
+
+##### Python session:
 
 ```python
 from genefeast import gf
@@ -517,23 +518,16 @@ from genefeast import gf
 gf.gf(<YAML_CONFIG_FILE>, <OUTPUT_DIR>)
 ```
 
-To use GeneFEAST to summarize results from multiple FEAs, type the following on the command line:
+<br>
+<blockquote>
+<b>IMPORTANT</b>
+<p>When you run GeneFEAST, it will use the setup YAML file to count how many FEAs are being summarised, and then generate either a single or multi FEA summary report accordingly.</p>
+</blockquote>
 
-```bash
-gf_multi <YAML_CONFIG_FILE> <OUTPUT_DIR>
-```
+<br>
+<hr>
 
-Alternatively, in Python:
-
-```python
-from genefeast import gf_multi
-
-gf_multi.gf_multi(<YAML_CONFIG_FILE>, <OUTPUT_DIR>)
-```
-
-***
-
-#### Viewing the GeneFEAST report
+### Viewing the GeneFEAST report
 
 ##### Single FEA summary report
 To view a GeneFEAST single FEA summary report, navigate to the output directory (specified by you in the `<OUTPUT_DIR>` parameter, above) and use a web browser to open 
