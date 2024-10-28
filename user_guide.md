@@ -114,13 +114,15 @@ Type,ID,Description,GeneID
 
 <details>
 <summary>Genes of interest (GoI) file</summary>
-  
-- CSV file containing the list of Genes of Interest (GoI) that were the input for the FEA being summarised. 
-- The file should contain one GoI per line, each with its corresponding quantitative data as measured in the high-throughput 'omics experiment in which the GoI were identified. 
-  
+<br>
+<ul>
+<li>CSV file containing the list of Genes of Interest (GoI) that were the input for the FEA being summarised.</li>
+<li>The file should contain one GoI per line, each with its corresponding quantitative data as measured in the high-throughput 'omics experiment in which the GoI were identified.</li>
+</ul>
+</br>
   <details>
    <summary>Example</summary>
-
+<br>
   <table>
       <tr><td><b>GeneID</b></td><td><b>log2FC</b></td></tr>
        <tr><td>PDGFB</td><td>2.845276684</td></tr>
@@ -133,10 +135,15 @@ Type,ID,Description,GeneID
        <tr><td>CDKN1A</td><td>3.154969844</td></tr>
        <tr><td>RARA</td><td>1.444539048</td></tr>
   </table>
+<br>
 
-  <mark>**NOTE:**</mark>
-  - <mark>GoI ***must*** be listed using ***IDs that match those used in the FEA results file***.</mark>
-  - <mark>If you do not have quantitative data, you can just provide a dummy column with the same *numerical* value entered for each gene.</mark>
+<blockquote>
+<b>IMPORTANT</b>
+<ul>
+  <li>GoI <b>must</b> be listed using <b>IDs that match those used in the FEA results file</b>.</li>
+  <li>If you do not have quantitative data, you can just provide a dummy column with the same <i>numerical</i> value entered for each gene.</li>
+</ul>
+</blockquote>
   </details>
 <hr>
 </details>
