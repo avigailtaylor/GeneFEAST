@@ -11,13 +11,15 @@ To download the latest container from the [repository](https://github.com/avigai
 docker pull ghcr.io/avigailtaylor/genefeast:latest
 ```
 
+<br>
 
 #### Option 2:  Locally install the package and its dependencies
 
-1. Install Python 3.12
-2. Install Graphviz
-3. [Create and activate a virtual Python environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment).
-
+<ol>
+<li>Install Python 3.12</li>
+<li>Install Graphviz</li>
+<li><a href="https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment">Create and activate a virtual environment</a></li>
+<br>
 <blockquote>
 <b>IMPORTANT</b>
 <ul>
@@ -26,14 +28,21 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
 </ul>
 </blockquote>
 
-4. Install the most recent version of setuptools:
-* Unix/macOS: `pip install --upgrade setuptools`
-* Windows: `py -m pip install --upgrade setuptools`
-5. Install GeneFEAST:
-* Unix/macOS: `pip install genefeast`
-* Windows: `py -m pip install genefeast`
+<li>Install the most recent version of setuptools:</li>
+<ul>
+<li>Unix/macOS: `pip install --upgrade setuptools`</li>
+<li>Windows: `py -m pip install --upgrade setuptools`</li>
+</ul>
+<li>Install GeneFEAST:</li>
+<ul>
+<li>Unix/macOS: `pip install genefeast`</li>
+<li>Windows: `py -m pip install genefeast`</li>
+</ul>
+</ol>
 
----
+
+<hr>
+
 
 ### Usage
 
