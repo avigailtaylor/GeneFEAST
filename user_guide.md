@@ -368,13 +368,13 @@ MSIGDB_HTML: "full/path/to/MSIGDB_HTML_file"
 
 <br>
 
-<p>However, all of these parameters can be over-written by the user to potentially get better performance tailored to the user's FEA(s).</p>
+<p>However, parameters can be over-written to potentially get better performance tailored to the user's FEA(s).</p>
 
 <br>
 
 <details>
 
-<summary>The user can over-write these parameters by setting them in the setup YAML file:</summary>
+<summary>The user can over-write the following parameters by setting their values in the setup YAML file:</summary>
 
 <pre><code>
 
