@@ -17,8 +17,15 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
 1. Install Python 3.12
 2. Install Graphviz
 3. [Create and activate a virtual Python environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment).
-* <mark>We <b>strongly recommend</b> installing GeneFEAST in a <b>virtual environment</b> because of its <a href="dependencies_and_requirements.md">dependencies and requirements</a>.</mark>
-* <mark>**NOTE:** Create a virtual environment using Python 3.12 explicitly, rather than your computer's default version.</mark>
+
+<blockquote>
+<b>IMPORTANT</b>
+<ul>
+  <li>We <b>strongly recommend</b> installing GeneFEAST in a <b>virtual environment</b> because of its <a href="dependencies_and_requirements.md">dependencies and requirements</a>.</li>
+  <li><b>Make sure to</b> create a virtual environment using <b>Python 3.12 explicitly</b>, rather than your computer's default version.</li>
+</ul>
+</blockquote>
+
 4. Install the most recent version of setuptools:
 * Unix/macOS: `pip install --upgrade setuptools`
 * Windows: `py -m pip install --upgrade setuptools`
