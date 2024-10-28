@@ -50,19 +50,26 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
 
 <details>
 <summary>Functional enrichment analysis (FEA) results file</summary>
+<br>
+<ul>
+<li>CSV file containing the results of a functional enrichment analysis (FEA) that has been run on a list of genes of interest (GoI).</li>
+<li>The file should have the following four columns, in this order:</li>
+</ul>
 
-- CSV file containing the results of a functional enrichment analysis (FEA) that has been run on a list of genes of interest (GoI).
-- The file should have the following four columns, in this order:
-
+<br>
 <table>
   <tr><td><b>Type</b></td><td><b>ID</b></td><td><b>Description</b></td><td><b>GeneID</b></td></tr>
 </table>
-  
-    - Type: Term type/ originating database
-    - ID: Term ID in database
-    - Description: Term description
-    - GeneID: "/"-separated list of gene IDs corresponding to GoIs annotated by the term
-
+<br>
+<blockquote>
+  <ul>
+    <li>Type: Term type/ originating database</li>
+    <li>ID: Term ID in database</li>
+    <li>Description: Term description</li>
+    <li>GeneID: "/"-separated list of gene IDs corresponding to GoIs annotated by the term</li>
+  </ul>
+</blockquote>
+<br>
 <details>
    <summary>Example</summary>
   
