@@ -539,7 +539,6 @@ To view a GeneFEAST multi FEA summary report, navigate to the output directory a
 
 <br>
 
-<br>
 <blockquote>
 <b>IMPORTANT</b>
 <ul>
