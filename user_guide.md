@@ -571,9 +571,9 @@ For each community of enriched terms, GeneFEAST reports:
 </ol>
 Where applicable, community frames have links back to their meta community and also to sibling communities in their meta community (black, dashed arrows); separately, they also have a list of links to terms sharing some gene-set overlap, where that overlap was too weak for membership of the community (black, dotted arrow). 
 
-Term frames have similar, reduced content of community frames. In particular, they do not include upset plots and dot plots, and the term-gene heatmap element of their [split heatmap](split_heatmaps.md) is extended to highlight which genes, if any, contribute to enriched terms that have been clustered into a community; in this case the corresponding gene-community pair is depicted in the heatmap. Term frames have links back to weakly connected communities (black, dotted arrow).
+<p>Term frames have similar, reduced content of community frames. In particular, they do not include upset plots and dot plots, and the term-gene heatmap element of their [split heatmap](split_heatmaps.md) is extended to highlight which genes, if any, contribute to enriched terms that have been clustered into a community; in this case the corresponding gene-community pair is depicted in the heatmap. Term frames have links back to weakly connected communities (black, dotted arrow).</p>
 
-Meta community frames contain: circos and upset plots showing the gene-set overlap of member communities, split heatmaps, wherein term annotation is replaced by gene-community membership in the top heatmap, and a literature search for each gene (as described above). Meta community frames have links to member communities (black, dashed arrow).
+<p>Meta community frames contain: circos and upset plots showing the gene-set overlap of member communities, split heatmaps, wherein term annotation is replaced by gene-community membership in the top heatmap, and a literature search for each gene (as described above). Meta community frames have links to member communities (black, dashed arrow).</p>
 
 <hr>
 
