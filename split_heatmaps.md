@@ -6,6 +6,11 @@ GeneFEAST is underpinned by the split heatmap, a data visualisation that we deve
 
 Sometimes, you may wish to keep track of an *a priori* set of genes relevant to your study, for example genes contributing to a particular biological signature, throughout the GeneFEAST report. In such cases, you can provide extra annotations to be added as rows to the term-GoI heatmap in all split heatmaps of the report (Figure 2). This is done *post hoc* once communities, and meta communities, and their associated GoI have been identified.
 
+### Full and truncated split heatmaps
+
+When split heatmaps become too large, GeneFEAST renders them in both a full and truncated format. In this case, the user will be able to toggle between the full and truncated version of the heatmap in the GeneFEAST report.
+
+
 (Back to [User Guide](user_guide.md))
 
 ![Split heatmap](https://avigailtaylor.github.io/GeneFEAST/sh.png)
