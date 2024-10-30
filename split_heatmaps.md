@@ -10,6 +10,9 @@ Sometimes, you may wish to keep track of an *a priori* set of genes relevant t
 
 When split heatmaps become too large, GeneFEAST renders them in both a full and truncated format. In this case, the user will be able to toggle between the full and truncated version of the heatmap in the GeneFEAST report.
 
+### Split heatmaps for meta communities
+
+Split heatmaps for meta communities have the same structure as those for communities, except that term annotation is replaced by gene-community membership in the top heatmap. In addition, <b>only genes present in two or more communities are shown</b>.
 
 (Back to [User Guide](user_guide.md))
 
