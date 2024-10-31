@@ -595,7 +595,7 @@ In addition, meta community frames have links to member communities (black, dash
 <li><a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/communities_overview.md">Communities overview page</a></li>
 </ul>
 <ul>
-<li><a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/featsi_front_page.md">FEA term-set intersection front page</a></li>
+<li><a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/featsi.md">FEA term-set intersection page</a></li>
 </ul>
 <ul>
 <li><a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/community_frame.md">Community frame</a></li>
