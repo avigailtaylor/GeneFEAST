@@ -588,6 +588,39 @@ Where applicable, community frames have links back to their meta community and a
 </ul>
 In addition, meta community frames have links to member communities (black, dashed arrow).</p>
 
+<br>
+
+<b>Further information on GeneFEAST report elements:</b>
+<details>
+  <summary>Communities Overview page</summary>
+  <img src="">
+  <hr>
+</details>
+
+<details>
+  <summary>FEA term-set intersection page</summary>
+  ![FEA term-set intersection front page](featsi_front_page_600dpi.png)
+  <hr>
+</details>
+
+<details>
+  <summary>Community frame</summary>
+  ![Community frame](community_frame_600dpi.png)
+  <hr>
+</details>
+
+<details>
+  <summary>Meta community frame</summary>
+  ![Meta community frame](meta_communities_frame_600dpi.png)
+  <hr>
+</details>
+
+<details>
+  <summary>Term frame</summary>
+  ![Term frame](term_frame_600dpi.png)
+  <hr>
+</details>
+
 <hr>
 
 #### Additional GeneFEAST output
