@@ -592,32 +592,33 @@ In addition, meta community frames have links to member communities (black, dash
 
 <b>Further information on GeneFEAST report elements:</b>
 <details>
-  <summary>Communities Overview page</summary>
-  <img src="">
+  <summary>Communities overview page</summary>
+  <img src="/GeneFEAST/communities_overview_600dpi.png" alt="Communities overview page"> == $0
   <hr>
 </details>
 
 <details>
   <summary>FEA term-set intersection page</summary>
-  ![FEA term-set intersection front page](featsi_front_page_600dpi.png)
+  <img src="/GeneFEAST/featsi_front_page_600dpi.png" alt="FEA term-set intersection front page">
   <hr>
 </details>
 
 <details>
   <summary>Community frame</summary>
-  ![Community frame](community_frame_600dpi.png)
+  <img src="/GeneFEAST/community_frame_600dpi.png" alt="Community frame">
   <hr>
 </details>
 
 <details>
   <summary>Meta community frame</summary>
   ![Meta community frame](meta_communities_frame_600dpi.png)
+  <img src="/GeneFEAST/meta_communities_frame_600dpi.png" alt="Meta community frame">
   <hr>
 </details>
 
 <details>
   <summary>Term frame</summary>
-  ![Term frame](term_frame_600dpi.png)
+  <img src="/GeneFEAST/term_frame_600dpi.png" alt="Term frame">
   <hr>
 </details>
 
