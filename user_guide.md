@@ -591,6 +591,9 @@ In addition, meta community frames have links to member communities (black, dash
 <br>
 
 <b>Further information on GeneFEAST report elements:</b>
+<ul>
+<li><a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/communities_overview.md">Communities overview page</a></li>
+</ul>
 <details>
   <summary>Communities overview page</summary>
   <img src="/GeneFEAST/communities_overview_600dpi.png" alt="Communities overview page"> == $0
