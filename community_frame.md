@@ -1,4 +1,4 @@
-## Term frame
+## Community frame
 
 ![Community frame](https://avigailtaylor.github.io/GeneFEAST/community_frame.png)
 
