@@ -391,7 +391,12 @@ MSIGDB_HTML: "full/path/to/MSIGDB_HTML_file"
 
 <details>
 
-<summary>The user can over-write these parameters by setting their values in the setup YAML file:</summary>
+<summary>Click here to see the list of parameters which can be set in the setup YAML file.</summary>
+
+<br>
+<b>Parameters are shown with their default values</b>
+
+<br>
 
 <pre><code>
 
@@ -399,7 +404,7 @@ MSIGDB_HTML: "full/path/to/MSIGDB_HTML_file"
 # *** Parameters for filtering terms prior to summarisation ***
 # **************************************************************************************************************************
 
-MIN_NUM_GENES: 5
+MIN_NUM_GENES: 10
 # Number of genes of interest that a term must annotate in order to be included in the GeneFEAST report.
 
 MAX_DCNT: 50
@@ -416,7 +421,7 @@ MIN_LEVEL: 3
 TT_OVERLAP_MEASURE: OC
 # Overlap measure to use when calculating the gene set overlap between terms. Two values are recognised:
 # OC (Overlap Coefficient)
-# J (Jaccard Index)
+# JI (Jaccard Index)
 # We recommend using OC here.
 
 MIN_WEIGHT_TT_EDGE: 0.5
@@ -427,17 +432,18 @@ MIN_WEIGHT_TT_EDGE: 0.5
 SC_BC_OVERLAP_MEASURE: OC
 # Overlap measure to use when calculating the gene set overlap between a term and a community of terms. Two values are recognised:
 # OC (Overlap Coefficient)
-# J (Jaccard Index)
+# JI (Jaccard Index)
 # We recommend using OC here.
 
 MIN_WEIGHT_SC_BC: 0.25
 # Minimum gene set overlap required between a term and a community of terms for that term to be considered weakly connected
 # to the community of terms (i.e. having some connectivtity to the community, but not enough to be considered part of that community).
 
-BC_BC_OVERLAP_MEASURE: J
+BC_BC_OVERLAP_MEASURE: JI
 # Overlap measure to use when calculating the gene set overlap between two communities of terms. Two values are recognised:
 # OC (Overlap Coefficient)
-# J (Jaccard Index)
+# JI (Jaccard Index)
+# We recommend using JI here.
 
 MIN_WEIGHT_BC_BC: 0.1
 # Minimum gene set overlap required between two communities of terms for those two communities to be connected (i.e. to 
@@ -464,7 +470,7 @@ QUANT_DATA_TYPE: log2 FC
 # This is the label for the colourmap legend in the split heatmaps
 
 HEATMAP_WIDTH_MIN: 10
-HEATMAP_HEIGHT_MIN: 5
+HEATMAP_HEIGHT_MIN: 6.5
 # These parameters control the size of the split heatmaps. These may need adjusting depending on the size of your display.
 
 HEATMAP_MIN: -4
