@@ -576,7 +576,7 @@ A top navigation bar with ‘Communities overview’ and ‘Full report’ dropd
 <p>For each <b>community</b> of enriched terms, GeneFEAST reports:
 <ul>
 <li>member terms;</li>
-<li>a circos plot and an upset plot showing the overlap between sets of genes annotated by the member terms;</li>
+<li>a <a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/circos_and_upset.md">circos plot and an upset plot</a> showing the overlap between sets of genes annotated by the member terms;</li>
 <li><a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/split_heatmaps.md">split heatmaps</a> of the term- and experiment-GoI relationships, gene-level quantitative data and extra annotations, if supplied;</li>
 <li>a dot plot summary of member term’s FEA results, if supplied;</li>
 <li>further information about terms, such as GO hierarchies and KEGG pathway diagrams;</li>
@@ -588,7 +588,7 @@ Where applicable, community frames have links back to their meta community and a
 
 <p><b>Meta community</b> frames contain:
 <ul>
-<li>circos and upset plots showing the gene-set overlap of member communities;</li>
+<li><a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/circos_and_upset.md">circos plot and upset plots</a> showing the gene-set overlap of member communities;</li>
 <li><a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/split_heatmaps.md">split heatmaps</a>, wherein term annotation is replaced by gene-community membership in the top heatmap, and <b>only genes present in two or more communities are shown</b>;</li>
 <li>external hyperlinks to literature searches for each gene of interest, incorporating additional search terms if you have supplied them.</li>
 </ul>
