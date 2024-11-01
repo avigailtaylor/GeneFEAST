@@ -1600,12 +1600,12 @@ class community:
         return my_genes
     
     def calc_overlap(self, other_community, measure):
-        if(measure == 'J'):
+        if(measure == 'JI'):
             return self.calc_Jaccard(other_community)
         elif(measure == 'OC'):
             return self.calc_overlap_coeff(other_community)
         else:
-            print('WARNING, measure for calculating overlap is not valid. Please choose either "J" (for Jaccard) or "OC" (for overlap coefficient).')
+            print('WARNING, measure for calculating overlap is not valid. Please choose either "JI" (for Jaccard Index) or "OC" (for Overlap Coefficient).')
             return 0
             
     def calc_Jaccard(self, other_community):
@@ -2575,7 +2575,8 @@ class metaGroup( community ):
 class etgContainer:
     def __init__( self , etg_name , etg_text_details , key_i_str ,  output_dir , relative_main_html , rel_images_dir, meta_communities , singleton_meta_communities , singleton_communities , new_h, 
                  silplot_img_path , silplot_img_width, silplot_img_height,
-                 comparisonplot_img_path , comparisonplot_img_width, comparisonplot_img_height):
+                 comparisonplot_oc_img_path , comparisonplot_oc_img_width, comparisonplot_oc_img_height,
+                 comparisonplot_ji_img_path , comparisonplot_ji_img_width, comparisonplot_ji_img_height):
         self.name = etg_name
         self.text_details = etg_text_details
         self.key_i_str = key_i_str
@@ -2592,9 +2593,12 @@ class etgContainer:
         self.silplot_img_path = silplot_img_path
         self.silplot_img_width = silplot_img_width
         self.silplot_img_height = silplot_img_height
-        self.comparisonplot_img_path = comparisonplot_img_path
-        self.comparisonplot_img_width = comparisonplot_img_width
-        self.comparisonplot_img_height = comparisonplot_img_height
+        self.comparisonplot_oc_img_path = comparisonplot_oc_img_path
+        self.comparisonplot_oc_img_width = comparisonplot_oc_img_width
+        self.comparisonplot_oc_img_height = comparisonplot_oc_img_height
+        self.comparisonplot_ji_img_path = comparisonplot_ji_img_path
+        self.comparisonplot_ji_img_width = comparisonplot_ji_img_width
+        self.comparisonplot_ji_img_height = comparisonplot_ji_img_height
         
     def print_csv(self):
         csv_f = open(self.output_dir + '/' + self.csv_filename , 'w')
@@ -2619,11 +2623,13 @@ class etgContainer:
         my_summaryPrinter = summaryPrinter( self.key_i_str , self.name + ': ' + self.text_details , self.output_dir , self.hyperlink , self.rel_images_dir, 
                                             self.meta_communities , self.singleton_meta_communities , self.singleton_communities , 
                                             self.silplot_img_path, self.silplot_img_width, self.silplot_img_height, 
-                                            self.comparisonplot_img_path, self.comparisonplot_img_width, self.comparisonplot_img_height, 
+                                            self.comparisonplot_oc_img_path, self.comparisonplot_oc_img_width, self.comparisonplot_oc_img_height,
+                                            self.comparisonplot_ji_img_path, self.comparisonplot_ji_img_width, self.comparisonplot_ji_img_height, 
                                             self.relative_main_html, etgContainers )
         my_summaryPrinter.print_html()
         my_summaryPrinter.print_html('communities_silhouette')
-        my_summaryPrinter.print_html('communities_paramcomparison')
+        my_summaryPrinter.print_html('communities_paramcomparison_oc')
+        my_summaryPrinter.print_html('communities_paramcomparison_ji')
         
         html_f = open( self.output_dir + '/' + self.hyperlink , 'w' )
         html_f.write("<!DOCTYPE html>\n")
@@ -3120,7 +3126,16 @@ class etgContainer:
         html_f.write('<div class="dropdown-content">\n')
         html_f.write('<a href="' + self.key_i_str + '_communities_summary.html">List of communities</a>\n')
         html_f.write('<a href="' + self.key_i_str + '_communities_silhouette.html">Silhouette plot</a>\n')
-        html_f.write('<a href="' + self.key_i_str + '_communities_paramcomparison.html">Graphical grid search of community detection parameters</a>\n')
+        #html_f.write('<a href="' + self.key_i_str + '_communities_paramcomparison.html">Graphical grid search of community detection parameters</a>\n')
+        
+        html_f.write('<div class="dropdownsub" style="width:450px">\n')
+        html_f.write('<a href="javascript:;">Graphical grid search of community detection parameters</a>\n')
+        html_f.write('<div class="dropdownsub-content" style="width:450px">\n')
+        html_f.write('<a href="' + self.key_i_str + '_communities_paramcomparison_oc.html">Graphical grid search of community detection parameters (OC)</a>\n')
+        html_f.write('<a href="' + self.key_i_str + '_communities_paramcomparison_ji.html">Graphical grid search of community detection parameters (JI)</a>\n')
+        html_f.write('</div>\n')
+        html_f.write('</div>\n')
+        
         html_f.write('</div>\n')
         html_f.write('</li> \n')
         
@@ -3214,7 +3229,8 @@ class summaryPrinter:
     #Can we refactor this? See note and query in etgContainer object...
     def __init__( self , summary_id , summary_title , output_dir , report_html , rel_images_dir, meta_communities , singleton_meta_communities , singleton_communities , 
                   silplot_img_path, silplot_img_width, silplot_img_height, 
-                  comparisonplot_img_path, comparisonplot_img_width, comparisonplot_img_height, 
+                  comparisonplot_oc_img_path, comparisonplot_oc_img_width, comparisonplot_oc_img_height,
+                  comparisonplot_ji_img_path, comparisonplot_ji_img_width, comparisonplot_ji_img_height, 
                   backlink = '' , etgContainers = [] ):
         self.summary_id = summary_id
         self.summary_title = summary_title
@@ -3227,9 +3243,12 @@ class summaryPrinter:
         self.silplot_img_path = silplot_img_path
         self.silplot_img_width = silplot_img_width
         self.silplot_img_height = silplot_img_height
-        self.comparisonplot_img_path = comparisonplot_img_path
-        self.comparisonplot_img_width = comparisonplot_img_width
-        self.comparisonplot_img_height = comparisonplot_img_height
+        self.comparisonplot_oc_img_path = comparisonplot_oc_img_path
+        self.comparisonplot_oc_img_width = comparisonplot_oc_img_width
+        self.comparisonplot_oc_img_height = comparisonplot_oc_img_height
+        self.comparisonplot_ji_img_path = comparisonplot_ji_img_path
+        self.comparisonplot_ji_img_width = comparisonplot_ji_img_width
+        self.comparisonplot_ji_img_height = comparisonplot_ji_img_height
         self.backlink = backlink
         self.etgContainers = etgContainers
         
@@ -3543,7 +3562,16 @@ class summaryPrinter:
         html_f.write('<div class="dropdown-content">\n')
         html_f.write('<a href="' + self.summary_id + '_communities_summary.html">List of communities</a>\n')
         html_f.write('<a href="' + self.summary_id + '_communities_silhouette.html">Silhouette plot</a>\n')
-        html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison.html">Graphical grid search of community detection parameters</a>\n')
+        #html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison.html">Graphical grid search of community detection parameters</a>\n')
+        
+        html_f.write('<div class="dropdownsub" style="width:450px">\n')
+        html_f.write('<a href="javascript:;">Graphical grid search of community detection parameters</a>\n')
+        html_f.write('<div class="dropdownsub-content" style="width:450px">\n')
+        html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison_oc.html">Graphical grid search of community detection parameters (OC)</a>\n')
+        html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison_ji.html">Graphical grid search of community detection parameters (JI)</a>\n')
+        html_f.write('</div>\n')
+        html_f.write('</div>\n')
+        
         html_f.write('</div>\n')
         html_f.write('</li> \n')
         
@@ -3655,13 +3683,25 @@ class summaryPrinter:
             
             html_f.write('</div>\n')
             
-        elif(summary_type == "communities_paramcomparison"):
+        elif(summary_type == "communities_paramcomparison_oc"):
             html_f.write('<div class="subtitlebanner">\n')
-            html_f.write('<li><a style="color:black;">Community detection parameters: comparison</a></li>\n')
+            html_f.write('<li><a style="color:black;">Graphical grid search of community detection parameters (OC)</a></li>\n')
             html_f.write('</div>\n')
             html_f.write('<div class="grid-container">\n')
             html_f.write('<div class="figure">\n')
-            html_f.write('<img src="' + self.comparisonplot_img_path + '" width="' + str(self.comparisonplot_img_width) + '" height="' + str(self.comparisonplot_img_height) + '">\n')
+            html_f.write('<img src="' + self.comparisonplot_oc_img_path + '" width="' + str(self.comparisonplot_oc_img_width) + '" height="' + str(self.comparisonplot_oc_img_height) + '">\n')
+            #html_f.write('<img src="' + self.rel_images_dir + 'sil_violinplots.svg">\n')
+            html_f.write('</div>\n')
+            html_f.write('</div>\n')
+            
+        
+        elif(summary_type == "communities_paramcomparison_ji"):
+            html_f.write('<div class="subtitlebanner">\n')
+            html_f.write('<li><a style="color:black;">Graphical grid search of community detection parameters (JI)</a></li>\n')
+            html_f.write('</div>\n')
+            html_f.write('<div class="grid-container">\n')
+            html_f.write('<div class="figure">\n')
+            html_f.write('<img src="' + self.comparisonplot_ji_img_path + '" width="' + str(self.comparisonplot_ji_img_width) + '" height="' + str(self.comparisonplot_ji_img_height) + '">\n')
             #html_f.write('<img src="' + self.rel_images_dir + 'sil_violinplots.svg">\n')
             html_f.write('</div>\n')
             html_f.write('</div>\n')

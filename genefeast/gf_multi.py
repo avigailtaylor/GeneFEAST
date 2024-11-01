@@ -215,7 +215,7 @@ def gf_multi(setup_yaml_path, output_dir):
 
 #    BC_BC_OVERLAP_MEASURE = cfg_yaml['BC_BC_OVERLAP_MEASURE']
     if(setup.get("BC_BC_OVERLAP_MEASURE") is None):
-        BC_BC_OVERLAP_MEASURE = "J"
+        BC_BC_OVERLAP_MEASURE = "JI"
     else:
         BC_BC_OVERLAP_MEASURE = setup.get("BC_BC_OVERLAP_MEASURE")
 
@@ -548,7 +548,7 @@ def gf_multi(setup_yaml_path, output_dir):
         else:
             # preconditions for silhouette coefficient not met, so generate empty figure.
             pyplot.figure(figsize=(10, 10))
-            pyplot.savefig(_abs_images_dir + "sil_plot.png", bbox_inches="tight")
+            pyplot.savefig(_abs_images_dir + _etg_name + "_sil_plot.png", bbox_inches="tight")
             pyplot.close()
             silplot_img_path = _rel_images_dir + _etg_name + "_sil_plot.png"
             silplot_img_width = NEW_H * 2.5
@@ -558,11 +558,16 @@ def gf_multi(setup_yaml_path, output_dir):
         # TODO: check this works when multiple FEA databases are used and database agglomeration is off!
         
         print("\nGenerating community detection quality comparison plot for grid search of community detection parameters")
-        ( comparisonplot_img_path , comparisonplot_img_width, comparisonplot_img_height ) = gfb.make_sil_violinplots(MIN_WEIGHT_TT_EDGE, MAX_COMMUNITY_SIZE_THRESH, COMBINE_TERM_TYPES, type_2_term_dict,
-                                                                                                etg_terms, _term_genes_dict, TT_OVERLAP_MEASURE,
+        ( comparisonplot_oc_img_path , comparisonplot_oc_img_width, comparisonplot_oc_img_height ) = gfb.make_sil_violinplots(MIN_WEIGHT_TT_EDGE, MAX_COMMUNITY_SIZE_THRESH, COMBINE_TERM_TYPES, type_2_term_dict,
+                                                                                                etg_terms, _term_genes_dict, 'OC', TT_OVERLAP_MEASURE,
                                                                                                 MAX_DCNT, _term_types_dict, _GO_term_stats, 
                                                                                                 _abs_images_dir, _rel_images_dir, _etg_name, NEW_H * 2.5)
         
+        ( comparisonplot_ji_img_path , comparisonplot_ji_img_width, comparisonplot_ji_img_height ) = gfb.make_sil_violinplots(MIN_WEIGHT_TT_EDGE, MAX_COMMUNITY_SIZE_THRESH, COMBINE_TERM_TYPES, type_2_term_dict,
+                                                                                                etg_terms, _term_genes_dict, 'JI', TT_OVERLAP_MEASURE,
+                                                                                                MAX_DCNT, _term_types_dict, _GO_term_stats, 
+                                                                                                _abs_images_dir, _rel_images_dir, _etg_name, NEW_H * 2.5)
+                
         
 #        min_weight_tt_edge_trials = sorted(set([x/10 for x in list(range(2,9,2))] + [MIN_WEIGHT_TT_EDGE]))
 #        max_community_size_thresh_trials = sorted(set([10,15,20,MAX_COMMUNITY_SIZE_THRESH]))
@@ -665,7 +670,8 @@ def gf_multi(setup_yaml_path, output_dir):
         relative_main_html = _info_string + '_main.html'
         etgContainers.append( gfc.etgContainer( _etg_name , _etg_text_details , _key_i_str , output_dir , relative_main_html  , _rel_images_dir, _meta_communities , _singleton_meta_communities , _singleton_communities , NEW_H, 
                                                silplot_img_path , silplot_img_width, silplot_img_height,
-                                               comparisonplot_img_path , comparisonplot_img_width, comparisonplot_img_height) )
+                                               comparisonplot_oc_img_path , comparisonplot_oc_img_width, comparisonplot_oc_img_height,
+                                               comparisonplot_ji_img_path , comparisonplot_ji_img_width, comparisonplot_ji_img_height) )
         
     
     # 8. GENERATE HTML REPORT *****************************************************

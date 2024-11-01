@@ -482,7 +482,7 @@ def build_terms_graph(terms_list, term_genes_dict, tt_overlap_measure, min_weigh
             
             if( tt_overlap_measure == 'OC' ):
                 weight = len( set.intersection( t1_genes , t2_genes ) )/ min( len( t1_genes ) , len( t2_genes ) )
-            if( tt_overlap_measure == 'J' ):
+            if( tt_overlap_measure == 'JI' ):
                 weight = len( set.intersection( t1_genes , t2_genes ) )/ len( set.union( t1_genes , t2_genes ) )
             
             
@@ -509,7 +509,7 @@ def adaptive_big_community_find_aux( xl_terms , max_community_size_thresh , tt_o
         
             if( tt_overlap_measure == 'OC' ):
                 weight = len( set.intersection( xl_t1_genes , xl_t2_genes ) )/ min( len( xl_t1_genes ) , len( xl_t2_genes ) )
-            if( tt_overlap_measure == 'J' ):
+            if( tt_overlap_measure == 'JI' ):
                 weight = len( set.intersection( xl_t1_genes , xl_t2_genes ) )/ len( set.union( xl_t1_genes , xl_t2_genes ) )
         
         
@@ -696,7 +696,7 @@ def build_terms_distance_matrix(term_community_pairs, term_genes_dict, tt_overla
             similarity = 0
             if( tt_overlap_measure == 'OC' ):
                 similarity = len( set.intersection( t1_genes , t2_genes ) )/ min( len( t1_genes ) , len( t2_genes ) )
-            if( tt_overlap_measure == 'J' ):
+            if( tt_overlap_measure == 'JI' ):
                 similarity = len( set.intersection( t1_genes , t2_genes ) )/ len( set.union( t1_genes , t2_genes ) )
                 
             distance = 1 - similarity
@@ -784,11 +784,11 @@ def make_silhouette_plot(terms_distance_matrix, term_community_labels, big_commu
 
 
 def make_sil_violinplots(min_weight_tt_edge, max_community_size_thresh, combine_term_types, type_2_term_dict,
-                                 etg_terms, term_genes_dict, tt_overlap_measure,
+                                 etg_terms, term_genes_dict, tested_overlap_measure, tt_overlap_measure,
                                  max_dcnt, term_types_dict, GO_term_stats, 
                                  abs_images_dir, rel_images_dir, etg_name, new_h):
     
-
+    
     min_weight_tt_edge_trials = sorted(set([x/10 for x in list(range(2,9,2))] + [min_weight_tt_edge]))
     max_community_size_thresh_trials = sorted(set([10,15,20,max_community_size_thresh]))
     
@@ -802,13 +802,13 @@ def make_sil_violinplots(min_weight_tt_edge, max_community_size_thresh, combine_
         
         sub_terms_graphs_try = []
         if(combine_term_types or len(type_2_term_dict.keys())==1):
-            sub_terms_graphs_try.append(build_terms_graph(etg_terms, term_genes_dict, tt_overlap_measure, min_weight_tt_edge_try))
+            sub_terms_graphs_try.append(build_terms_graph(etg_terms, term_genes_dict, tested_overlap_measure, min_weight_tt_edge_try))
         else:
             type_2_term_dict_keys = list(type_2_term_dict.keys())
             type_2_term_dict_keys.sort()
             for type_2_term_dict_key in type_2_term_dict_keys:
                 sub_terms_list = type_2_term_dict[type_2_term_dict_key]
-                sub_terms_graphs_try.append(build_terms_graph(sub_terms_list, term_genes_dict, tt_overlap_measure, min_weight_tt_edge_try))
+                sub_terms_graphs_try.append(build_terms_graph(sub_terms_list, term_genes_dict, tested_overlap_measure, min_weight_tt_edge_try))
             
         #for max_community_size_thresh_try in max_community_size_thresh_trials:
         for max_community_size_thresh_try_i in range(len(max_community_size_thresh_trials)):
@@ -817,21 +817,30 @@ def make_sil_violinplots(min_weight_tt_edge, max_community_size_thresh, combine_
             big_community_term_sets_try = []
             for sub_terms_graph_try in sub_terms_graphs_try:
                 big_community_term_sets_try = big_community_term_sets_try + get_big_community_term_sets(sub_terms_graph_try, max_community_size_thresh_try,
-                                                                                                            tt_overlap_measure, min_weight_tt_edge_try, 
+                                                                                                            tested_overlap_measure, min_weight_tt_edge_try, 
                                                                                                             max_dcnt, term_types_dict, GO_term_stats, 
                                                                                                             term_genes_dict)
+            
+            
                 
             num_big_communities_try = len(big_community_term_sets_try)
+           
+            
             
             term_community_pairs_try = get_big_community_labels_for_terms_from_term_sets(big_community_term_sets_try)
             term_community_labels_try = np.array([c for (t,c) in term_community_pairs_try])
             #prop_try = gfb.calc_prop_terms_in_big_communities(term_community_labels_try, term_genes_dict)
             
+            
+            
             if((num_big_communities_try >= 2) & (num_big_communities_try <= (len(term_community_pairs_try)-1))):
-                if((min_weight_tt_edge_try == min_weight_tt_edge) & (max_community_size_thresh_try==max_community_size_thresh)):
+                if((tested_overlap_measure == tt_overlap_measure) & 
+                   (min_weight_tt_edge_try == min_weight_tt_edge) & 
+                   (max_community_size_thresh_try==max_community_size_thresh)):
                     axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_facecolor("yellow")
                 
-                terms_distance_matrix_try = build_terms_distance_matrix(term_community_pairs_try, term_genes_dict, tt_overlap_measure)
+                
+                terms_distance_matrix_try = build_terms_distance_matrix(term_community_pairs_try, term_genes_dict, tested_overlap_measure)
                 silhouette_avg_try = silhouette_score(terms_distance_matrix_try, term_community_labels_try, metric="precomputed")
                 sample_silhouette_values_try = silhouette_samples(terms_distance_matrix_try, term_community_labels_try, metric="precomputed")
                 
@@ -852,9 +861,10 @@ def make_sil_violinplots(min_weight_tt_edge, max_community_size_thresh, combine_
 #                    axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_ylim([-1,1])
                 
                 
-                community_cum_prop_of_total_df = sample_silhouette_values_try_df.groupby('Community').size().cumsum().reset_index()
-                community_cum_prop_of_total_df['cum prop of total terms'] = [(x/len(term_genes_dict))*100 for x in sample_silhouette_values_try_df.groupby('Community').size().cumsum()]
+                community_cum_prop_of_total_df = sample_silhouette_values_try_df.groupby('Community', sort=False).size().cumsum().reset_index()
+                community_cum_prop_of_total_df['cum prop of total terms'] = [(x/len(term_genes_dict))*100 for x in sample_silhouette_values_try_df.groupby('Community', sort=False).size().cumsum()]
             
+
                 axis = axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i]
                 ax_twin = axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].twinx()
                 ax_twin.bar(community_cum_prop_of_total_df['Community'], community_cum_prop_of_total_df['cum prop of total terms'], alpha=0.25)
@@ -878,10 +888,40 @@ def make_sil_violinplots(min_weight_tt_edge, max_community_size_thresh, combine_
                     axis.set_ylabel("")
                 if(min_weight_tt_edge_try_i < (len(min_weight_tt_edge_trials)-1)):
                     axis.set_xlabel("")
-                    
-                axis.set_title("GSO=" + str(min_weight_tt_edge_try) + ", MCS=" + str(max_community_size_thresh_try))
                 
-                axis.set_xticks(axis.get_xticks()[::2])
+                
+                if(len(axis.get_xticks()) > 5):
+                    axis.set_xticks(axis.get_xticks()[::2])
+                
+                axis.set_title("OM=" + tested_overlap_measure + ", GSO=" + str(min_weight_tt_edge_try) + ", MCS=" + str(max_community_size_thresh_try))
+            else:
+                axis = axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i]
+                ax_twin = axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].twinx()
+                ax_twin.set_ylim([0,100])
+                if(max_community_size_thresh_try_i == (len(max_community_size_thresh_trials)-1)):
+                    ax_twin.yaxis.tick_right()
+                    ax_twin.set_ylabel("Cum. % terms")
+                
+                
+                axis.axhline(y = 0, color = 'k', linestyle = '-')
+                axis.axhline(y = 0.5, color = 'darkgrey', linestyle = '--')
+                
+                
+                #axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_xticklabels([]])
+                axis.set_ylim([-1.1,1.1])
+                
+                if(max_community_size_thresh_try_i == 0 ):
+                    axis.set_ylabel("Silhouette Score")
+                if(min_weight_tt_edge_try_i == (len(min_weight_tt_edge_trials)-1)):
+                    axis.set_xlabel("Community")
+                
+                
+                axis.set_xticks([])
+                
+                axis.set_title("OM=" + tested_overlap_measure + ", GSO=" + str(min_weight_tt_edge_try) + ", MCS=" + str(max_community_size_thresh_try))
+            
+                
+                
                 
                 
 #                sns.violinplot(ax=axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i], data=sample_silhouette_values_try_df,
@@ -906,14 +946,14 @@ def make_sil_violinplots(min_weight_tt_edge, max_community_size_thresh, combine_
 #                axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_xticklabels(axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].get_xticklabels(), rotation=45, ha='right', va='top')
 #               
     pyplot.subplots_adjust(hspace=0.7)            
-    pyplot.savefig(abs_images_dir + etg_name + "_sil_violinplots.png", bbox_inches="tight")
+    pyplot.savefig(abs_images_dir + etg_name + "_sil_violinplots_" + tested_overlap_measure + ".png", bbox_inches="tight")
     pyplot.close()
-    image = Image.open(abs_images_dir + etg_name + "_sil_violinplots.png")
+    image = Image.open(abs_images_dir + etg_name + "_sil_violinplots_" + tested_overlap_measure + ".png")
     w,h = image.size
     new_w = int(new_h * w/h)
     image.close()
             
-    return (rel_images_dir + etg_name + "_sil_violinplots.png", new_w, new_h)
+    return (rel_images_dir + etg_name + "_sil_violinplots_" + tested_overlap_measure + ".png", new_w, new_h)
     
 def build_big_communities_tracker_and_graph(big_communities, bc_bc_overlap_measure, min_weight_bc_bc):
     big_communities_tracker_dict = {}

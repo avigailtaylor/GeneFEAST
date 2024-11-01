@@ -176,7 +176,7 @@ def gf(setup_yaml_path, output_dir):
 
 #    BC_BC_OVERLAP_MEASURE = cfg_yaml['BC_BC_OVERLAP_MEASURE']
     if(setup.get("BC_BC_OVERLAP_MEASURE") is None):
-        BC_BC_OVERLAP_MEASURE = "J"
+        BC_BC_OVERLAP_MEASURE = "JI"
     else:
         BC_BC_OVERLAP_MEASURE = setup.get("BC_BC_OVERLAP_MEASURE")
 
@@ -450,8 +450,14 @@ def gf(setup_yaml_path, output_dir):
         # TODO: check this works when multiple FEA databases are used and database agglomeration is off!
     
     print("\nGenerating community detection quality comparison plot for grid search of community detection parameters")
-    ( comparisonplot_img_path , comparisonplot_img_width, comparisonplot_img_height ) = gfb.make_sil_violinplots(MIN_WEIGHT_TT_EDGE, MAX_COMMUNITY_SIZE_THRESH, COMBINE_TERM_TYPES, type_2_term_dict,
-                                                                                                                 terms_list, _term_genes_dict, TT_OVERLAP_MEASURE,
+    ( comparisonplot_oc_img_path , comparisonplot_oc_img_width, comparisonplot_oc_img_height ) = gfb.make_sil_violinplots(MIN_WEIGHT_TT_EDGE, MAX_COMMUNITY_SIZE_THRESH, COMBINE_TERM_TYPES, type_2_term_dict,
+                                                                                                                 terms_list, _term_genes_dict, 'OC', TT_OVERLAP_MEASURE,
+                                                                                                                 MAX_DCNT, _term_types_dict, _GO_term_stats, 
+                                                                                                                 abs_images_dir, rel_images_dir, '', NEW_H * 2.5)
+    
+
+    ( comparisonplot_ji_img_path , comparisonplot_ji_img_width, comparisonplot_ji_img_height ) = gfb.make_sil_violinplots(MIN_WEIGHT_TT_EDGE, MAX_COMMUNITY_SIZE_THRESH, COMBINE_TERM_TYPES, type_2_term_dict,
+                                                                                                                 terms_list, _term_genes_dict, 'JI', TT_OVERLAP_MEASURE,
                                                                                                                  MAX_DCNT, _term_types_dict, _GO_term_stats, 
                                                                                                                  abs_images_dir, rel_images_dir, '', NEW_H * 2.5)
             
@@ -460,10 +466,13 @@ def gf(setup_yaml_path, output_dir):
     # 7. GENERATE HTML REPORT *****************************************************
     print("\nGenerating HTML report")
     my_summaryPrinter = gfc.summaryPrinter(summary_id, summary_id, output_dir, info_string + '_report.html', rel_images_dir, meta_communities, singleton_meta_communities, singleton_communities,
-                                           silplot_img_path, silplot_img_width, silplot_img_height, comparisonplot_img_path, comparisonplot_img_width, comparisonplot_img_height)
+                                           silplot_img_path, silplot_img_width, silplot_img_height, 
+                                           comparisonplot_oc_img_path, comparisonplot_oc_img_width, comparisonplot_oc_img_height,
+                                           comparisonplot_ji_img_path, comparisonplot_ji_img_width, comparisonplot_ji_img_height)
     my_summaryPrinter.print_html()
     my_summaryPrinter.print_html('communities_silhouette')
-    my_summaryPrinter.print_html('communities_paramcomparison')
+    my_summaryPrinter.print_html('communities_paramcomparison_oc')
+    my_summaryPrinter.print_html('communities_paramcomparison_ji')
     
     html_f = open(output_dir + '/' + info_string + '_report.html', 'w')
     html_f.write("<!DOCTYPE html>\n")
@@ -951,7 +960,18 @@ def gf(setup_yaml_path, output_dir):
     html_f.write('<div class="dropdown-content">\n')
     html_f.write('<a href="' + summary_id + '_communities_summary.html">List of communities</a>\n')
     html_f.write('<a href="' + summary_id + '_communities_silhouette.html">Silhouette plot</a>\n')
-    html_f.write('<a href="' + summary_id + '_communities_paramcomparison.html">Community detection parameters: comparison</a>\n')
+    
+    
+    #html_f.write('<a href="' + summary_id + '_communities_paramcomparison.html">Graphical grid search of community detection parameters</a>\n')
+    html_f.write('<div class="dropdownsub" style="width:450px">\n')
+    html_f.write('<a href="javascript:;">Graphical grid search of community detection parameters</a>\n')
+    html_f.write('<div class="dropdownsub-content" style="width:450px">\n')
+    html_f.write('<a href="' + summary_id + '_communities_paramcomparison_oc.html">Graphical grid search of community detection parameters (OC)</a>\n')
+    html_f.write('<a href="' + summary_id + '_communities_paramcomparison_ji.html">Graphical grid search of community detection parameters (JI)</a>\n')
+    html_f.write('</div>\n')
+    html_f.write('</div>\n')
+    
+    
     html_f.write('</div>\n')
     html_f.write('</li> \n')   
         
