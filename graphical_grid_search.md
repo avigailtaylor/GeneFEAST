@@ -15,4 +15,6 @@ the corresponding subplot is highlighted with a yellow background.
 
 ***
 
+Pinto SM, Subbannayya Y, Kim H, Hagen L, Górna MW, Nieminen AI, Bjørås M, Espevik T, Kainov D, Kandasamy RK. Multi-OMICs landscape of SARS-CoV-2-induced host responses in human lung epithelial cells. iScience. 2023 Jan 20;26(1):105895. doi: 10.1016/j.isci.2022.105895. Epub 2022 Dec 28. PMID: 36590899; PMCID: PMC9794516.
+
 (Back to [User Guide](user_guide.md))
