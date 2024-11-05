@@ -519,7 +519,7 @@ gf <SETUP_YAML_FILE> <OUTPUT_DIR>
 ```python
 from genefeast import gf
 
-gf.gf(<YAML_CONFIG_FILE>, <OUTPUT_DIR>)
+gf.gf(<SETUP_YAML_FILE>, <OUTPUT_DIR>)
 ```
 
 <br>
