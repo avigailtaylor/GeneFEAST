@@ -1,11 +1,6 @@
 FEAs:
     - id: "mmc2_3h"
       goi_file_path: "mmc2_goi_3h.csv"
-      fea_file_path: "GO_BP_3h_0.001_4GF.csv"
-
-
-MAX_META_COMMUNITY_SIZE_THRESH: 12
-MIN_WEIGHT_TT_EDGE: 0.6
+      fea_file_path: "GO_BP_3h_0.0001_4GF_basic.csv"
       
-ENRICHR: True
-DOTPLOTS: False
+MAX_COMMUNITY_SIZE_THRESH: 10
