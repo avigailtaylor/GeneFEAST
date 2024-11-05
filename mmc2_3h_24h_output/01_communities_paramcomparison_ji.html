@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.title {
+  margin: 5px;
+}
+.view-button {
+  padding: 5;
+  border: none;
+  font: inherit;
+  color: white;
+  cursor: pointer;
+  background-color: dodgerblue;
+  border-radius: 20px;
+  transition-duration: 0.1s;
+}
+.grid-container {
+  display: grid;
+  grid-template-areas:
+    'report_title'
+    'meta_communities'
+    'singleton_meta_communities'
+    'singleton_communities';
+  grid-gap: 10px;
+  background-color: #0aa8a8;
+  padding: 10px;
+}
+.report_title{ grid-area: report_title; }
+.meta_communities { grid-area: meta_communities;
+                    overflow: scroll;}
+.singleton_meta_communities { grid-area: singleton_meta_communities;
+                         overflow: scroll;}
+.singleton_communities { grid-area: singleton_communities;
+                              overflow: scroll;}
+.grid-container > div {
+  max-height: 760px;
+  overflow: scroll;
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: left;
+  padding: 15px;
+  font-size: small;
+  margin:0;
+}
+.navgrid-container {
+display: grid;
+grid-template-columns: auto;
+position: fixed; top: 0; left: 0; width:100%; height: 55px; z-index:1;
+}
+ul {
+list-style-type: none;
+margin: 0;
+padding: 0;
+background-color: #088F8F;
+top: 0; left: 0; width: 100%; height: 55px; z-index:1;
+}
+li {
+  float: left;
+}
+li a {
+  display: block;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+.navactive {
+  text-decoration:underline;
+}
+.logo {
+  display: block;
+  color: yellow;
+  text-align: center;
+  text-decoration: none;
+  padding: 9px 16px;
+  padding-right: 75px;
+  font-family: arial black, sans-serif;
+  font-size: 18px;
+}
+.rightlink {
+  float: right;
+}
+.subnav {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #0aa8a8;
+}
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+.dropdown .dropbtn {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  font-weight: bold;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+.dropbtnactive {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  text-decoration:underline;
+  font-weight: bold;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #0aa8a8;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+.dropdown-content a {
+  float: none;
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  font-size: small;
+}
+.dropdown-content a:hover {
+  background-color: #088F8F;
+}
+.dropdown:hover .dropdown-content {
+  display: block;
+  position:fixed;
+  z-index: 9999;
+}
+
+.dropdownsub {
+  float: left;
+  overflow: hidden;
+}
+
+.dropdown-content .dropdownsub {
+  float: none;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdownsub-content{
+  display: none;
+  position: absolute;
+  background-color: #0aa8a8;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.dropdownsub-content a {
+  float: none;
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  font-size: small;
+}
+
+.dropdownsub:hover .dropdownsub-content {
+  display: block;
+  position:absolute;
+  z-index: 9999;
+  left: 50%;
+}
+
+.dropdownsubsub {
+  float: left;
+  overflow: hidden;
+}
+
+.dropdownsub-content .dropdownsubsub {
+  float: none;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdownsubsub-content{
+  display: none;
+  position: absolute;
+  background-color: #0aa8a8;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.dropdownsubsub-content a {
+  float: none;
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  font-size: small;
+}
+
+.dropdownsubsub:hover .dropdownsubsub-content {
+  display: block;
+  position:absolute;
+  z-index: 9999;
+  left: 50%;
+}
+
+.subtitlebanner {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #0aa8a8;
+  margin-top:110px;
+  z-index:1
+}
+
+</style>
+</head>
+<body style="background-color:#0aa8a8; font-family: arial, sans-serif;">
+<div class="navgrid-container">
+<div>
+<ul>
+<li class="logo">GeneFEAST</li>
+<li><a href="mmc2_3h_mmc2_24h_main.html">FEA term-set intersections</a></li>
+<li class="dropdown">
+<button class="dropbtnactive">Reports
+</button>
+<div class="dropdown-content">
+<a href="01_communities_summary.html">FEATSI 01: mmc2_3h and mmc2_24h</a>
+</div>
+</li>
+</ul>
+</div>
+<div>
+<ul class="subnav">
+<li class="dropdown">
+<button class="dropbtnactive" onclick="document.location='01_communities_summary.html'">Communities overview</button>
+<div class="dropdown-content">
+<a href="01_communities_summary.html">List of communities</a>
+<a href="01_communities_silhouette.html">Silhouette plot</a>
+<div class="dropdownsub" style="width:450px">
+<a href="javascript:;">Graphical grid search of community detection parameters</a>
+<div class="dropdownsub-content" style="width:450px">
+<a href="01_communities_paramcomparison_oc.html">Graphical grid search of community detection parameters (OC)</a>
+<a href="01_communities_paramcomparison_ji.html">Graphical grid search of community detection parameters (JI)</a>
+</div>
+</div>
+</div>
+</li> 
+<li class="dropdown">
+<button class="dropbtn" onclick="document.location='01_report.html'">Full report</button>
+<div class="dropdown-content">
+<div class="dropdownsub" style="width:300px">
+<a href="01_report.html#FEATSI 01_meta community 01">Meta communities</a>
+<div class="dropdownsub-content">
+<div class="dropdownsubsub" style="width:300px">
+<a href="01_report.html#FEATSI 01_meta community 01">FEATSI 01_meta community 01</a>
+<div class="dropdownsubsub-content" style="width:600px;max-height:200px;overflow:scroll;">
+<a href="01_report.html#FEATSI 01_community 01 (GO)">FEATSI 01_community 01 (GO) GO:0009615 - response to virus</a>
+<a href="01_report.html#FEATSI 01_community 02 (GO)">FEATSI 01_community 02 (GO) GO:0002237 - response to molecule of bacterial origin</a>
+<a href="01_report.html#FEATSI 01_community 03 (GO)">FEATSI 01_community 03 (GO) GO:0030217 - T cell differentiation</a>
+<a href="01_report.html#FEATSI 01_community 04 (GO)">FEATSI 01_community 04 (GO) GO:0070482 - response to oxygen levels</a>
+<a href="01_report.html#FEATSI 01_community 08 (GO)">FEATSI 01_community 08 (GO) GO:0043410 - positive regulation of MAPK cascade</a>
+</div>
+</div>
+<div class="dropdownsubsub" style="width:300px">
+<a href="01_report.html#FEATSI 01_meta community 02">FEATSI 01_meta community 02</a>
+<div class="dropdownsubsub-content" style="width:600px;max-height:200px;overflow:scroll;">
+<a href="01_report.html#FEATSI 01_community 05 (GO)">FEATSI 01_community 05 (GO) GO:0048568 - embryonic organ development</a>
+<a href="01_report.html#FEATSI 01_community 06 (GO)">FEATSI 01_community 06 (GO) GO:0050673 - epithelial cell proliferation</a>
+<a href="01_report.html#FEATSI 01_community 07 (GO)">FEATSI 01_community 07 (GO) GO:0072001 - renal system development</a>
+<a href="01_report.html#FEATSI 01_community 09 (GO)">FEATSI 01_community 09 (GO) GO:0061448 - connective tissue development</a>
+</div>
+</div>
+</div>
+</div>
+<a href="javascript:;">Communities</a>
+<div class="dropdownsub" style="width:300px">
+<a href="01_report.html#GO:0007264">Terms</a>
+<div class="dropdownsub-content" style="width:600px;max-height:200px;overflow:scroll;">
+<a href="01_report.html#GO:0007264">GO:0007264 - small GTPase mediated signal transduction</a>
+<a href="01_report.html#GO:0030099">GO:0030099 - myeloid cell differentiation</a>
+<a href="01_report.html#GO:0034612">GO:0034612 - response to tumor necrosis factor</a>
+<a href="01_report.html#GO:0048545">GO:0048545 - response to steroid hormone</a>
+<a href="01_report.html#GO:0048660">GO:0048660 - regulation of smooth muscle cell proliferation</a>
+<a href="01_report.html#GO:0098781">GO:0098781 - ncRNA transcription</a>
+</div>
+</div>
+</div>
+</li>
+<li class="rightlink"><a style="color:white;">FEATSI 01: mmc2_3h and mmc2_24h</a></li>
+</ul>
+</div>
+</div>
+<div class="subtitlebanner">
+<li><a style="color:black;">Graphical grid search of community detection parameters (JI)</a></li>
+</div>
+<div class="grid-container">
+<div class="figure">
+<img src="images_mmc2_3h_mmc2_24h_AUTO/FEATSI 01_sil_violinplots_JI.png" width="1195" height="750.0">
+</div>
+</div>
+</body>
+</html>
