@@ -450,7 +450,7 @@ MIN_WEIGHT_BC_BC: 0.1
 # have an edge between them) in the community-community network that GeneFEAST constructs prior to finding
 # meta-communities of communities. (Please see GeneFEAST paper for further details).
 
-MAX_CLUSTER_SIZE_THRESH: 15
+MAX_COMMUNITY_SIZE_THRESH: 15
 MAX_META_COMMUNITY_SIZE_THRESH: 15
 # In GeneFEAST, the size communities and meta communities is attenuated using an adaptive algorithm (see main paper for details).
 # These two values are parameters for the adaptive algorithm, which will ensure that community and meta-community sizes do
