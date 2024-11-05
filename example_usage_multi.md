@@ -63,4 +63,4 @@ gf.gf(<full/path/to/mmc2_3h_24h_setup.yml>, <OUTPUT_DIR>)
 
 ### Comparing your output to the example output
 
-Compare your GeneFEAST report to <a href="https://github.com/avigailtaylor/GeneFEAST/tree/main/mmc2_3h_24h_output">this example output</a>. 
+Compare your GeneFEAST report to <a href="https://github.com/avigailtaylor/GeneFEAST/tree/main/example_outputs/mmc2_3h_24h_output">this example output</a>. 
