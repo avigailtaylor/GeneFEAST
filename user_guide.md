@@ -308,10 +308,10 @@ Proteome_DRG_IFN,IFIT2/IFIT1/IFIT3/OAS2/MX2/OASL/IFIH1/ISG15/MX1/SP110/IFI44/CMP
 <p>Then, add this line of code to your setup YAML file:</p>
 
 <pre><code>
-EA_FILE: full/path/to/EA_file
+EA_FILE: extra_annotation_file
 </code></pre>
 
-You can create a setup YAML file with these additional lines of code using <a href="https://avigailtaylor.github.io/GeneFEAST/setup_template_4.yml">this template</a>..
+You can create a setup YAML file with these additional lines of code using <a href="https://avigailtaylor.github.io/GeneFEAST/setup_template_4.yml">this template</a>.
 
 <hr>
 </details>
@@ -328,14 +328,14 @@ You can create a setup YAML file with these additional lines of code using <a hr
 
 <br>
 
-<p>In the setup YAML file, do this by specifying the path to the image directory for an FEA by adding the field "input_image_dir" to that FEA's record:</p>
+<p>In the setup YAML file, do this by specifying the image directory for an FEA by adding the field "input_image_dir" to that FEA's record:</p>
 <br>
 <pre><code>
 FEAs:
     - id: "FEA_1"
-      goi_file_path: "full/file/path/to/goi_file_for_FEA_1"
-      fea_file_path: "full/file/path/to/FEA_1_results_file"
-      input_img_dir: "full/path/to/image_directory_for_FEA_1"
+      goi_file: "goi_file_for_FEA_1"
+      fea_file: "FEA_1_results_file"
+      input_img_dir: "image_directory_for_FEA_1"
 </code></pre>
 
 <br>
@@ -360,7 +360,7 @@ FEAs:
 <p>GeneFEAST ships with a GO OBO file, but if you want to provide a more recent version of this yourself, you can do so in the setup YAML file by adding this line of code:</p>
 <br>
 <pre><code>
-OBO_FILE: "full/path/to/GO_OBO_file"
+OBO_FILE: "GO_OBO_file"
 </code></pre>
 
 <hr>
@@ -373,7 +373,7 @@ OBO_FILE: "full/path/to/GO_OBO_file"
 <p>GeneFEAST ships with an MSIGDB HTML file containing an HTML tabular summary of each MSIGDB term, but if you want to provide a more recent version of this yourself, you can do so in the setup YAML file by adding this line of code:</p>
 <br>
 <pre><code>
-MSIGDB_HTML: "full/path/to/MSIGDB_HTML_file"
+MSIGDB_HTML: "MSIGDB_HTML_file"
 </code></pre>
 
 <hr>
