@@ -490,6 +490,52 @@ HEATMAP_MAX: 4
 
 ### Running GeneFEAST
 
+#### Setting up your GeneFEAST project directory (folder)
+
+Start by making your GeneFEAST project directory (folder) and navigating there. For example, in Linux:
+
+```bash
+mkdir my_genefeast_project
+cd my_genefeast_project
+```
+
+<br>
+
+Next, copy the following files to this directory:
+<ul>
+  <li>fea_file(s)</li>
+  <li>goi_file(s)</li>
+</ul>
+
+<br>
+
+Also copy over the following, as required:
+<ul>
+  <li>extra_annotation_file</li>
+  <li>image_directory_for_FEA (you can have up to one image directory file per FEA being summarised)</li> 
+  <li>GO_OBO_file</li>
+  <li>MSIGDB_file</li>
+</ul>
+
+<br>
+
+<p>For example, in Linux, use the following commands to copy your fea_file and goi_file from their original locations to your GeneFEAST project directory:</p>
+
+```bash
+cp /full/path/to/fea_file .
+cp /full/path/to/goi_file .
+```
+
+<br>
+
+Lastly, create your setup YAML file (you can use <a href="https://avigailtaylor.github.io/GeneFEAST/setup_template.yml">this template</a>) and save it in this directory.
+
+<br>
+
+<mark>Now, stay in your GeneFEAST project directory and run GeneFEAST using one of the following options:</mark>
+
+<br>
+
 #### Running GeneFEAST from a Docker container
 
 <br>
