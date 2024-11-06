@@ -179,8 +179,8 @@ To summarise a single FEA:
 <pre><code>
 FEAs:
     - id: "FEA_1"
-      goi_file_path: "full/file/path/to/goi_file_for_FEA_1"
-      fea_file_path: "full/file/path/to/FEA_1_results_file"
+      goi_file: "goi_file_for_FEA_1"
+      fea_file: "FEA_1_results_file"
 </code></pre>
 
 <br>
@@ -189,16 +189,16 @@ To summarise multiple FEAs (e.g. three FEAs):
 <pre><code>
 FEAs:
     - id: "FEA_1"
-      goi_file_path: "full/file/path/to/goi_file_for_FEA_1"
-      fea_file_path: "full/file/path/to/FEA_1_results_file"
+      goi_file: "goi_file_for_FEA_1"
+      fea_file: "FEA_1_results_file"
 
     - id: "FEA_2"
-      goi_file_path: "full/file/path/to/goi_file_for_FEA_2"
-      fea_file_path: "full/file/path/to/FEA_2_results_file"
+      goi_file: "goi_file_for_FEA_2"
+      fea_file: "FEA_2_results_file"
 
     - id: "FEA_3"
-      goi_file_path: "full/file/path/to/goi_file_for_FEA_3"
-      fea_file_path: "full/file/path/to/FEA_3_results_file"
+      goi_file: "goi_file_for_FEA_3"
+      fea_file: "FEA_3_results_file"
 </code></pre>
   
    You can create a YAML setup file using <a href="https://avigailtaylor.github.io/GeneFEAST/setup_template.yml">this template</a>.
