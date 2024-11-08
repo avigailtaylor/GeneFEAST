@@ -16,8 +16,8 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
 #### Option 2:  Locally install the package and its dependencies
 
 <ol>
-<li>Install Python 3.12</li>
-<li>Install Graphviz</li>
+<li><a href="https://docs.python.org/3.12/using/index.html">Install Python 3.12</a></li>
+<li><a href="https://graphviz.org/download/">Install Graphviz</a></li>
 <li><a href="https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment">Create and activate a virtual environment</a></li>
 <br>
 <blockquote>
