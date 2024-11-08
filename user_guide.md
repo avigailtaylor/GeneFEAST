@@ -587,12 +587,12 @@ gf.gf(<SETUP_YAML_FILE>, <OUTPUT_DIR>)
 
   <br>
 
-  <p>If, like me, you prefer to use a directory structure that separates code, input, and output, that's absolutely fine. If you know what you're
+  <p><i>If, like me, you prefer to use a directory structure that separates code, input, and output, that's absolutely fine. If you know what you're
   doing you can replace file names with file paths, in either or both of the main call to GeneFEAST and the setup YAML file, and GeneFEAST will know
-  what to do.... I've just put the most simple process here so that all users can get started with GeneFEAST!</p>
+  what to do.... I've just put the most simple process here so that all users can get started with GeneFEAST!</i></p>
   
-  <p>On an extra technical note - if you're using GeneFEAST via its Docker container please do make sure that all the directories referenced in your GeneFEAST call and setup YAML file are 
-    bind-mounted to the correct directory on the host computer :)</p>
+  <p><i>On an extra technical note - if you're using GeneFEAST via its Docker container please do make sure that all the directories referenced in your GeneFEAST call and setup YAML file are 
+    bind-mounted to the correct directory on the host computer :)</i></p>
 </details>
 
 <hr>
