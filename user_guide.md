@@ -1,6 +1,5 @@
 # User Guide
 
-<mark><b>October 2024: This user guide is being edited to reflect changes in GeneFEAST!! It is incomplete and cannot be used as-is. The user guide should be finished by the end of the month.</b></mark>
 
 ### Installation
 
