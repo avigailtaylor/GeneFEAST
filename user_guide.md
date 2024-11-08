@@ -490,6 +490,8 @@ HEATMAP_MAX: 4
 
 ### Running GeneFEAST
 
+Here is the simplest way to set up and run GeneFEAST. There's a note for more computationally advanced users at the [end of this section](#advanced).
+
 #### Setting up your GeneFEAST project directory (folder)
 
 Start by making your GeneFEAST project directory (folder) and navigating there. For example, in Linux:
@@ -524,6 +526,8 @@ Also copy over the following, as required:
 ```bash
 cp /full/path/to/fea_file .
 cp /full/path/to/goi_file .
+
+# The precondition for this command is that you are calling it from inside your GeneFEAST project directory.
 ```
 
 <br>
@@ -532,7 +536,7 @@ Lastly, create your setup YAML file (you can use <a href="https://avigailtaylor.
 
 <br>
 
-<mark>Now, stay in your GeneFEAST project directory and run GeneFEAST using one of the following options:</mark>
+<mark>Next, stay in your GeneFEAST project directory and run GeneFEAST using one of the following options:</mark>
 
 <br>
 
@@ -540,9 +544,11 @@ Lastly, create your setup YAML file (you can use <a href="https://avigailtaylor.
 
 <br>
 
-Assuming that the setup YAML file and data files are located in ```${PWD}```, run GeneFEAST from a Docker container as follows:
 ```bash
-  docker run --rm -v ${PWD}:/data -w /data ghcr.io/avigailtaylor/genefeast gf <SETUP_YAML_FILE> <OUTPUT_DIR> 
+  docker run --rm -v ${PWD}:/data -w /data ghcr.io/avigailtaylor/genefeast gf <SETUP_YAML_FILE> <OUTPUT_DIR>
+
+  # The precondition for this command is that the setup YAML file and data files are located in directory ${PWD}.
+  # (Technical note for more advanced users: the -v flag is bind-mounting directory ${PWD} on the host machine to the directory called data in the container.)
 ```
 <br>
     
@@ -575,6 +581,20 @@ gf.gf(<SETUP_YAML_FILE>, <OUTPUT_DIR>)
 </blockquote>
 
 <br>
+
+<details>
+  <summary><b><a name="advanced">A note for more computationally advanced users about the use of file paths when calling GeneFEAST.</a></b></summary>
+
+  <br>
+
+  <p>If, like me, you prefer to use a directory structure that separates code, input, and output, that's absolutely fine. If you know what you're
+  doing you can replace file names with file paths, in either or both of the main call to GeneFEAST and the setup YAML file, and GeneFEAST will know
+  what to do.... I've just put the most simple process here so that all users can get started with GeneFEAST!</p>
+  
+  <p>On an extra technical note - if you're using GeneFEAST via its Docker container please do make sure that all the directories referenced in your GeneFEAST call and setup YAML file are 
+    bind-mounted to the correct directory on the host computer :)</p>
+</details>
+
 <hr>
 
 ### Viewing the GeneFEAST report
