@@ -11,12 +11,31 @@
 - GoI file (3 hour time point): [mmc2_goi_3h.csv](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv)
 - Setup YAML file: [mmc2_3h_setup.yml](https://avigailtaylor.github.io/GeneFEAST/mmc2_3h_setup.yml)
   
-> **IMPORTANT**
-> 
-> <mark>Open the setup YAML file and add the full path to your copies of GO_BP_3h_0.0001_4GF_basic.csv and mmc2_goi_3h.csv.</mark>
+---
+
+### Next, make your GeneFEAST project directory (folder) and navigate there. For example, in Linux:
+
+```bash
+mkdir my_genefeast_project
+cd my_genefeast_project
+```
+
+<br>
+
+Now copy all downloaded files to this directory. For example, in Linux, use the following commands to copy the files from their original locations to your GeneFEAST project directory:</p>
+
+```bash
+cp /full/path/to/fea_file .
+cp /full/path/to/goi_file .
+cp /full/path/to/setup_yaml_file .
+
+# The precondition for these cp commands is that they are called from inside your GeneFEAST project directory.
+```
+
+<br>
 
 ---
-### Now run GeneFEAST in one of the following three ways:
+### Now, staying in your GeneFEAST project directory, run GeneFEAST in one of the following three ways:
 
 Through its [docker](https://docs.docker.com/get-docker/) container:
 
