@@ -31,9 +31,9 @@ cd my_genefeast_project
 For example, in Linux, use the following commands to copy the files from their original locations to your GeneFEAST project directory:
 
 ```bash
-cp /full/path/to/fea_file .
-cp /full/path/to/goi_file .
-cp /full/path/to/setup_yaml_file .
+cp /full/path/to/GO_BP_3h_0.0001_4GF_basic.csv .
+cp /full/path/to/mmc2_goi_3h.csv .
+cp /full/path/to/mmc2_3h_setup.yml .
 
 # The precondition for these cp commands is that they are called from inside your GeneFEAST project directory.
 ```
