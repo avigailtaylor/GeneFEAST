@@ -5,7 +5,7 @@
 > Pinto SM, Subbannayya Y, Kim H, Hagen L, Górna MW, Nieminen AI, Bjørås M, Espevik T, Kainov D, Kandasamy RK. Multi-OMICs landscape of SARS-CoV-2-induced host responses in human lung epithelial cells. iScience. 2023 Jan 20;26(1):105895. doi: 10.1016/j.isci.2022.105895. Epub 2022 Dec 28. PMID: 36590899; PMCID: PMC9794516.
 
 ---
-<mark>Here is the simplest way to set up and run GeneFEAST to generate a single FEA summary report. There's a note for more computationally advanced users [below](#advanced).</mark>
+Here is the simplest way to set up and run GeneFEAST to generate a single FEA summary report. There's a note for more computationally advanced users [below](#advanced).
 
 
 ### Download the following files:
