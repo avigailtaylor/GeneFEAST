@@ -209,7 +209,7 @@ FEAs:
 
 #### In addition, you can also provide GeneFEAST with:
 <details>
-  <summary>An <a href="https://cran.r-project.org/web/packages/enrichR/vignettes/enrichR.html">enrichR</a> formatted FEA results file <b>instead of</b> the basic FEA results file described above. This is useful if you want GeneFEAST to create dot plots of your FEA results.</summary>
+  <summary>An <a href="https://www.rdocumentation.org/packages/enrichR/">enrichR</a> formatted FEA results file <b>instead of</b> the basic FEA results file described above. This is useful if you want GeneFEAST to create dot plots of your FEA results.</summary>
   <br>
   
 <table>
