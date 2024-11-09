@@ -8,7 +8,7 @@
 Here is the simplest way to set up and run GeneFEAST to generate a single FEA summary report. There's a note for more computationally advanced users [below](#advanced).
 
 
-### Download <a href="https://github.com/avigailtaylor/GeneFEAST/tree/main/single_gf_example_inputs">this folder of input files containing:</a>
+### Download <a href="https://github.com/avigailtaylor/GeneFEAST/tree/main/single_gf_example_inputs" download>this folder of input files containing:</a>
 
 - FEA results file (3 hour time point, p.adjust<0.0001)
 - GoI file (3 hour time point)
