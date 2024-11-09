@@ -8,11 +8,11 @@
 Here is the simplest way to set up and run GeneFEAST to generate a single FEA summary report. There's a note for more computationally advanced users [below](#advanced).
 
 
-### Download the following files:
+### Download <a href="https://avigailtaylor.github.io/GeneFEAST/single_gf_example_inputs">this folder of input files containing:</a>
 
-- FEA results file (3 hour time point, p.adjust<0.0001): [GO_BP_3h_0.0001_4GF_basic.csv](https://avigailtaylor.github.io/GeneFEAST/GO_BP_3h_0.0001_4GF_basic.csv)
-- GoI file (3 hour time point): [mmc2_goi_3h.csv](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv)
-- Setup YAML file: [mmc2_3h_setup.yml](https://avigailtaylor.github.io/GeneFEAST/mmc2_3h_setup.yml)
+- FEA results file (3 hour time point, p.adjust<0.0001)
+- GoI file (3 hour time point)
+- Setup YAML file
 
 <br>
 
