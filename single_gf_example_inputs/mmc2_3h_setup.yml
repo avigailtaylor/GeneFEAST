@@ -1,6 +1,0 @@
-FEAs:
-    - id: "mmc2_3h"
-      goi_file: "mmc2_goi_3h.csv"
-      fea_file: "GO_BP_3h_0.0001_4GF_basic.csv"
-      
-MAX_COMMUNITY_SIZE_THRESH: 10
