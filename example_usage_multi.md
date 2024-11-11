@@ -7,17 +7,6 @@
 ---
 Here is the simplest way to set up and run GeneFEAST to generate a single FEA summary report. There's a note for more computationally advanced users [below](#advanced).
 
-
-### Download the following files:
-
-- FEA results file 1 (3 hour time point, p.adjust<0.0001): [GO_BP_3h_0.0001_4GF_basic.csv](https://avigailtaylor.github.io/GeneFEAST/GO_BP_3h_0.0001_4GF_basic.csv)
-- FEA results file 2 (24 hour time point, p.adjust<0.0001): [GO_BP_24h_0.0001_4GF_basic.csv](https://avigailtaylor.github.io/GeneFEAST/GO_BP_24h_0.0001_4GF_basic.csv)
-- GoI file 1 (3 hour time point): [mmc2_goi_3h.csv](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv)
-- GoI file 2 (24 hour time point): [mmc2_goi_24h.csv](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_24h.csv)
-- Example extra annotation file: [mmc2_3h_24h_extra_annotations.txt](https://avigailtaylor.github.io/GeneFEAST/mmc2_3h_24h_extra_annotations.txt)
-- Setup YAML file: [mmc2_3h_24h_setup.yml](https://avigailtaylor.github.io/GeneFEAST/mmc2_3h_24h_setup.yml)
-
-
 ### Download the following files:
 
 <ul>
@@ -25,16 +14,9 @@ Here is the simplest way to set up and run GeneFEAST to generate a single FEA su
   <li>FEA results file 2 (24 hour time point, p.adjust<0.0001): <a href="https://avigailtaylor.github.io/GeneFEAST/GO_BP_24h_0.0001_4GF_basic.csv" download>GO_BP_24h_0.0001_4GF_basic.csv</a></li>
   <li>GoI file 1 (3 hour time point): <a href="https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv" download>mmc2_goi_3h.csv</a></li>
   <li>GoI file 2 (24 hour time point): <a href="https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_24h.csv" download>mmc2_goi_24h.csv</a></li>
-  <li>Example extra annotation file: <a href="https://avigailtaylor.github.io/GeneFEAST/mmc2_3h_24h_extra_annotations.txt" download>mmc2_3h_24h_setup.yml</a></li>
+  <li>Example extra annotation file: <a href="https://avigailtaylor.github.io/GeneFEAST/mmc2_3h_24h_extra_annotations.txt" download>mmc2_3h_24h_extra_annotations.txt</a></li>
   <li>Setup YAML file: <a href="https://avigailtaylor.github.io/GeneFEAST/mmc2_3h_24h_setup.yml" download>mmc2_3h_24h_setup.yml</a></li>
 </ul>
-
-- FEA results file 1 (3 hour time point, p.adjust<0.0001): [GO_BP_3h_0.0001_4GF_basic.csv](https://avigailtaylor.github.io/GeneFEAST/GO_BP_3h_0.0001_4GF_basic.csv)
-- FEA results file 2 (24 hour time point, p.adjust<0.0001): [GO_BP_24h_0.0001_4GF_basic.csv](https://avigailtaylor.github.io/GeneFEAST/GO_BP_24h_0.0001_4GF_basic.csv)
-- GoI file 1 (3 hour time point): [mmc2_goi_3h.csv](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv)
-- GoI file 2 (24 hour time point): [mmc2_goi_24h.csv](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_24h.csv)
-- Example extra annotation file: [mmc2_3h_24h_extra_annotations.txt](https://avigailtaylor.github.io/GeneFEAST/mmc2_3h_24h_extra_annotations.txt)
-- Setup YAML file: [mmc2_3h_24h_setup.yml](https://avigailtaylor.github.io/GeneFEAST/mmc2_3h_24h_setup.yml)
 
 <br>
 
