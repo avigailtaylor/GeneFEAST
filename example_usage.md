@@ -14,6 +14,18 @@ Here is the simplest way to set up and run GeneFEAST to generate a single FEA su
 - GoI file (3 hour time point)
 - Setup YAML file
 
+### Download the following files:
+
+- FEA results file 1 (3 hour time point, p.adjust<0.0001): [GO_BP_3h_0.0001_4GF_basic.csv](https://avigailtaylor.github.io/GeneFEAST/GO_BP_3h_0.0001_4GF_basic.csv)
+- GoI file (3 hour time point): [mmc2_goi_3h.csv](https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv)
+- Setup YAML file: [mmc2_3h_setup.yml](https://avigailtaylor.github.io/GeneFEAST/mmc2_3h_setup.yml)
+
+<ul>
+  <li>FEA results file 1 (3 hour time point, p.adjust<0.0001): <a href="https://avigailtaylor.github.io/GeneFEAST/GO_BP_3h_0.0001_4GF_basic.csv" download>GO_BP_3h_0.0001_4GF_basic.csv</a></li>
+  <li>GoI file (3 hour time point): <a href="https://avigailtaylor.github.io/GeneFEAST/mmc2_goi_3h.csv" download>mmc2_goi_3h.csv</a></li>
+  <li>Setup YAML file: <a href="https://avigailtaylor.github.io/GeneFEAST/mmc2_3h_setup.yml" download>mmc2_3h_setup.yml</a></li>
+</ul>
+
 <br>
 
 ### Next, make your GeneFEAST project directory (folder) and navigate there. 
