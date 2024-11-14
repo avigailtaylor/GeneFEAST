@@ -2,3 +2,5 @@
 
 include genefeast/*.obo
 include genefeast/*.html
+
+exclude example_outputs
