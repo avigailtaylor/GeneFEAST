@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "genefeast"
-version = "0.0.27"
+version = "0.0.28"
 authors = [
   { name="Avigail Taylor", email="avigail.taylor@well.ox.ac.uk" },
 ]
@@ -39,7 +39,6 @@ dependencies = [
 where = ["."]  # list of folders that contain the packages (["."] by default)
 include = ["genefeast"]  # package names should match these glob patterns (["*"] by default)
 exclude = []  # exclude packages matching these glob patterns (empty by default)
-namespaces = false  # to disable scanning PEP 420 namespaces (true by default)
 
 [tool.setuptools]
 include-package-data = true
