@@ -489,7 +489,7 @@ HEATMAP_MAX: 4
 
 ### Running GeneFEAST
 
-Below are simple/quickstart instructions for setting up and running GeneFEAST. Users with more computational experience can refer to the note at the [end of this section](#advanced).
+Below are simple/quick-start instructions for setting up and running GeneFEAST. Users with more computational experience can refer to the note at the [end of this section](#advanced).
 
 <br>
 
