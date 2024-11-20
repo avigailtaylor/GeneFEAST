@@ -52,9 +52,9 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
 <summary>Functional enrichment analysis (FEA) results file(s)</summary>
 <br>
 <ul>
-<li>FEA files contain the results of a FEA conducted on a list of genes of interest (GoI).</li>
-<li>FEA files should be in CSV file format.</li>
-<li>FEA files should have the following four columns, in this order:</li>
+<li>contain the results of a FEA conducted on a list of genes of interest (GoI).</li>
+<li>should be in CSV file format.</li>
+<li>should have the following four columns, in this order:</li>
 </ul>
 
 <br>
@@ -64,7 +64,7 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
 <br>
 <blockquote>
   <ul>
-    <li>Type: Term type/ originating database</li>
+    <li>Type: Term type/originating database</li>
     <li>ID: Term ID in database</li>
     <li>Description: Term description</li>
     <li>GeneID: "/"-separated list of gene IDs corresponding to GoIs annotated by the term</li>
@@ -97,12 +97,11 @@ docker pull ghcr.io/avigailtaylor/genefeast:latest
 </table>
 
 <br>
-This table corresponds to this CSV format:
+The corresponding table in CSV format:
 
 <pre>
 <code>
-Type,ID,Description,GeneID
-    
+Type,ID,Description,GeneID    
 "GO","GO:0071774","response to fibroblast growth factor","CCN2/THBS1/EGR3/FGF2/SPRY4/NDST1/CCL2/IER2/FLRT3/PRKD2/CXCL8/SPRY2/FRS2/FGFR1/SPRY1/RUNX2/HYAL1/KDM5B/NOG/ZFP36L1/COL1A1/CASR/FGFR3/FGF1/EXT1/FGFBP1/GATA3/NR4A1"
 "GO","GO:0002294","CD4-positive alpha-beta T cell differentiation involved in immune response","RARA/BCL6/SMAD7/SOCS3/PTGER4/JUNB/ZC3H12A/FOXP1/ENTPD7/NFKBIZ/NLRP3/RC3H1/RORC/RIPK2/ANXA1/RELB/MYB/IL6/LGALS9/GATA3"
 "GO","GO:2000514","regulation of CD4-positive alpha-beta T cell activation","RARA/BCL6/SMAD7/JUNB/RUNX1/ZC3H12A/NFKBIZ/NLRP3/RC3H1/CD274/CBLB/RIPK2/ANXA1/AGER/RUNX3/SOCS1/VSIR/PRKCQ/LGALS9/GATA3"
@@ -117,9 +116,9 @@ Type,ID,Description,GeneID
 <summary>Genes of interest (GoI) file(s)</summary>
 <br>
 <ul>
-<li>GoI files contain the list of GoI that were the input for the FEA being summarised.</li>
-<li>GoI files should be in CSV file format.</li>
-<li>GoI files should contain one GoI per line, each with its corresponding quantitative data as measured in the high-throughput 'omics experiment in which the GoI were identified.</li>
+<li>contain the list of GoI that served as input for the FEA being summarised.</li>
+<li>should be in CSV file format.</li>
+<li>should contain one GoI per line, each with a corresponding quantitative value derived from the high-throughput 'omics experiment from which the GoI were also identified.</li>
 </ul>
 <br>
 <blockquote>
@@ -148,7 +147,7 @@ Type,ID,Description,GeneID
   </table>
 <br>
     
-This table corresponds to this CSV format:
+The corresponding table in CSV format:
 
 <pre>
 <code>
@@ -172,7 +171,7 @@ RARA,1.444539048
 <details>
    <summary>A YAML setup file</summary>
    <br>
-   <p>You will use your setup file to tell GeneFEAST the id(s) of the FEA(s) to summarise, the location(s) of the FEA file(s), and the location(s) of the GoI file(s).</p>
+   <p>You will use this setup file to give GeneFEAST the id(s) of the FEA(s) to summarise, the location(s) of the FEA file(s), and the location(s) of the GoI file(s).</p>
 
 To summarise a single FEA:
 
@@ -225,7 +224,7 @@ FEAs:
 <b>IMPORTANT</b>
 <ul>
   <li>Columns ID through to count are output by enrichR.</li>
-  <li>However, <b>you will need to add the "Type" column</b> using, e.g., Excel or VIM.</li>
+  <li>However, <b>you will need to add the "Type" column manually</b>, e.g., using Excel or VIM.</li>
 </ul>
 </blockquote>
 
@@ -255,7 +254,7 @@ DOTPLOTS: True
 
 
 <details>
-  <summary>Search terms to be searched for alongside your GoI.</summary>
+  <summary>Search terms to look up alongside your GoI.</summary>
   <br>
 
 <p>As part of the report generation process, GeneFEAST conducts a literature search for each GoI via the National Center for Biotechnology Information's Gene and PubMed services (Sayers, et al., 2021).</p> 
@@ -280,7 +279,7 @@ SEARCH_WORDS:
   <summary>Extra annotations for genes.</summary>
   <br>
 
-<p>Sometimes, you may wish to keep track of an <i>a priori</i> set of genes relevant to your study, for example those that are members of a particular biological signature, throughout the GeneFEAST report.</p>
+<p>Occasionally, you may wish to keep track of an <i>a priori</i> set of genes relevant to your study, for example those that are members of a particular biological signature, throughout the GeneFEAST report.</p>
 
 <br>
 
@@ -319,7 +318,7 @@ You can create a setup YAML file with these additional lines of code using <a hr
 <details>
 
   
-<summary>Pre-made PNG images for significantly enriched/ over-represented terms.</summary>
+<summary>Pre-made PNG images for significantly enriched/over-represented terms.</summary>
 <br>
 <p>For example, if KEGG pathway images have been generated as part of the FEA, these images can be incorporated into the report.</p>
 
@@ -490,7 +489,7 @@ HEATMAP_MAX: 4
 
 ### Running GeneFEAST
 
-Here is the simplest way to set up and run GeneFEAST. There's a note for more computationally advanced users at the [end of this section](#advanced).
+Users with more computational experience can refer to the note at the [end of this section](#advanced).
 
 <br>
 
@@ -513,16 +512,6 @@ Next, copy the following files to this directory:
 
 <br>
 
-Also copy over the following, as required:
-<ul>
-  <li>extra_annotation_file</li>
-  <li>image_directory_for_FEA (you can have up to one image directory file per FEA being summarised)</li> 
-  <li>GO_OBO_file</li>
-  <li>MSIGDB_file</li>
-</ul>
-
-<br>
-
 <p>For example, in Linux, use the following commands to copy your fea_file and goi_file from their original locations to your GeneFEAST project directory:</p>
 
 ```bash
@@ -531,6 +520,16 @@ cp /full/path/to/goi_file .
 
 # The precondition for these cp commands is that they are called from inside your GeneFEAST project directory.
 ```
+
+<br>
+
+(Optional) Also copy over the following, as needed:
+<ul>
+  <li>extra_annotation_file</li>
+  <li>image_directory_for_FEA (you can have up to one image directory file per FEA being summarised)</li> 
+  <li>GO_OBO_file</li>
+  <li>MSIGDB_file</li>
+</ul>
 
 <br>
 
@@ -577,7 +576,7 @@ gf.gf(<SETUP_YAML_FILE>, <OUTPUT_DIR>)
 <blockquote>
 <b>NOTES</b>
 <ul>
-<li>When you run GeneFEAST, it will use the setup YAML file to count how many FEAs are being summarised, and then generate either a single or multi FEA summary report accordingly.</li>
+<li>When you run GeneFEAST, it will use the setup YAML file to count how many FEAs are being summarised, and then generate either a single or multi FEA summary reports accordingly.</li>
 <li>Make sure &lt;OUTPUT_DIR&gt;  does not already exist.</li>
 </ul>
 </blockquote>
@@ -586,13 +585,13 @@ gf.gf(<SETUP_YAML_FILE>, <OUTPUT_DIR>)
 <br>
 
 <details>
-  <summary><b><a name="advanced">A note for more computationally advanced users about the use of file paths when calling GeneFEAST.</a></b></summary>
+  <summary><b><a name="advanced">A note for users with more computational experience on the use of file paths when calling GeneFeast.</a></b></summary>
 
   <br>
 
   <p><i>If, like me, you prefer to use a directory structure that separates code, input, and output, that's absolutely fine. If you know what you're
   doing you can replace file names with file paths, in either or both of the main call to GeneFEAST and the setup YAML file, and GeneFEAST will know
-  what to do.... I've just put the most simple process here so that all users can get started with GeneFEAST!</i></p>
+  what to do....I've presented the simplest process above so that all users can get started with GeneFEAST!</i></p>
   
   <p><i>On an extra technical note - if you're using GeneFEAST via its Docker container please do make sure that all the directories referenced in your GeneFEAST call and setup YAML file are 
     bind-mounted to the correct directory on the host computer :)</i></p>
@@ -620,7 +619,7 @@ To view a GeneFEAST multi FEA summary report, navigate to the output directory a
 <b>IMPORTANT</b>
 <ul>
 <li>Viewing the HTML output report requires a web-browser with HTML5 and JavaScript 1.6 support.</li>
-<li>Please make sure to keep all the output generated by GeneFEAST in the output directory; the HTML report uses relative links to images, and will <mark>break if the relative directory structure is broken.</mark></li>
+<li>Please make sure to keep all the output generated by GeneFEAST in the output directory; the HTML report uses relative links to images, and will <b>break</b> if the relative directory structure is broken.</li>
 </ul>
 </blockquote>
 
@@ -643,7 +642,7 @@ The figure below summarises the structure of HTML reports generated by GeneFEAST
   <li>and links to terms that did not form part of an enriched-term community (yellow frame).</li>
 </ul>  
 
-A top navigation bar with ‘Communities overview’ and ‘Full report’ dropdown menus, providing direct access to every part of the report at all times, is fixed at the top of the report and always visible.</p>
+A top navigation bar with ‘Communities overview’ and ‘Full report’ dropdown menus is fixed at the top of the report and always visible. This provides direct access to every part of the report at all times, </p>
 
 <p><b>Reports summarising multiple FEAs</b> start with a front page showing an upset plot of the sets of terms identified as enriched in each of the input FEAs (top left green frame). We refer to each set of terms found in two or more FEAs as a "FEA term-set intersection". The navigation bar at the top of this front page provides a ‘Reports’ dropdown menu from which the user can navigate to separate reports summarising the terms in each FEA term-set intersection. Each of the separate reports has the structure of a report summarising a single FEA, as described above.</p>
 
@@ -651,7 +650,7 @@ A top navigation bar with ‘Communities overview’ and ‘Full report’ dropd
 <ul>
 <li>member terms;</li>
 <li>a <a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/circos_and_upset.md">circos plot and an upset plot</a> showing the overlap between sets of genes annotated by the member terms;</li>
-<li><a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/split_heatmaps.md">split heatmaps</a> of the term- and experiment-GoI relationships, gene-level quantitative data and extra annotations, if supplied;</li>
+<li><a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/split_heatmaps.md">split heatmaps</a> of the term- and experiment-GoI relationships and gene-level quantitative data, as well as extra annotations, if supplied;</li>
 <li>a dot plot summary of member term’s FEA results, if supplied;</li>
 <li>further information about terms, such as GO hierarchies and KEGG pathway diagrams;</li>
 <li>external hyperlinks to literature searches for each gene of interest, incorporating additional search terms if you have supplied them.</li>
@@ -663,7 +662,7 @@ Where applicable, community frames have links back to their meta community and a
 <p><b>Meta community</b> frames contain:
 <ul>
 <li><a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/circos_and_upset.md">circos plot and upset plot</a> showing the gene-set overlap of member communities;</li>
-<li><a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/split_heatmaps.md">split heatmaps</a>, wherein term annotation is replaced by gene-community membership in the top heatmap, and <b>only genes present in two or more communities are shown</b>;</li>
+<li><a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/split_heatmaps.md">split heatmaps</a>, wherein term annotation is replaced by gene-community membership in the top heatmap, and <b>only genes present in two or more communities</b> are shown;</li>
 <li>external hyperlinks to literature searches for each gene of interest, incorporating additional search terms if you have supplied them.</li>
 </ul>
 In addition, meta community frames have links to member communities (black, dashed arrow).</p>
@@ -693,10 +692,10 @@ In addition, meta community frames have links to member communities (black, dash
 
 ### Additional GeneFEAST output
 
-Term-community membership, term- and experiment-GoI relationships are also output in comma-separated value format, for input into downstream programs. The columns are:
+Term-community membership, term- and experiment-GoI relationships are also output in CSV format, for input into downstream programs. The columns are:
 
 - Community (will be empty if a term is not part of a community)
-- Meta community (will be empty if a community is not part of a meta community)
+- Meta community (will be empty if a community is not part of a meta-community)
 - FEA/experiment identifier
 - Term
 - Gene
