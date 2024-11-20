@@ -489,7 +489,7 @@ HEATMAP_MAX: 4
 
 ### Running GeneFEAST
 
-Users with more computational experience can refer to the note at the [end of this section](#advanced).
+Below are simple/quickstart instructions for setting up and running GeneFEAST. Users with more computational experience can refer to the note at the [end of this section](#advanced).
 
 <br>
 
@@ -576,7 +576,7 @@ gf.gf(<SETUP_YAML_FILE>, <OUTPUT_DIR>)
 <blockquote>
 <b>NOTES</b>
 <ul>
-<li>When you run GeneFEAST, it will use the setup YAML file to count how many FEAs are being summarised, and then generate either a single or multi FEA summary reports accordingly.</li>
+<li>When you run GeneFEAST, it will use the setup YAML file to count how many FEAs are being summarised, and then generate single or multi FEA summary reports accordingly.</li>
 <li>Make sure &lt;OUTPUT_DIR&gt;  does not already exist.</li>
 </ul>
 </blockquote>
@@ -695,7 +695,7 @@ In addition, meta community frames have links to member communities (black, dash
 Term-community membership, term- and experiment-GoI relationships are also output in CSV format, for input into downstream programs. The columns are:
 
 - Community (will be empty if a term is not part of a community)
-- Meta community (will be empty if a community is not part of a meta-community)
+- Meta community (will be empty if a community is not part of a meta community)
 - FEA/experiment identifier
 - Term
 - Gene
