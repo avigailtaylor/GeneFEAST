@@ -8,10 +8,14 @@ Please see the [User Guide](https://avigailtaylor.github.io/GeneFEAST/user_guide
 
 <br>
 
-Once you have installed GeneFEAST, or downloaded the docker container, follow these links for:
-- Single FEA summary: [example input data and output GeneFEAST report](https://avigailtaylor.github.io/GeneFEAST/example_usage.html)
-- Multi FEA summary: [example input data and output GeneFEAST report](https://avigailtaylor.github.io/GeneFEAST/example_usage_multi.html)
+## Quick-start with example input data and output report
 
+After installing GeneFEAST or downloading the docker container (see [User Guide](https://avigailtaylor.github.io/GeneFEAST/user_guide.html)), you can test it using the example data below.
+
+The following links contain example input data, instructions on how to run GeneFEAST on them, and example output GeneFEAST reports.
+- [Single FEA](https://avigailtaylor.github.io/GeneFEAST/example_usage.html)
+- [Multi FEA](https://avigailtaylor.github.io/GeneFEAST/example_usage_multi.html)
+  
 ---
 
 ### Citation
