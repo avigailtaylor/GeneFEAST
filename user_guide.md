@@ -9,6 +9,11 @@ To download the latest container from the [repository](https://github.com/avigai
 ```
 docker pull ghcr.io/avigailtaylor/genefeast:latest
 ```
+<br>
+
+<blockquote>
+This Docker image is designed for “standard Docker installations” on hosts with AMD64 and ARM64 CPUs.
+</blockquote>
 
 <br>
 
