@@ -349,7 +349,7 @@ def gf(setup_yaml_path, output_dir):
         sys.exit()
     
     # Store quantitative data (qd) values (usually log2 FC) for genes
-    (status, message, _exp_gene_qd_dict) = gfb.make_gene_qd_dict(gene_qd_file_path, exp_id, GENE_INDEX, QD_INDEX)
+    (status, message, _exp_gene_qd_dict) = gfb.make_gene_qd_dict(gene_qd_file_path, exp_id, exp_term_genes_dict, GENE_INDEX, QD_INDEX)
     print(message)
     if(status > 0):
         sys.exit()

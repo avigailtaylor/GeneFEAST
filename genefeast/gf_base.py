@@ -360,10 +360,11 @@ def make_extra_annotations_dict(ea_file_path):
     return(status, message, extra_annotations_dict, num_extra_annotations)
                 
 
-def make_gene_qd_dict(gene_qd_file_path, exp_id, gene_index, qd_index):
+def make_gene_qd_dict(gene_qd_file_path, exp_id, exp_term_genes_dict, gene_index, qd_index):
     status = 0
     message = ''
     gene_qd_dict = {}
+    exp_used_gois = set([goi for genelist in list(exp_term_genes_dict.values()) for goi in genelist])
     
     if os.stat(gene_qd_file_path).st_size > 0:
         with open(gene_qd_file_path) as f:
@@ -392,7 +393,8 @@ def make_gene_qd_dict(gene_qd_file_path, exp_id, gene_index, qd_index):
                         return(status, message, {})
                         
                     else:
-                        gene_qd_dict[(exp_id, gene)] = qd
+                        if(gene in exp_used_gois):
+                            gene_qd_dict[(exp_id, gene)] = qd
             
             if(lines_read == 0):
                 status = 3
