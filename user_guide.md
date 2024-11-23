@@ -73,6 +73,9 @@ This Docker image is designed for “standard Docker installations” on hosts w
     <li>ID: Term ID in database</li>
     <li>Description: Term description</li>
     <li>GeneID: "/"-separated list of gene IDs corresponding to GoIs annotated by the term</li>
+    <ul>
+      <li>Note that in a GSEA-type FEA this is known as the term's <i>leading edge</i> subset</li>
+    </ul>
   </ul>
 </blockquote>
 <br>
@@ -135,6 +138,7 @@ Type,ID,Description,GeneID
 </blockquote>
 
 <br>
+
   <details>
    <summary>Example</summary>
 <br>
@@ -170,6 +174,34 @@ RARA,1.444539048
 </pre>
 
 </details>
+<br>
+
+<blockquote>
+<b>NOTES for ORA-type FEAs</b>
+<ul>
+  <li>GoI files can contain just significantly differentially expressed genes, <b>or</b> they can contain results for all genes tested in a given experiment.</li>
+  <li>Either way, GeneFEAST will only store quantitative data for GoI that are also present in the FEA results file for the corresponding experiment.</li>
+</ul>
+</blockquote>
+
+<br>
+
+<blockquote>
+<b>NOTES for GSEA-type FEAs</b>
+<ul>
+  <li>Since, by definition, GSEA-type FEAs do not select a subset of genes for analysis, the GoI file in this scenario is just the results for all genes tested in a given experiment.</li>
+  <li>Importantly, GeneFEAST will only store quantitative data for genes present in at least one leading edge subset in the GSEA-type FEA results file, and it is this set of genes that are considered as <i>de facto</i> GoI for the rest of the GeneFEAST analysis.</li>
+</ul>
+<br>
+<b>IMPORTANT NOTE ABOUT BEST PRACTICE FOR GENEFEAST ANALYSIS OF GSEA-TYPE FEAs</b>
+<ul>
+  <li>Standard GSEAs look for enrichment of gene-sets amongst <b>either</b> the most over-expressed <b>or</b> the most under-expressed genes in a list of genes ranked by expression.</li>
+  <li>Thus, for any significantly enriched term, <b>either</b> a positive enrichment score (corresponding to enrichment amongst over-expressed genes) <b>or</b> a negative enrichment score (corresponding to enrichment amongst under-expressed genes) is reported, <b>but never both</b>.</li>
+  <li>Consequently, in the GeneFEAST setting, you should <b>split your GSEA results into two FEA results files:</b> one for positive scoring terms and one for negative scoring terms, then treat these as <b>separate FEA results files</b> for GeneFEAST summarisation purposes.</li>
+</ul>
+</blockquote>
+
+<br>
 <hr>
 </details>
 
