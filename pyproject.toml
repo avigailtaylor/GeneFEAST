@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "genefeast"
-version = "0.0.29"
+version = "0.0.30"
 authors = [
   { name="Avigail Taylor", email="avigail.taylor@well.ox.ac.uk" },
 ]
