@@ -175,6 +175,7 @@ RARA,1.444539048
 
 </details>
 <br>
+<hr>
 
 <blockquote>
 <b>NOTES for ORA-type FEAs</b>
