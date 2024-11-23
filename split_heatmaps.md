@@ -8,7 +8,7 @@ Sometimes, you may wish to keep track of an *a priori* set of genes relevant t
 
 ### Full and truncated split heatmaps
 
-When split heatmaps become too large, GeneFEAST renders them in both a full and truncated format. In this case, the user will be able to toggle between the full and truncated version of the heatmap in the GeneFEAST report.
+When split heatmaps become too large, GeneFEAST renders them in both a full and truncated format. In this case, the user will be able to toggle between the full and truncated version of the heatmap in the GeneFEAST report. To truncate a heatmap, GeneFEAST removes genes annotated by $n$ terms, when $n<trunc$. The $trunc$ threshold is set automatically and is determined by the number of terms in the community/number of communities in the meta community. Note that genes are only removed for display purposes, and will still be visible in the full heatmap as well as in the corresponding output csv files.
 
 ### Split heatmaps for meta communities
 
