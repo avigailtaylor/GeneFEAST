@@ -213,7 +213,7 @@ FEAs:
 
 #### In addition, you can also provide GeneFEAST with:
 <details>
-  <summary>An <a href="https://www.rdocumentation.org/packages/enrichR/">enrichR</a> formatted FEA results file <b>instead of</b> the basic FEA results file described above. This is useful if you want GeneFEAST to create dot plots of your FEA results.</summary>
+  <summary>An FEA results file outputted by one of the 'enrich' family of functions available from the <a href="https://rdrr.io/bioc/clusterProfiler/man/">clusterProfiler R package</a>. This is <b>instead of</b> the basic FEA results file described above and is useful if you want GeneFEAST to create dot plots of your FEA results.</summary>
   <br>
   
 <table>
@@ -228,7 +228,7 @@ FEAs:
 <blockquote>
 <b>IMPORTANT</b>
 <ul>
-  <li>Columns ID through to count are output by enrichR.</li>
+  <li>Columns ID through to count are output by the enrich functions.</li>
   <li>However, <b>you will need to add the "Type" column manually</b>, e.g., using Excel or VIM.</li>
 </ul>
 </blockquote>
@@ -236,7 +236,7 @@ FEAs:
 
 <br>
 
-When using enrichR formatted FEA results, you will need to add the following line to your YAML setup file:
+When using 'enrich'-formatted FEA results, you will need to add the following line to your YAML setup file:
 
 <pre><code>
 ENRICHR: True
