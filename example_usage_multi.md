@@ -20,6 +20,12 @@ Here is the simplest way to set up and run GeneFEAST to generate a single FEA su
 
 <br>
 
+You can download each file individually, or download a zip file of the GeneFEAST repo, if you prefer:
+
+![How to download the repo.](https://avigailtaylor.github.io/GeneFEAST/download_zip.png)
+
+<br>
+
 ### Next, make your GeneFEAST project directory (folder) and navigate there. 
 
 For example, in Linux:
