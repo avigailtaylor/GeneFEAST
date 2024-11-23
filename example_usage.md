@@ -21,6 +21,8 @@ You can download each file individually, or download a zip file of the GeneFEAST
 
 ![How to download the repo.](https://avigailtaylor.github.io/GeneFEAST/download_zip.png)
 
+<br>
+
 ### Next, make your GeneFEAST project directory (folder) and navigate there. 
 
 For example, in Linux:
