@@ -12,5 +12,5 @@ FEAs:
       fea_file: "FEA_3_results_file"
 
 
-ENRICHR: True
+ENRICH: True
 DOTPLOTS: True

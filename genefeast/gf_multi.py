@@ -152,10 +152,10 @@ def gf_multi(setup_yaml_path, output_dir):
     else:
         QUANT_DATA_TYPE = setup.get("QUANT_DATA_TYPE")
 
-    if(setup.get("ENRICHR") is None):
-        ENRICHR = False
+    if(setup.get("ENRICH") is None):
+        ENRICH = False
     else:
-        ENRICHR = setup.get("ENRICHR")
+        ENRICH = setup.get("ENRICH")
 
 #    DOTPLOTS = cfg_yaml['DOTPLOTS']
     if(setup.get("DOTPLOTS") is None):
@@ -163,11 +163,11 @@ def gf_multi(setup_yaml_path, output_dir):
     else:
         DOTPLOTS = setup.get("DOTPLOTS")
         
-    if(DOTPLOTS and not(ENRICHR)):
-        print('*** ERROR: DOTPLOTS is set to True, but ENRICHR is set to False. '
-              'Dotplots can only be plotted if ORA/ GSEA results are in Enrichr format (see docs). '
-              'Please ensure that ORA/ GSEA results are in Enrichr format, and explicitly set ENRICHR to True in '
-              'setup YAML file. (The default value for ENRICHR is False if not given in the setup '
+    if(DOTPLOTS and not(ENRICH)):
+        print('*** ERROR: DOTPLOTS is set to True, but ENRICH is set to False. '
+              'Dotplots can only be plotted if ORA-type FEA results are in Enrich format (see docs). '
+              'Please ensure that ORA results are in Enrich format, and explicitly set ENRICH to True in '
+              'setup YAML file. (The default value for ENRICH is False if not given in the setup '
               'YAML file.) ***')
         sys.exit()
     
@@ -393,7 +393,7 @@ def gf_multi(setup_yaml_path, output_dir):
         
         # Read in the ORA/ GSEA data
         (status, message, term_types_dict_sub, term_defs_dict_sub, exp_term_genes_dict_sub, exp_term_dotplot_dict_sub, exp_terms) = \
-            gfb.read_in_ora_data(my_ora_file_path, exp_id, MIN_LEVEL, MAX_DCNT, ENRICHR, DOTPLOTS, _GO_term_stats)
+            gfb.read_in_ora_data(my_ora_file_path, exp_id, MIN_LEVEL, MAX_DCNT, ENRICH, DOTPLOTS, _GO_term_stats)
         print(message)
         if(status > 0):
             sys.exit()

@@ -239,7 +239,7 @@ FEAs:
 When using 'enrich'-formatted FEA results, you will need to add the following line to your YAML setup file:
 
 <pre><code>
-ENRICHR: True
+ENRICH: True
 </code></pre>
 
 <br>

@@ -175,7 +175,7 @@ def is_fraction_str(fraction_string):
     else:
         return True
         
-def read_in_ora_data(ora_file_path, exp_id, min_level, max_dcnt, enrichr_format, dotplots, GO_term_stats):
+def read_in_ora_data(ora_file_path, exp_id, min_level, max_dcnt, enrich_format, dotplots, GO_term_stats):
     status = 0
     message = ''
     term_types_dict = {}
@@ -195,18 +195,18 @@ def read_in_ora_data(ora_file_path, exp_id, min_level, max_dcnt, enrichr_format,
                 lines_read += 1
                 
                 
-                if(enrichr_format):
+                if(enrich_format):
                     if(len(line) < 10):
                         status = 1
-                        message = ('*** ERROR: ORA (or GSEA) file not formatted correctly. '
-                                   'Enrichr format is expected, but has not been supplied. '
-                                   'If your ORA file is in basic csv format with four columns '
+                        message = ('*** ERROR: FEA file not formatted correctly. '
+                                   'Enrich format is expected, but has not been supplied. '
+                                   'If your FEA file is in basic csv format with four columns '
                                    '(Type, Term, Definition, Genes), then '
-                                   'please check that variable ENRICHR is set to False in the setup YAML file, '
-                                   'and then run again. (Note that the default value for ENRICHR is False if not '
+                                   'please check that variable ENRICH is set to False in the setup YAML file, '
+                                   'and then run again. (Note that the default value for ENRICH is False if not '
                                    'given in the setup YAML file.) '
-                                   'Otherwise, please check that your ORA file is '
-                                   'in the expected Enrichr format and matches the description in the docs. '
+                                   'Otherwise, please check that your FEA file is '
+                                   'in the expected Enrich format and matches the description in the docs. '
                                    'Also, check the number of fields in each line and that there '
                                    'are no empty lines. ***')
                         return(status, message, {}, {}, {}, {}, [])
@@ -221,12 +221,12 @@ def read_in_ora_data(ora_file_path, exp_id, min_level, max_dcnt, enrichr_format,
                 else:
                     if(len(line) != 4):
                         status = 1
-                        message = ('*** ERROR: ORA (or GSEA) file not formatted correctly. '
+                        message = ('*** ERROR: FEA file not formatted correctly. '
                                    'Basic format is expected, but has not been supplied. '
-                                   'If your ORA file is in Enrichr format (see docs), then '
-                                   'please check that variable ENRICHR is set to True in the setup YAML, '
-                                   'and then run again. (Note that the default value for ENRICHR is False if not '
-                                   'given in the setup YAML file.) Otherwise, please check that your ORA file is '
+                                   'If your FEA file is in Enrich format (see docs), then '
+                                   'please check that variable ENRICH is set to True in the setup YAML, '
+                                   'and then run again. (Note that the default value for ENRICH is False if not '
+                                   'given in the setup YAML file.) Otherwise, please check that your FEA file is '
                                    'in basic csv format with four columns (Type, Term, Definition, Genes). '
                                    'Also, check the number of fields in each line and that there '
                                    'are no empty lines. ***')
@@ -271,13 +271,13 @@ def read_in_ora_data(ora_file_path, exp_id, min_level, max_dcnt, enrichr_format,
                         
                     if( dotplots ):
                         
-                        if(not(enrichr_format)):
+                        if(not(enrich_format)):
                             status = 3
-                            message = ( '*** ERROR: DOTPLOTS is True, but ORA/ GSEA file is not in the Enrichr format '
+                            message = ( '*** ERROR: DOTPLOTS is True, but FEA file is not in the Enrich format '
                                        'required for dotplots. To fix this, set DOTPLOTS to False in the setup YAML file. '
-                                       'Alternatively, set ENRICHR '
+                                       'Alternatively, set ENRICH '
                                        'to True in the setup YAML file (if not given, the default value is False), '
-                                       'and supply ORA/ GSEA results in the Enrichr format (see docs). ***')
+                                       'and supply FEA results in the Enrich format (see docs). ***')
                             return(status, message, {}, {}, {}, {}, [])
                             
                         else:
