@@ -175,20 +175,21 @@ RARA,1.444539048
 
 </details>
 <br>
-<hr>
 
+<details>
+<summary>IMPORTANT README FOR ORA-type FEAs</summary>
 <blockquote>
-<b>NOTES for ORA-type FEAs</b>
 <ul>
   <li>GoI files can contain just significantly differentially expressed genes, <b>or</b> they can contain results for all genes tested in a given experiment.</li>
   <li>Either way, GeneFEAST will only store quantitative data for GoI that are also present in the FEA results file for the corresponding experiment.</li>
 </ul>
 </blockquote>
-
+</details>
 <br>
 
+<details>
+  <summary>IMPORTANT README FOR GSEA-type FEAs</summary>
 <blockquote>
-<b>NOTES for GSEA-type FEAs</b>
 <ul>
   <li>Since, by definition, GSEA-type FEAs do not select a subset of genes for analysis, the GoI file in this scenario is just the results for all genes tested in a given experiment.</li>
   <li>Importantly, GeneFEAST will only store quantitative data for genes present in at least one leading edge subset in the GSEA-type FEA results file, and it is this set of genes that are considered as <i>de facto</i> GoI for the rest of the GeneFEAST analysis.</li>
@@ -201,7 +202,7 @@ RARA,1.444539048
   <li>Consequently, in the GeneFEAST setting, you should <b>split your GSEA results into two FEA results files:</b> one for positive scoring terms and one for negative scoring terms, then treat these as <b>separate FEA results files</b> for GeneFEAST summarisation purposes.</li>
 </ul>
 </blockquote>
-
+</details>
 <br>
 <hr>
 </details>
