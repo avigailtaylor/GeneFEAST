@@ -38,7 +38,7 @@ cd my_genefeast_project
 <br>
 
 ### Now copy all downloaded files to this directory. 
-For example, in Linux, use the following commands to copy the files from their original locations to your GeneFEAST project directory:
+For example, in Linux, use the following commands to copy the six files (listed above) from their original locations to your GeneFEAST project directory:
 
 ```bash
 cp /full/path/to/GO_BP_3h_0.0001_4GF_basic.csv .
@@ -67,7 +67,7 @@ docker run --rm -v ${PWD}:/data -w /data ghcr.io/avigailtaylor/genefeast gf mmc2
 Through the command line:
 
 ```bash
-gf <full/path/to/mmc2_3h_24h_setup.yml> <OUTPUT_DIR>
+gf <mmc2_3h_24h_setup.yml> <OUTPUT_DIR>
 ```
 
 In Python:
@@ -75,7 +75,7 @@ In Python:
 ```python
 from genefeast import gf
 
-gf.gf(<full/path/to/mmc2_3h_24h_setup.yml>, <OUTPUT_DIR>)
+gf.gf(<mmc2_3h_24h_setup.yml>, <OUTPUT_DIR>)
 ```
 
 <br>
