@@ -50,7 +50,7 @@ def get_output_dir_status(output_dir):
     else:
         status = 3
         message = ( 'Output directory does not exist... Creating directory now, '
-                    'and then proceeding with analysis...' )
+                    'and then proceeding with GeneFEAST summarisation...' )
     
     return (status, message)
         

@@ -2623,7 +2623,7 @@ class etgContainer:
         return self.summary_hyperlink # used by external code
     
 
-    def print_html( self, etgContainers ):
+    def print_html( self, etgContainers):
         # Can we refactor this to pass the etgContainer object, rather than all of its attributes? The question is, how will this affect instances of summaryPrinter not called by an etgContainer?
         my_summaryPrinter = summaryPrinter( self.lower_name , self.name + ': ' + self.text_details , self.output_dir , self.hyperlink , self.rel_images_dir, 
                                             self.meta_communities , self.singleton_meta_communities , self.singleton_communities , 
@@ -3223,21 +3223,41 @@ class etgContainer:
             
         
         first_print = True
+        
+        mc_index=1
+        mc_total=len(self.meta_communities)
         for mc in self.meta_communities:
+            
+            print("Generating HTML for meta community " + str(mc_index) + " of " + str(mc_total))
             mc.print_html( html_f , self.summary_hyperlink , first_print, backlink = self.relative_main_html )
             first_print = False
             
+            bc_index=1
+            bc_total=len(mc.communities)
             for bc in mc.communities:
+                print("Generating HTML for community " + str(bc_index) + " of " + str(bc_total) + " in meta community " + str(mc_index))
                 bc.print_html( html_f , self.summary_hyperlink , first_print, backlink = self.relative_main_html )
+                bc_index+=1
                 
+            mc_index+=1
+        
+        bc_index=1
+        bc_total=len(self.singleton_meta_communities)    
         for bc in self.singleton_meta_communities:
+            print("Generating HTML for community " + str(bc_index) + " of " + str(bc_total))
             bc.print_html( html_f , self.summary_hyperlink , first_print, backlink = self.relative_main_html )
             first_print = False
-            
+            bc_index+=1
+        
+        sc_index=1
+        sc_total=len(self.singleton_communities)    
         for sc in self.singleton_communities:
+            print("Generating HTML for term " + str(sc_index) + " of " + str(sc_total))
             sc.print_html( html_f , self.summary_hyperlink , first_print, backlink = self.relative_main_html )
             first_print = False
+            sc_index+=1
 
+        print("\nGenerating JavaScript for HTML report")
         jSPrinter.print_html_for_event_listeners( html_f )
         jSPrinter.print_html_for_preclickbuttons( html_f, self.default_meta_view, self.default_community_view )
         html_f.write("</body>\n")

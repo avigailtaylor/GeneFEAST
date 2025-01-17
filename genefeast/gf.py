@@ -69,7 +69,8 @@ def gf(setup_yaml_path, output_dir):
     print("\nSetting up I/O files and directories")
     #(status, message, mi_dict, exp_ids) = gfb.get_meta_info(mif_path) # mi short for meta input
     (status, message, mi_dict, exp_ids) = gfb.get_meta_info_from_setup(setup_yaml_path) # mi short for meta input
-    print(message)
+    if(message):
+        print(message)
     if(status > 0):
         sys.exit()
     
@@ -82,7 +83,8 @@ def gf(setup_yaml_path, output_dir):
     ora_file_path , gene_qd_file_path , input_img_dir = mi_dict[info_string]
     
     (status, message) = gfb.get_output_dir_status(output_dir)
-    print(message)
+    if(message):
+        print(message)
     if(status == 1):
         sys.exit()
     elif(status == 2):
@@ -358,13 +360,17 @@ def gf(setup_yaml_path, output_dir):
     # Read in the ORA/ GSEA data
     (status, message, _term_types_dict, _term_defs_dict, exp_term_genes_dict, _exp_term_dotplot_dict, _) = \
             gfb.read_in_ora_data(ora_file_path, exp_id, MIN_LEVEL, MAX_DCNT, ENRICH, DOTPLOTS, _GO_term_stats)
-    print(message)
+    
+    if(message):
+        print(message)
     if(status > 0):
         sys.exit()
     
     # Store quantitative data (qd) values (usually log2 FC) for genes
     (status, message, _exp_gene_qd_dict) = gfb.make_gene_qd_dict(gene_qd_file_path, exp_id, exp_term_genes_dict, GENE_INDEX, QD_INDEX)
-    print(message)
+    
+    if(message):
+        print(message)
     if(status > 0):
         sys.exit()
     
@@ -1071,22 +1077,42 @@ def gf(setup_yaml_path, output_dir):
         
     
     first_print = True
+    
+    mc_index=1
+    mc_total=len(meta_communities)
     for mc in meta_communities:
+        
+        print("Generating HTML for meta community " + str(mc_index) + " of " + str(mc_total))
         mc.print_html(html_f, 'GeneFEAST_REPORT_' + summary_id + '.html', first_print)
         first_print = False
         
+        bc_index=1
+        bc_total=len(mc.communities)
         for bc in mc.communities:
-            bc.print_html(html_f, 'GeneFEAST_REPORT_' + summary_id + '.html', first_print)
             
+            print("Generating HTML for community " + str(bc_index) + " of " + str(bc_total) + " in meta community " + str(mc_index))
+            bc.print_html(html_f, 'GeneFEAST_REPORT_' + summary_id + '.html', first_print)
+            bc_index+=1
+            
+        mc_index+=1
+    
+    bc_index=1
+    bc_total=len(singleton_meta_communities)
     for bc in singleton_meta_communities:
+        print("Generating HTML for community " + str(bc_index) + " of " + str(bc_total))
         bc.print_html(html_f, 'GeneFEAST_REPORT_' + summary_id + '.html', first_print)
         first_print = False
+        bc_index+=1
         
+    sc_index=1
+    sc_total=len(singleton_communities)
     for sc in singleton_communities:
+        print("Generating HTML for term " + str(sc_index) + " of " + str(sc_total))
         sc.print_html(html_f, 'GeneFEAST_REPORT_' + summary_id + '.html', first_print)
         first_print = False
-       
+        sc_index+=1
     
+    print("\nGenerating JavaScript for HTML report")
     jSPrinter.print_html_for_event_listeners( html_f )
     jSPrinter.print_html_for_preclickbuttons( html_f, DEFAULT_META_VIEW, DEFAULT_COMMUNITY_VIEW )
     
@@ -1094,17 +1120,18 @@ def gf(setup_yaml_path, output_dir):
     html_f.write("</html>\n")
     html_f.close()
     
-    print("\nGenerating csv files")
+    print("\nGenerating csv file")
     csv_f = open(output_dir + '/GeneFEAST_TABLE_' + info_string + '.csv', 'w')
     for mc in meta_communities:
         for bc in mc.communities:
             bc.print_csv(csv_f)
-            
+    
     for bc in singleton_meta_communities:
         bc.print_csv(csv_f)
-        
+
     for sc in singleton_communities:
         sc.print_csv(csv_f)
+
         
     csv_f.close()
     

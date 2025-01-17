@@ -73,7 +73,9 @@ def gf_multi(setup_yaml_path, output_dir):
     print("\nSetting up I/O files and directories")
     #(status, message, _mi_dict, _exp_ids) = gfb.get_meta_info(mif_path) # mi short for meta input
     (status, message, _mi_dict, _exp_ids) = gfb.get_meta_info_from_setup(setup_yaml_path) # mi short for meta input
-    print(message)
+    
+    if(message):
+        print(message)
     if(status > 0):
         sys.exit()
         
@@ -81,7 +83,8 @@ def gf_multi(setup_yaml_path, output_dir):
     
     
     (status, message) = gfb.get_output_dir_status(output_dir)
-    print(message)
+    if(message):
+        print(message)
     if(status == 1):
         sys.exit()
     elif(status == 2):
@@ -413,7 +416,8 @@ def gf_multi(setup_yaml_path, output_dir):
         # Read in the ORA/ GSEA data
         (status, message, term_types_dict_sub, term_defs_dict_sub, exp_term_genes_dict_sub, exp_term_dotplot_dict_sub, exp_terms) = \
             gfb.read_in_ora_data(my_ora_file_path, exp_id, MIN_LEVEL, MAX_DCNT, ENRICH, DOTPLOTS, _GO_term_stats)
-        print(message)
+        if(message):
+            print(message)
         if(status > 0):
             sys.exit()
         
@@ -426,7 +430,8 @@ def gf_multi(setup_yaml_path, output_dir):
     
         # Store quantitative data (qd) values (usually log2 FC) for genes
         (status, message, exp_gene_qd_dict_sub) = gfb.make_gene_qd_dict(my_gene_qd_file_path, exp_id, exp_term_genes_dict_sub, GENE_INDEX, QD_INDEX)
-        print(message)
+        if(message):
+            print(message)
         if(status > 0):
             sys.exit()
     
@@ -912,8 +917,12 @@ def gf_multi(setup_yaml_path, output_dir):
     html_f.write("</html>\n")
     html_f.close()
     
+    etg_index=1
+    etg_total=len(etgContainers)
     for etgContainer in etgContainers:
-        etgContainer.print_html( etgContainers )
+        print("Generating HTML for FEATSI " + str(etg_index) + " of " + str(etg_total))
+        etgContainer.print_html(etgContainers)
+        etg_total+=1
     
     print("\nGenerating csv files")
     for etgContainer in etgContainers:
