@@ -94,8 +94,15 @@ def gf_multi(setup_yaml_path, output_dir):
     (_rel_images_dir, _abs_images_dir) = gfb.generate_images_dirs(_info_string, output_dir)
     os.mkdir(_abs_images_dir)
     
+    # Make CSV tables output directory
+    
+    _rel_tables_dir = '/GeneFEAST_TABLES_' + _info_string
+    _abs_tables_dir = output_dir + _rel_tables_dir
+    os.mkdir(_abs_tables_dir)
+    
     # Also need to store the file name for the main HTML page - this is auto-generated and should not be part of the config file.
-    MAIN_HYPERLINK = output_dir + '/' + _info_string + '_main.html'
+    REL_MAIN_HYPERLINK = 'GeneFEAST_REPORT_' + _info_string + '.html'
+    ABS_MAIN_HYPERLINK = output_dir + '/' + REL_MAIN_HYPERLINK
     
     # *****************************************************************************
     
@@ -667,8 +674,10 @@ def gf_multi(setup_yaml_path, output_dir):
 #        pyplot.close()
     
         # ***************************************************************************** 
-        relative_main_html = _info_string + '_main.html'
-        etgContainers.append( gfc.etgContainer( _etg_name , _etg_text_details , _key_i_str , output_dir , relative_main_html  , _rel_images_dir, _meta_communities , _singleton_meta_communities , _singleton_communities , NEW_H, 
+        #relative_main_html = _info_string + '_main.html'
+        etgContainers.append( gfc.etgContainer( _etg_name , _etg_text_details , _key_i_str , output_dir , REL_MAIN_HYPERLINK  , 
+                                               _rel_images_dir, _rel_tables_dir,
+                                               _meta_communities , _singleton_meta_communities , _singleton_communities , NEW_H, 
                                                silplot_img_path , silplot_img_width, silplot_img_height,
                                                comparisonplot_oc_img_path , comparisonplot_oc_img_width, comparisonplot_oc_img_height,
                                                comparisonplot_ji_img_path , comparisonplot_ji_img_width, comparisonplot_ji_img_height) )
@@ -677,7 +686,7 @@ def gf_multi(setup_yaml_path, output_dir):
     # 8. GENERATE HTML REPORT *****************************************************
     
     print("\nGenerating HTML report")
-    html_f = open( MAIN_HYPERLINK , 'w')
+    html_f = open( ABS_MAIN_HYPERLINK , 'w')
     html_f.write("<!DOCTYPE html>\n")
     html_f.write("<html>\n")
     
@@ -858,7 +867,7 @@ def gf_multi(setup_yaml_path, output_dir):
     html_f.write('<div>\n')
     html_f.write('<ul>\n')
     html_f.write('<li class="logo">GeneFEAST</li>\n')
-    html_f.write('<li><a href="' + relative_main_html + '" class="navactive">FEA term-set intersections</a></li>\n')
+    html_f.write('<li><a href="' + REL_MAIN_HYPERLINK + '" class="navactive">FEA term-set intersections</a></li>\n')
     html_f.write('<li class="dropdown">\n')
     html_f.write('<button class="dropbtn">Reports\n')
     html_f.write('</button>\n')

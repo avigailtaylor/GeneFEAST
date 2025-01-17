@@ -2573,19 +2573,21 @@ class metaGroup( community ):
         #html_f.write('<br>\n')
 
 class etgContainer:
-    def __init__( self , etg_name , etg_text_details , key_i_str ,  output_dir , relative_main_html , rel_images_dir, meta_communities , singleton_meta_communities , singleton_communities , new_h, 
+    def __init__( self , etg_name , etg_text_details , key_i_str ,  output_dir , relative_main_html , rel_images_dir, rel_tables_dir, meta_communities , singleton_meta_communities , singleton_communities , new_h, 
                  silplot_img_path , silplot_img_width, silplot_img_height,
                  comparisonplot_oc_img_path , comparisonplot_oc_img_width, comparisonplot_oc_img_height,
                  comparisonplot_ji_img_path , comparisonplot_ji_img_width, comparisonplot_ji_img_height):
         self.name = etg_name
+        self.lower_name = 'gfmulti_' + etg_name.lower().replace(" ", "")
         self.text_details = etg_text_details
         self.key_i_str = key_i_str
-        self.hyperlink = key_i_str + '_report.html'
-        self.summary_hyperlink = key_i_str + '_communities_summary.html'
-        self.csv_filename = key_i_str + '_report.csv'
+        self.hyperlink = self.lower_name + '_report.html'
+        self.summary_hyperlink = self.lower_name + '_communities_summary.html'
+        self.csv_filename = 'GeneFEAST_TABLE_' + self.lower_name + '.csv'
         self.output_dir = output_dir
         self.relative_main_html = relative_main_html
         self.rel_images_dir = rel_images_dir
+        self.rel_tables_dir = rel_tables_dir
         self.meta_communities = meta_communities
         self.singleton_meta_communities = singleton_meta_communities
         self.singleton_communities = singleton_communities
@@ -2601,7 +2603,7 @@ class etgContainer:
         self.comparisonplot_ji_img_height = comparisonplot_ji_img_height
         
     def print_csv(self):
-        csv_f = open(self.output_dir + '/' + self.csv_filename , 'w')
+        csv_f = open(self.output_dir + '/' + self.rel_tables_dir + '/' + self.csv_filename , 'w')
         for mc in self.meta_communities:
             for bc in mc.communities:
                 bc.print_csv(csv_f)
@@ -2620,7 +2622,7 @@ class etgContainer:
 
     def print_html( self, etgContainers ):
         # Can we refactor this to pass the etgContainer object, rather than all of its attributes? The question is, how will this affect instances of summaryPrinter not called by an etgContainer?
-        my_summaryPrinter = summaryPrinter( self.key_i_str , self.name + ': ' + self.text_details , self.output_dir , self.hyperlink , self.rel_images_dir, 
+        my_summaryPrinter = summaryPrinter( self.lower_name , self.name + ': ' + self.text_details , self.output_dir , self.hyperlink , self.rel_images_dir, 
                                             self.meta_communities , self.singleton_meta_communities , self.singleton_communities , 
                                             self.silplot_img_path, self.silplot_img_width, self.silplot_img_height, 
                                             self.comparisonplot_oc_img_path, self.comparisonplot_oc_img_width, self.comparisonplot_oc_img_height,
@@ -3122,17 +3124,17 @@ class etgContainer:
         html_f.write('<div>\n')
         html_f.write('<ul class="subnav">\n')
         html_f.write('<li class="dropdown">\n')
-        html_f.write('<button class="dropbtn" onclick="document.location=\'' + self.key_i_str + '_communities_summary.html\'">Communities overview</button>\n')
+        html_f.write('<button class="dropbtn" onclick="document.location=\'' + self.lower_name + '_communities_summary.html\'">Communities overview</button>\n')
         html_f.write('<div class="dropdown-content">\n')
-        html_f.write('<a href="' + self.key_i_str + '_communities_summary.html">List of communities</a>\n')
-        html_f.write('<a href="' + self.key_i_str + '_communities_silhouette.html">Silhouette plot</a>\n')
+        html_f.write('<a href="' + self.lower_name + '_communities_summary.html">List of communities</a>\n')
+        html_f.write('<a href="' + self.lower_name + '_communities_silhouette.html">Silhouette plot</a>\n')
         #html_f.write('<a href="' + self.key_i_str + '_communities_paramcomparison.html">Graphical grid search of community detection parameters</a>\n')
         
         html_f.write('<div class="dropdownsub" style="width:450px">\n')
         html_f.write('<a href="javascript:;">Graphical grid search of community detection parameters</a>\n')
         html_f.write('<div class="dropdownsub-content" style="width:450px">\n')
-        html_f.write('<a href="' + self.key_i_str + '_communities_paramcomparison_oc.html">Graphical grid search of community detection parameters (OC)</a>\n')
-        html_f.write('<a href="' + self.key_i_str + '_communities_paramcomparison_ji.html">Graphical grid search of community detection parameters (JI)</a>\n')
+        html_f.write('<a href="' + self.lower_name + '_communities_paramcomparison_oc.html">Graphical grid search of community detection parameters (OC)</a>\n')
+        html_f.write('<a href="' + self.lower_name + '_communities_paramcomparison_ji.html">Graphical grid search of community detection parameters (JI)</a>\n')
         html_f.write('</div>\n')
         html_f.write('</div>\n')
         
@@ -3253,8 +3255,19 @@ class summaryPrinter:
         self.etgContainers = etgContainers
         
     
-    def print_html( self , summary_type="communities_summary" ):
-        html_f = open( self.output_dir + '/' + self.summary_id + '_' + summary_type + '.html', 'w' )
+    def print_html( self , summary_type="communities_summary", gf_single=False ):
+        
+        #if(summary_type=="communities_summary" and gf_single):
+        
+        if(gf_single):
+            if(summary_type=="communities_summary"):
+                html_f = open( self.output_dir + '/GeneFEAST_REPORT_' + self.summary_id + '.html', 'w' )
+            else:
+                html_f = open( self.output_dir + '/gf_' + self.summary_id + '_' + summary_type + '.html', 'w' )
+        else:
+            html_f = open( self.output_dir + '/' + self.summary_id + '_' + summary_type + '.html', 'w' )
+        
+        
         html_f.write("<!DOCTYPE html>\n")
         html_f.write("<html>\n")
 
@@ -3558,17 +3571,32 @@ class summaryPrinter:
         html_f.write('<div>\n')
         html_f.write('<ul class="subnav">\n')
         html_f.write('<li class="dropdown">\n')
-        html_f.write('<button class="dropbtnactive" onclick="document.location=\'' + self.summary_id + '_communities_summary.html\'">Communities overview</button>\n')
-        html_f.write('<div class="dropdown-content">\n')
-        html_f.write('<a href="' + self.summary_id + '_communities_summary.html">List of communities</a>\n')
-        html_f.write('<a href="' + self.summary_id + '_communities_silhouette.html">Silhouette plot</a>\n')
+        
+        if(gf_single):
+            html_f.write('<button class="dropbtnactive" onclick="document.location=\'GeneFEAST_REPORT_' + self.summary_id + '.html\'">Communities overview</button>\n')
+            html_f.write('<div class="dropdown-content">\n')
+            html_f.write('<a href="GeneFEAST_REPORT_' + self.summary_id + '.html">List of communities</a>\n')
+            html_f.write('<a href="gf_' + self.summary_id + '_communities_silhouette.html">Silhouette plot</a>\n')
+        else:
+            html_f.write('<button class="dropbtnactive" onclick="document.location=\'' + self.summary_id + '_communities_summary.html\'">Communities overview</button>\n')
+            html_f.write('<div class="dropdown-content">\n')
+            html_f.write('<a href="' + self.summary_id + '_communities_summary.html">List of communities</a>\n')
+            html_f.write('<a href="' + self.summary_id + '_communities_silhouette.html">Silhouette plot</a>\n')
+        
+        #html_f.write('<a href="' + self.summary_id + '_communities_silhouette.html">Silhouette plot</a>\n')
         #html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison.html">Graphical grid search of community detection parameters</a>\n')
         
         html_f.write('<div class="dropdownsub" style="width:450px">\n')
         html_f.write('<a href="javascript:;">Graphical grid search of community detection parameters</a>\n')
         html_f.write('<div class="dropdownsub-content" style="width:450px">\n')
-        html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison_oc.html">Graphical grid search of community detection parameters (OC)</a>\n')
-        html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison_ji.html">Graphical grid search of community detection parameters (JI)</a>\n')
+        
+        if(gf_single):
+            html_f.write('<a href="gf_' + self.summary_id + '_communities_paramcomparison_oc.html">Graphical grid search of community detection parameters (OC)</a>\n')
+            html_f.write('<a href="gf_' + self.summary_id + '_communities_paramcomparison_ji.html">Graphical grid search of community detection parameters (JI)</a>\n')
+        else:
+            html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison_oc.html">Graphical grid search of community detection parameters (OC)</a>\n')
+            html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison_ji.html">Graphical grid search of community detection parameters (JI)</a>\n')
+        
         html_f.write('</div>\n')
         html_f.write('</div>\n')
         

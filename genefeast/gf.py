@@ -465,16 +465,16 @@ def gf(setup_yaml_path, output_dir):
     
     # 7. GENERATE HTML REPORT *****************************************************
     print("\nGenerating HTML report")
-    my_summaryPrinter = gfc.summaryPrinter(summary_id, summary_id, output_dir, info_string + '_report.html', rel_images_dir, meta_communities, singleton_meta_communities, singleton_communities,
+    my_summaryPrinter = gfc.summaryPrinter(summary_id, summary_id, output_dir, 'gf_' + info_string + '.html', rel_images_dir, meta_communities, singleton_meta_communities, singleton_communities,
                                            silplot_img_path, silplot_img_width, silplot_img_height, 
                                            comparisonplot_oc_img_path, comparisonplot_oc_img_width, comparisonplot_oc_img_height,
                                            comparisonplot_ji_img_path, comparisonplot_ji_img_width, comparisonplot_ji_img_height)
-    my_summaryPrinter.print_html()
-    my_summaryPrinter.print_html('communities_silhouette')
-    my_summaryPrinter.print_html('communities_paramcomparison_oc')
-    my_summaryPrinter.print_html('communities_paramcomparison_ji')
+    my_summaryPrinter.print_html(gf_single=True)
+    my_summaryPrinter.print_html('communities_silhouette', gf_single=True)
+    my_summaryPrinter.print_html('communities_paramcomparison_oc', gf_single=True)
+    my_summaryPrinter.print_html('communities_paramcomparison_ji', gf_single=True)
     
-    html_f = open(output_dir + '/' + info_string + '_report.html', 'w')
+    html_f = open(output_dir + '/gf_' + info_string + '.html', 'w')
     html_f.write("<!DOCTYPE html>\n")
     html_f.write("<html>\n")
     
@@ -956,18 +956,18 @@ def gf(setup_yaml_path, output_dir):
     html_f.write('<div>\n')
     html_f.write('<ul class="subnav">\n')
     html_f.write('<li class="dropdown">\n')
-    html_f.write('<button class="dropbtn" onclick="document.location=\'' + summary_id + '_communities_summary.html\'">Communities overview</button>\n')
+    html_f.write('<button class="dropbtn" onclick="document.location=\'GeneFEAST_REPORT_' + summary_id + '.html\'">Communities overview</button>\n')
     html_f.write('<div class="dropdown-content">\n')
-    html_f.write('<a href="' + summary_id + '_communities_summary.html">List of communities</a>\n')
-    html_f.write('<a href="' + summary_id + '_communities_silhouette.html">Silhouette plot</a>\n')
+    html_f.write('<a href="GeneFEAST_REPORT_' + summary_id + '.html">List of communities</a>\n')
+    html_f.write('<a href="gf_' + summary_id + '_communities_silhouette.html">Silhouette plot</a>\n')
     
     
     #html_f.write('<a href="' + summary_id + '_communities_paramcomparison.html">Graphical grid search of community detection parameters</a>\n')
     html_f.write('<div class="dropdownsub" style="width:450px">\n')
     html_f.write('<a href="javascript:;">Graphical grid search of community detection parameters</a>\n')
     html_f.write('<div class="dropdownsub-content" style="width:450px">\n')
-    html_f.write('<a href="' + summary_id + '_communities_paramcomparison_oc.html">Graphical grid search of community detection parameters (OC)</a>\n')
-    html_f.write('<a href="' + summary_id + '_communities_paramcomparison_ji.html">Graphical grid search of community detection parameters (JI)</a>\n')
+    html_f.write('<a href="gf_' + summary_id + '_communities_paramcomparison_oc.html">Graphical grid search of community detection parameters (OC)</a>\n')
+    html_f.write('<a href="gf_' + summary_id + '_communities_paramcomparison_ji.html">Graphical grid search of community detection parameters (JI)</a>\n')
     html_f.write('</div>\n')
     html_f.write('</div>\n')
     
@@ -977,7 +977,7 @@ def gf(setup_yaml_path, output_dir):
         
         
     html_f.write('<li class="dropdown">\n')
-    html_f.write('<button class="dropbtnactive" onclick="document.location=\'' + info_string + '_report.html' + '\'">Full report</button>\n')
+    html_f.write('<button class="dropbtnactive" onclick="document.location=\'gf_' + info_string + '.html' + '\'">Full report</button>\n')
     html_f.write('<div class="dropdown-content">\n')    
         
     
@@ -985,16 +985,16 @@ def gf(setup_yaml_path, output_dir):
         html_f.write('<a href="#">Meta communities</a>\n')
     else:
         html_f.write('<div class="dropdownsub" style="width:300px">\n')
-        html_f.write('<a href="' + info_string + '_report.html' + '#' + meta_communities[0].name + '">Meta communities</a>\n')
+        html_f.write('<a href="gf_' + info_string + '.html' + '#' + meta_communities[0].name + '">Meta communities</a>\n')
         html_f.write('<div class="dropdownsub-content">\n')
                      
         for mg in meta_communities:
             html_f.write('<div class="dropdownsubsub" style="width:300px">\n')
-            html_f.write('<a href="' + info_string + '_report.html' + '#' + mg.name + '">' + mg.name + '</a>\n' )
+            html_f.write('<a href="gf_' + info_string + '.html' + '#' + mg.name + '">' + mg.name + '</a>\n' )
             
             html_f.write('<div class="dropdownsubsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
             for bc in mg.communities:
-                html_f.write('<a href="' + info_string + '_report.html' + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
+                html_f.write('<a href="gf_' + info_string + '.html' + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
             
             html_f.write('</div>\n')
                 
@@ -1008,10 +1008,10 @@ def gf(setup_yaml_path, output_dir):
         html_f.write('<a href="javascript:;">Communities</a>\n')
     else:
         html_f.write('<div class="dropdownsub" style="width:300px">\n')
-        html_f.write('<a href="' + info_string + '_report.html' + '#' + singleton_meta_communities[0].name + '">Communities</a>\n')
+        html_f.write('<a href="gf_' + info_string + '.html' + '#' + singleton_meta_communities[0].name + '">Communities</a>\n')
         html_f.write('<div class="dropdownsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
         for bc in singleton_meta_communities:
-            html_f.write('<a href="' + info_string + '_report.html' + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
+            html_f.write('<a href="gf_' + info_string + '.html' + '#' + bc.name + '">' + bc.name + ' ' + bc.top_term + '</a>\n')
         
         html_f.write('</div>\n')
         html_f.write('</div>\n')         
@@ -1020,13 +1020,13 @@ def gf(setup_yaml_path, output_dir):
         html_f.write('<a href="#">Terms</a>\n')
     else:
         html_f.write('<div class="dropdownsub" style="width:300px">\n')
-        html_f.write('<a href="' + info_string + '_report.html' + '#' + singleton_communities[0].name + '">Terms</a>\n')
+        html_f.write('<a href="gf_' + info_string + '.html' + '#' + singleton_communities[0].name + '">Terms</a>\n')
         html_f.write('<div class="dropdownsub-content" style="width:600px;max-height:200px;overflow:scroll;">\n')
         for sc in singleton_communities:
             if( sc.name == sc.all_term_defs_dict[ sc.name ] ):
-                html_f.write('<a href="' + info_string + '_report.html' + '#' + sc.name + '">' + sc.name + '</a>\n' )
+                html_f.write('<a href="gf_' + info_string + '.html' + '#' + sc.name + '">' + sc.name + '</a>\n' )
             else:
-                html_f.write('<a href="' + info_string + '_report.html' + '#' + sc.name + '">' + sc.name + ' - ' + sc.all_term_defs_dict[ sc.name ]  + '</a>\n' )
+                html_f.write('<a href="gf_' + info_string + '.html' + '#' + sc.name + '">' + sc.name + ' - ' + sc.all_term_defs_dict[ sc.name ]  + '</a>\n' )
         html_f.write('</div>\n')
         html_f.write('</div>\n')  
     
@@ -1042,18 +1042,18 @@ def gf(setup_yaml_path, output_dir):
     
     first_print = True
     for mc in meta_communities:
-        mc.print_html(html_f, summary_id + '_communities_summary.html', first_print)
+        mc.print_html(html_f, 'GeneFEAST_REPORT_' + summary_id + '.html', first_print)
         first_print = False
         
         for bc in mc.communities:
-            bc.print_html(html_f, summary_id + '_communities_summary.html', first_print)
+            bc.print_html(html_f, 'GeneFEAST_REPORT_' + summary_id + '.html', first_print)
             
     for bc in singleton_meta_communities:
-        bc.print_html(html_f, summary_id + '_communities_summary.html', first_print)
+        bc.print_html(html_f, 'GeneFEAST_REPORT_' + summary_id + '.html', first_print)
         first_print = False
         
     for sc in singleton_communities:
-        sc.print_html(html_f, summary_id + '_communities_summary.html', first_print)
+        sc.print_html(html_f, 'GeneFEAST_REPORT_' + summary_id + '.html', first_print)
         first_print = False
        
     
@@ -1064,7 +1064,7 @@ def gf(setup_yaml_path, output_dir):
     html_f.close()
     
     print("\nGenerating csv files")
-    csv_f = open(output_dir + '/' + info_string + '_report.csv', 'w')
+    csv_f = open(output_dir + '/GeneFEAST_TABLE_' + info_string + '.csv', 'w')
     for mc in meta_communities:
         for bc in mc.communities:
             bc.print_csv(csv_f)
