@@ -251,6 +251,18 @@ def gf(setup_yaml_path, output_dir):
     else:
         QD_INDEX = setup.get("QD_INDEX")  
     
+
+    if(setup.get("DEFAULT_META_VIEW") in set(["circos","upset","heatmapa","heatmapb","heatmapc","litsearch"])):
+        DEFAULT_META_VIEW = setup.get("DEFAULT_META_VIEW")
+    else:
+        DEFAULT_META_VIEW = "circos"
+        
+    if(setup.get("DEFAULT_COMMUNITY_VIEW") in set(["circos","upset","heatmapa","heatmapb","heatmapc","litsearch"])):
+        DEFAULT_COMMUNITY_VIEW = setup.get("DEFAULT_COMMUNITY_VIEW")
+    else:
+        DEFAULT_COMMUNITY_VIEW = "circos"
+
+
 #    EA_FILE = cfg_yaml['EA_FILE']
     EA_FILE = setup.get("EA_FILE")
 
@@ -327,6 +339,8 @@ def gf(setup_yaml_path, output_dir):
     log_f.write("MAX_COMMUNITY_SIZE_THRESH: " + str(MAX_COMMUNITY_SIZE_THRESH) + "\n")
     log_f.write("MAX_META_COMMUNITY_SIZE_THRESH: " + str(MAX_META_COMMUNITY_SIZE_THRESH) + "\n")
     log_f.write("COMBINE_TERM_TYPES: " + str(COMBINE_TERM_TYPES) + "\n")
+    log_f.write("DEFAULT_META_VIEW: " + str(DEFAULT_META_VIEW) + "\n" )
+    log_f.write("DEFAULT_COMMUNITY_VIEW: " + str(DEFAULT_COMMUNITY_VIEW) + "\n" )
     log_f.write("SEARCH_WORDS: " + str(SEARCH_WORDS))
     log_f.close()
     
@@ -939,6 +953,22 @@ def gf(setup_yaml_path, output_dir):
     html_f.write("  z-index:1\n")
     html_f.write("}\n\n")
     
+    
+    html_f.write(".preclick-metacircos-button{}")
+    html_f.write(".preclick-metaupset-button{}")
+    html_f.write(".preclick-metaheatmapa-button{}")
+    html_f.write(".preclick-metaheatmapb-button{}")
+    html_f.write(".preclick-metaheatmapc-button{}")
+    html_f.write(".preclick-metalitsearch-button{}")
+    
+    html_f.write(".preclick-communitycircos-button{}")
+    html_f.write(".preclick-communityupset-button{}")
+    html_f.write(".preclick-communityheatmapa-button{}")
+    html_f.write(".preclick-communityheatmapb-button{}")
+    html_f.write(".preclick-communityheatmapc-button{}")
+    html_f.write(".preclick-communitylitsearch-button{}")
+    
+    
     html_f.write("</style>\n")
     html_f.write("</head>\n")
     
@@ -1058,6 +1088,7 @@ def gf(setup_yaml_path, output_dir):
        
     
     jSPrinter.print_html_for_event_listeners( html_f )
+    jSPrinter.print_html_for_preclickbuttons( html_f, DEFAULT_META_VIEW, DEFAULT_COMMUNITY_VIEW )
     
     html_f.write("</body>\n")
     html_f.write("</html>\n")

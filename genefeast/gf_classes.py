@@ -944,9 +944,9 @@ class bigBasicCommunityPrinter():
         html_f.write('<div class="plot_buttons">\n')
         
         
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.circos_img_path + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.circos_img_width) + '\' ,\'Circos plot\',1)">Circos plot</button>\n')
+        html_f.write('<button class="view-button preclick-communitycircos-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.circos_img_path + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.circos_img_width) + '\' ,\'Circos plot\',1)">Circos plot</button>\n')
         
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.upset_img_path + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.upset_img_width) + '\' ,\'UpSet plot\',1)">UpSet plot</button>\n')
+        html_f.write('<button class="view-button preclick-communityupset-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.upset_img_path + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.upset_img_width) + '\' ,\'UpSet plot\',1)">UpSet plot</button>\n')
         
         
         
@@ -959,9 +959,9 @@ class bigBasicCommunityPrinter():
         
         
         if(len(self.community.heatmap_img_paths_list) == 3):
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[0] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[0]) + '\' ,\'' + self.community.heatmap_img_titles_list[0] + '\',1)">Heatmap A (' + self.community.quant_data_type +')</button>\n')
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[1] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[1]) + '\' ,\'' + self.community.heatmap_img_titles_list[1] + '\',1)">Heatmap B (annotations x ' + self.community.quant_data_type +')</button>\n')
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[2] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[2]) + '\' ,\'' + self.community.heatmap_img_titles_list[2] + '\',1)">Heatmap C (alphabetical)</button>\n')
+            html_f.write('<button class="view-button preclick-communityheatmapa-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[0] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[0]) + '\' ,\'' + self.community.heatmap_img_titles_list[0] + '\',1)">Heatmap A (' + self.community.quant_data_type +')</button>\n')
+            html_f.write('<button class="view-button preclick-communityheatmapb-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[1] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[1]) + '\' ,\'' + self.community.heatmap_img_titles_list[1] + '\',1)">Heatmap B (annotations x ' + self.community.quant_data_type +')</button>\n')
+            html_f.write('<button class="view-button preclick-communityheatmapc-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[2] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[2]) + '\' ,\'' + self.community.heatmap_img_titles_list[2] + '\',1)">Heatmap C (alphabetical)</button>\n')
         else:
             heatmap_img_paths_array_as_str_A = ','.join( [self.community.heatmap_img_paths_list[x] for x in [0,3]] )
             heatmap_widths_array_as_str_A = ','.join( map( str , [self.community.heatmap_img_widths_list[x] for x in [0,3]] ) )
@@ -975,9 +975,9 @@ class bigBasicCommunityPrinter():
             heatmap_widths_array_as_str_C = ','.join( map( str , [self.community.heatmap_img_widths_list[x] for x in [2,5]] ) )
             heatmap_img_titles_array_as_str_C = ','.join( [self.community.heatmap_img_titles_list[x] for x in [2,5]] )
             
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A (' + self.community.quant_data_type +')</button>\n' )
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B (annotations x ' + self.community.quant_data_type +')</button>\n' )
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C (alphabetical)</button>\n' )
+            html_f.write( '<button class="view-button preclick-communityheatmapa-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A (' + self.community.quant_data_type +')</button>\n' )
+            html_f.write( '<button class="view-button preclick-communityheatmapb-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B (annotations x ' + self.community.quant_data_type +')</button>\n' )
+            html_f.write( '<button class="view-button preclick-communityheatmapc-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C (alphabetical)</button>\n' )
         
         
         
@@ -993,7 +993,7 @@ class bigBasicCommunityPrinter():
                 html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + dotplot_img_paths_array_as_str + '\' ,' + str(self.community.new_h) + ',\'' + dotplot_widths_array_as_str + '\',\'' + dotplot_img_titles_array_as_str + '\',1)">Dot plots</button>\n')
 
         
-        html_f.write('<button class="view-button"  onclick="changeTable( \'' + self.community.name + '\' , 0 , 1 ,\'plotbox\', true , \'Literature search\')">Literature search</button>\n')
+        html_f.write('<button class="view-button preclick-communitylitsearch-button"  onclick="changeTable( \'' + self.community.name + '\' , 0 , 1 ,\'plotbox\', true , \'Literature search\')">Literature search</button>\n')
         
         html_f.write('</div>\n')
         
@@ -2201,12 +2201,12 @@ class singletonCommunity( community ):
         
         html_f.write('<div class="plot_buttons3">\n')
         #html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + heatmap_img_paths_array_as_str + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heatmaps</button>\n' )
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\',\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A (' + self.quant_data_type +')</button>\n' )
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\',\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B (annotations x ' + self.quant_data_type +')</button>\n' )
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\',\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C (alphabetical)</button>\n' )
+        html_f.write('<button class="view-button preclick-communityheatmapa-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\',\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A (' + self.quant_data_type +')</button>\n' )
+        html_f.write('<button class="view-button preclick-communityheatmapb-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\',\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B (annotations x ' + self.quant_data_type +')</button>\n' )
+        html_f.write('<button class="view-button preclick-communityheatmapc-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\',\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C (alphabetical)</button>\n' )
         
         
-        html_f.write('<button class="view-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'heatmap\', true , \'Literature search\')">Literature search</button>\n' )
+        html_f.write('<button class="view-button preclick-communitylitsearch-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'heatmap\', true , \'Literature search\')">Literature search</button>\n' )
     
         if( len(self.exp_ids) > 1 and ( self.num_extra_images > 1 ) ):# only want a button to toggle through extra images if there is more than one such image... len(self.exp_ids) > 1
                                                                       # is necessary, but not sufficient for this to be the case, hence the extra check here.
@@ -2508,9 +2508,9 @@ class metaGroup( community ):
         
         html_f.write('<div class="plot_buttons2">\n')
         
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.circos_img_path + '\' ,' + str(self.new_h) + ',\'' + str(self.circos_img_width) + '\' ,\'Circos plot\',1)">Circos plot</button>\n')
+        html_f.write('<button class="view-button preclick-metacircos-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.circos_img_path + '\' ,' + str(self.new_h) + ',\'' + str(self.circos_img_width) + '\' ,\'Circos plot\',1)">Circos plot</button>\n')
         
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.upset_img_path + '\' ,' + str(self.new_h) + ',\'' + str(self.upset_img_width) + '\' ,\'UpSet plot\',1)">UpSet plot</button>\n')
+        html_f.write('<button class="view-button preclick-metaupset-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.upset_img_path + '\' ,' + str(self.new_h) + ',\'' + str(self.upset_img_width) + '\' ,\'UpSet plot\',1)">UpSet plot</button>\n')
         
         
         
@@ -2519,9 +2519,9 @@ class metaGroup( community ):
 #            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\' ,\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B</button>\n')
 #            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\' ,\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C</button>\n')
         
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\' ,\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A (' + self.quant_data_type +')</button>\n')
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\' ,\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B (annotations x ' + self.quant_data_type +')</button>\n')
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\' ,\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C (alphabetical)</button>\n')
+            html_f.write('<button class="view-button preclick-metaheatmapa-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\' ,\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A (' + self.quant_data_type +')</button>\n')
+            html_f.write('<button class="view-button preclick-metaheatmapb-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\' ,\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B (annotations x ' + self.quant_data_type +')</button>\n')
+            html_f.write('<button class="view-button preclick-metaheatmapc-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\' ,\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C (alphabetical)</button>\n')
         
         else:
             heatmap_img_paths_array_as_str_A = ','.join( [self.heatmap_img_paths_list[x] for x in [0,3]] )
@@ -2541,12 +2541,12 @@ class metaGroup( community ):
 #            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C</button>\n' )
 #        
         
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A (' + self.quant_data_type +')</button>\n')
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B (annotations x ' + self.quant_data_type +')</button>\n')
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C (alphabetical)</button>\n')
+            html_f.write( '<button class="view-button preclick-metaheatmapa-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A (' + self.quant_data_type +')</button>\n')
+            html_f.write( '<button class="view-button preclick-metaheatmapb-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B (annotations x ' + self.quant_data_type +')</button>\n')
+            html_f.write( '<button class="view-button preclick-metaheatmapc-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C (alphabetical)</button>\n')
         
         
-        html_f.write( '<button class="view-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'upset\', true , \'Literature search\')">Literature search</button>\n' )
+        html_f.write( '<button class="view-button preclick-metalitsearch-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'upset\', true , \'Literature search\')">Literature search</button>\n' )
 
         html_f.write('</div>\n')
         
@@ -2576,7 +2576,8 @@ class etgContainer:
     def __init__( self , etg_name , etg_text_details , key_i_str ,  output_dir , relative_main_html , rel_images_dir, rel_tables_dir, meta_communities , singleton_meta_communities , singleton_communities , new_h, 
                  silplot_img_path , silplot_img_width, silplot_img_height,
                  comparisonplot_oc_img_path , comparisonplot_oc_img_width, comparisonplot_oc_img_height,
-                 comparisonplot_ji_img_path , comparisonplot_ji_img_width, comparisonplot_ji_img_height):
+                 comparisonplot_ji_img_path , comparisonplot_ji_img_width, comparisonplot_ji_img_height,
+                 default_meta_view, default_community_view):
         self.name = etg_name
         self.lower_name = 'gfmulti_' + etg_name.lower().replace(" ", "")
         self.text_details = etg_text_details
@@ -2601,6 +2602,8 @@ class etgContainer:
         self.comparisonplot_ji_img_path = comparisonplot_ji_img_path
         self.comparisonplot_ji_img_width = comparisonplot_ji_img_width
         self.comparisonplot_ji_img_height = comparisonplot_ji_img_height
+        self.default_meta_view = default_meta_view
+        self.default_community_view = default_community_view
         
     def print_csv(self):
         csv_f = open(self.output_dir + '/' + self.rel_tables_dir + '/' + self.csv_filename , 'w')
@@ -3095,6 +3098,20 @@ class etgContainer:
         html_f.write("  z-index:1\n")
         html_f.write("}\n\n")
         
+        html_f.write(".preclick-metacircos-button{}")
+        html_f.write(".preclick-metaupset-button{}")
+        html_f.write(".preclick-metaheatmapa-button{}")
+        html_f.write(".preclick-metaheatmapb-button{}")
+        html_f.write(".preclick-metaheatmapc-button{}")
+        html_f.write(".preclick-metalitsearch-button{}")
+        
+        html_f.write(".preclick-communitycircos-button{}")
+        html_f.write(".preclick-communityupset-button{}")
+        html_f.write(".preclick-communityheatmapa-button{}")
+        html_f.write(".preclick-communityheatmapb-button{}")
+        html_f.write(".preclick-communityheatmapc-button{}")
+        html_f.write(".preclick-communitylitsearch-button{}")
+        
         html_f.write("</style>\n")
         html_f.write("</head>\n")
 
@@ -3222,6 +3239,7 @@ class etgContainer:
             first_print = False
 
         jSPrinter.print_html_for_event_listeners( html_f )
+        jSPrinter.print_html_for_preclickbuttons( html_f, self.default_meta_view, self.default_community_view )
         html_f.write("</body>\n")
         html_f.write("</html>\n")
         html_f.close()
@@ -3889,6 +3907,60 @@ class javaScriptPrinter:
         html_f.write('}\n')
         html_f.write("</script>\n")
         
+    def print_html_for_preclickbuttons(self, html_f, default_meta_view, default_community_view):
+        
+        html_f.write("<script>\n")
+        match default_meta_view:
+            case "circos":
+                html_f.write('var coll = document.getElementsByClassName("preclick-metacircos-button");\n')
+            
+            case "upset":
+                html_f.write('var coll = document.getElementsByClassName("preclick-metaupset-button");\n')
+            
+            case "heatmapa":
+                html_f.write('var coll = document.getElementsByClassName("preclick-metaheatmapa-button");\n')
+            
+            case "heatmapb":
+                html_f.write('var coll = document.getElementsByClassName("preclick-metaheatmapb-button");\n')
+            
+            case "heatmapc":
+                html_f.write('var coll = document.getElementsByClassName("preclick-metaheatmapc-button");\n')
+            
+            case "litsearch":
+                html_f.write('var coll = document.getElementsByClassName("preclick-metalitsearch-button");\n')
+        
+        html_f.write('var i;\n')
+        html_f.write('for (i = 0; i < coll.length; i++) {\n')
+        html_f.write('  coll[i].click();')
+        html_f.write('}\n')
+        html_f.write("</script>\n")
+        
+        
+        html_f.write("<script>\n")
+        match default_community_view:
+            case "circos":
+                html_f.write('var coll = document.getElementsByClassName("preclick-communitycircos-button");\n')
+            
+            case "upset":
+                html_f.write('var coll = document.getElementsByClassName("preclick-communityupset-button");\n')
+            
+            case "heatmapa":
+                html_f.write('var coll = document.getElementsByClassName("preclick-communityheatmapa-button");\n')
+            
+            case "heatmapb":
+                html_f.write('var coll = document.getElementsByClassName("preclick-communityheatmapb-button");\n')
+            
+            case "heatmapc":
+                html_f.write('var coll = document.getElementsByClassName("preclick-communityheatmapc-button");\n')
+            
+            case "litsearch":
+                html_f.write('var coll = document.getElementsByClassName("preclick-communitylitsearch-button");\n')
+        
+        html_f.write('var i;\n')
+        html_f.write('for (i = 0; i < coll.length; i++) {\n')
+        html_f.write('  coll[i].click();')
+        html_f.write('}\n')
+        html_f.write("</script>\n")
 
 
 # END CLASSES *****************************************************************

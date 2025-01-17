@@ -296,6 +296,16 @@ def gf_multi(setup_yaml_path, output_dir):
         QD_INDEX = 1
     else:
         QD_INDEX = setup.get("QD_INDEX")  
+
+    if(setup.get("DEFAULT_META_VIEW") in set(["circos","upset","heatmapa","heatmapb","heatmapc","litsearch"])):
+        DEFAULT_META_VIEW = setup.get("DEFAULT_META_VIEW")
+    else:
+        DEFAULT_META_VIEW = "circos"
+        
+    if(setup.get("DEFAULT_COMMUNITY_VIEW") in set(["circos","upset","heatmapa","heatmapb","heatmapc","litsearch"])):
+        DEFAULT_COMMUNITY_VIEW = setup.get("DEFAULT_COMMUNITY_VIEW")
+    else:
+        DEFAULT_COMMUNITY_VIEW = "circos"
     
 #    EA_FILE = cfg_yaml['EA_FILE']
     EA_FILE = setup.get("EA_FILE")
@@ -370,6 +380,8 @@ def gf_multi(setup_yaml_path, output_dir):
     log_f.write("MAX_COMMUNITY_SIZE_THRESH: " + str(MAX_COMMUNITY_SIZE_THRESH) + "\n")
     log_f.write("MAX_META_COMMUNITY_SIZE_THRESH: " + str(MAX_META_COMMUNITY_SIZE_THRESH) + "\n")
     log_f.write("COMBINE_TERM_TYPES: " + str(COMBINE_TERM_TYPES) + "\n")
+    log_f.write("DEFAULT_META_VIEW: " + str(DEFAULT_META_VIEW) + "\n" )
+    log_f.write("DEFAULT_COMMUNITY_VIEW: " + str(DEFAULT_COMMUNITY_VIEW) + "\n" )
     log_f.write("SEARCH_WORDS: " + str(SEARCH_WORDS))
     log_f.close()
     
@@ -680,7 +692,8 @@ def gf_multi(setup_yaml_path, output_dir):
                                                _meta_communities , _singleton_meta_communities , _singleton_communities , NEW_H, 
                                                silplot_img_path , silplot_img_width, silplot_img_height,
                                                comparisonplot_oc_img_path , comparisonplot_oc_img_width, comparisonplot_oc_img_height,
-                                               comparisonplot_ji_img_path , comparisonplot_ji_img_width, comparisonplot_ji_img_height) )
+                                               comparisonplot_ji_img_path , comparisonplot_ji_img_width, comparisonplot_ji_img_height,
+                                               DEFAULT_META_VIEW, DEFAULT_COMMUNITY_VIEW) )
         
     
     # 8. GENERATE HTML REPORT *****************************************************
