@@ -309,6 +309,12 @@ def gf_multi(setup_yaml_path, output_dir):
         DEFAULT_COMMUNITY_VIEW = setup.get("DEFAULT_COMMUNITY_VIEW")
     else:
         DEFAULT_COMMUNITY_VIEW = "circos"
+        
+    
+    if(setup.get("TOOLTIPS") is None):
+        TOOLTIPS = False
+    else:
+        TOOLTIPS = setup.get("TOOLTIPS") 
     
 #    EA_FILE = cfg_yaml['EA_FILE']
     EA_FILE = setup.get("EA_FILE")
@@ -385,6 +391,7 @@ def gf_multi(setup_yaml_path, output_dir):
     log_f.write("COMBINE_TERM_TYPES: " + str(COMBINE_TERM_TYPES) + "\n")
     log_f.write("DEFAULT_META_VIEW: " + str(DEFAULT_META_VIEW) + "\n" )
     log_f.write("DEFAULT_COMMUNITY_VIEW: " + str(DEFAULT_COMMUNITY_VIEW) + "\n" )
+    log_f.write("TOOLTIPS: " + str(TOOLTIPS) + "\n" )
     log_f.write("SEARCH_WORDS: " + str(SEARCH_WORDS))
     log_f.close()
     
@@ -698,7 +705,7 @@ def gf_multi(setup_yaml_path, output_dir):
                                                silplot_img_path , silplot_img_width, silplot_img_height,
                                                comparisonplot_oc_img_path , comparisonplot_oc_img_width, comparisonplot_oc_img_height,
                                                comparisonplot_ji_img_path , comparisonplot_ji_img_width, comparisonplot_ji_img_height,
-                                               DEFAULT_META_VIEW, DEFAULT_COMMUNITY_VIEW) )
+                                               DEFAULT_META_VIEW, DEFAULT_COMMUNITY_VIEW, TOOLTIPS) )
         
     
     # 8. GENERATE HTML REPORT *****************************************************
@@ -875,6 +882,57 @@ def gf_multi(setup_yaml_path, output_dir):
     html_f.write("}\n\n")
     
     
+    html_f.write(".tooltip {\n")
+    html_f.write("  position: relative;\n")
+    html_f.write("  display: inline-block;\n")
+    html_f.write("  border-bottom: 1px dotted black;\n")
+    html_f.write("}\n\n")
+
+    html_f.write(".buttontooltip {\n")
+    html_f.write("  position: relative;\n")
+    html_f.write("  display: inline-block;\n")
+    html_f.write("}\n\n")
+
+    html_f.write(".tooltip .tooltiptext {\n")
+    html_f.write("  visibility: hidden;\n")
+    html_f.write("  width: 200px;\n")
+    html_f.write("  background-color: black;\n")
+    html_f.write("  color: #fff;\n")
+    html_f.write("  text-align: center;\n")
+    html_f.write("  border-radius: 6px;\n")
+    html_f.write("  padding: 5px 0;\n")
+
+    html_f.write("  /* Position the tooltip */\n")
+    html_f.write("  position: absolute;\n")
+    html_f.write("  z-index: 1;\n")
+    html_f.write("}\n\n")
+
+    html_f.write(".tooltip:hover .tooltiptext {\n")
+    html_f.write("  visibility: visible;\n")
+    html_f.write("}\n\n")
+
+    html_f.write(".buttontooltip .tooltiptext {\n")
+    html_f.write("  visibility: hidden;\n")
+    html_f.write("  width: 200px;\n")
+    html_f.write("  background-color: black;\n")
+    html_f.write("  color: #fff;\n")
+    html_f.write("  opacity: 0.4;\n")
+    html_f.write("  text-align: center;\n")
+    html_f.write("  border-radius: 6px;\n")
+    html_f.write("  padding: 5px 0;\n")
+
+    html_f.write("  /* Position the tooltip */\n")
+    html_f.write("  position: absolute;\n")
+    html_f.write("  z-index: 1;\n")
+    html_f.write("  top: 70%;\n")
+    html_f.write("  left: 50%;\n")
+    html_f.write("  margin-left: -100px;\n")
+    html_f.write("}\n\n")
+
+    html_f.write(".buttontooltip:hover .tooltiptext {\n")
+    html_f.write("  visibility: visible;\n")
+    html_f.write("}\n\n")
+    
     html_f.write("</style>\n")
     html_f.write("</head>\n")
     
@@ -912,6 +970,9 @@ def gf_multi(setup_yaml_path, output_dir):
     html_f.write('<img src="' + upset_img_path + '" width="' + str(upset_img_width)  + '" height="' + str(NEW_H) + '">\n')
     html_f.write('</div>\n')
     html_f.write('</div>\n')
+    
+    jSPrinter = gfc.javaScriptPrinter()
+    jSPrinter.print_html_for_tooltips(html_f, TOOLTIPS)
     
     html_f.write("</body>\n")
     html_f.write("</html>\n")

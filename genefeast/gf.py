@@ -263,6 +263,11 @@ def gf(setup_yaml_path, output_dir):
         DEFAULT_COMMUNITY_VIEW = setup.get("DEFAULT_COMMUNITY_VIEW")
     else:
         DEFAULT_COMMUNITY_VIEW = "circos"
+        
+    if(setup.get("TOOLTIPS") is None):
+        TOOLTIPS = False
+    else:
+        TOOLTIPS = setup.get("TOOLTIPS")   
 
 
 #    EA_FILE = cfg_yaml['EA_FILE']
@@ -343,6 +348,7 @@ def gf(setup_yaml_path, output_dir):
     log_f.write("COMBINE_TERM_TYPES: " + str(COMBINE_TERM_TYPES) + "\n")
     log_f.write("DEFAULT_META_VIEW: " + str(DEFAULT_META_VIEW) + "\n" )
     log_f.write("DEFAULT_COMMUNITY_VIEW: " + str(DEFAULT_COMMUNITY_VIEW) + "\n" )
+    log_f.write("TOOLTIPS: " + str(TOOLTIPS) + "\n" )
     log_f.write("SEARCH_WORDS: " + str(SEARCH_WORDS))
     log_f.close()
     
@@ -488,7 +494,8 @@ def gf(setup_yaml_path, output_dir):
     my_summaryPrinter = gfc.summaryPrinter(summary_id, summary_id, output_dir, 'gf_' + info_string + '.html', rel_images_dir, meta_communities, singleton_meta_communities, singleton_communities,
                                            silplot_img_path, silplot_img_width, silplot_img_height, 
                                            comparisonplot_oc_img_path, comparisonplot_oc_img_width, comparisonplot_oc_img_height,
-                                           comparisonplot_ji_img_path, comparisonplot_ji_img_width, comparisonplot_ji_img_height)
+                                           comparisonplot_ji_img_path, comparisonplot_ji_img_width, comparisonplot_ji_img_height,
+                                           TOOLTIPS)
     my_summaryPrinter.print_html(gf_single=True)
     my_summaryPrinter.print_html('communities_silhouette', gf_single=True)
     my_summaryPrinter.print_html('communities_paramcomparison_oc', gf_single=True)
@@ -960,19 +967,71 @@ def gf(setup_yaml_path, output_dir):
     html_f.write("}\n\n")
     
     
-    html_f.write(".preclick-metacircos-button{}")
-    html_f.write(".preclick-metaupset-button{}")
-    html_f.write(".preclick-metaheatmapa-button{}")
-    html_f.write(".preclick-metaheatmapb-button{}")
-    html_f.write(".preclick-metaheatmapc-button{}")
-    html_f.write(".preclick-metalitsearch-button{}")
+    html_f.write(".tooltip {\n")
+    html_f.write("  position: relative;\n")
+    html_f.write("  display: inline-block;\n")
+    html_f.write("  border-bottom: 1px dotted black;\n")
+    html_f.write("}\n\n")
+
+    html_f.write(".buttontooltip {\n")
+    html_f.write("  position: relative;\n")
+    html_f.write("  display: inline-block;\n")
+    html_f.write("}\n\n")
+
+    html_f.write(".tooltip .tooltiptext {\n")
+    html_f.write("  visibility: hidden;\n")
+    html_f.write("  width: 200px;\n")
+    html_f.write("  background-color: black;\n")
+    html_f.write("  color: #fff;\n")
+    html_f.write("  text-align: center;\n")
+    html_f.write("  border-radius: 6px;\n")
+    html_f.write("  padding: 5px 0;\n")
+
+    html_f.write("  /* Position the tooltip */\n")
+    html_f.write("  position: absolute;\n")
+    html_f.write("  z-index: 1;\n")
+    html_f.write("}\n\n")
+
+    html_f.write(".tooltip:hover .tooltiptext {\n")
+    html_f.write("  visibility: visible;\n")
+    html_f.write("}\n\n")
+
+    html_f.write(".buttontooltip .tooltiptext {\n")
+    html_f.write("  visibility: hidden;\n")
+    html_f.write("  width: 200px;\n")
+    html_f.write("  background-color: black;\n")
+    html_f.write("  color: #fff;\n")
+    html_f.write("  opacity: 0.4;\n")
+    html_f.write("  text-align: center;\n")
+    html_f.write("  border-radius: 6px;\n")
+    html_f.write("  padding: 5px 0;\n")
+
+    html_f.write("  /* Position the tooltip */\n")
+    html_f.write("  position: absolute;\n")
+    html_f.write("  z-index: 1;\n")
+    html_f.write("  top: 70%;\n")
+    html_f.write("  left: 50%;\n")
+    html_f.write("  margin-left: -100px;\n")
+    html_f.write("}\n\n")
+
+    html_f.write(".buttontooltip:hover .tooltiptext {\n")
+    html_f.write("  visibility: visible;\n")
+    html_f.write("}\n\n")
+
     
-    html_f.write(".preclick-communitycircos-button{}")
-    html_f.write(".preclick-communityupset-button{}")
-    html_f.write(".preclick-communityheatmapa-button{}")
-    html_f.write(".preclick-communityheatmapb-button{}")
-    html_f.write(".preclick-communityheatmapc-button{}")
-    html_f.write(".preclick-communitylitsearch-button{}")
+    html_f.write(".preclick-metacircos-button{}\n")
+    html_f.write(".preclick-metaupset-button{}\n")
+    html_f.write(".preclick-metaheatmapa-button{}\n")
+    html_f.write(".preclick-metaheatmapb-button{}\n")
+    html_f.write(".preclick-metaheatmapc-button{}\n")
+    html_f.write(".preclick-metalitsearch-button{}\n")
+    
+    html_f.write(".preclick-communitycircos-button{}\n")
+    html_f.write(".preclick-communityupset-button{}\n")
+    html_f.write(".preclick-communityheatmapa-button{}\n")
+    html_f.write(".preclick-communityheatmapb-button{}\n")
+    html_f.write(".preclick-communityheatmapc-button{}\n")
+    html_f.write(".preclick-communitylitsearch-button{}\n")
     
     
     html_f.write("</style>\n")
@@ -1115,6 +1174,7 @@ def gf(setup_yaml_path, output_dir):
     print("\nGenerating JavaScript for HTML report")
     jSPrinter.print_html_for_event_listeners( html_f )
     jSPrinter.print_html_for_preclickbuttons( html_f, DEFAULT_META_VIEW, DEFAULT_COMMUNITY_VIEW )
+    jSPrinter.print_html_for_tooltips(html_f, TOOLTIPS)
     
     html_f.write("</body>\n")
     html_f.write("</html>\n")

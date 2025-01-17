@@ -975,9 +975,9 @@ class bigBasicCommunityPrinter():
             heatmap_widths_array_as_str_C = ','.join( map( str , [self.community.heatmap_img_widths_list[x] for x in [2,5]] ) )
             heatmap_img_titles_array_as_str_C = ','.join( [self.community.heatmap_img_titles_list[x] for x in [2,5]] )
             
-            html_f.write( '<button class="view-button preclick-communityheatmapa-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A (' + self.community.quant_data_type +')</button>\n' )
-            html_f.write( '<button class="view-button preclick-communityheatmapb-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B (annotations x ' + self.community.quant_data_type +')</button>\n' )
-            html_f.write( '<button class="view-button preclick-communityheatmapc-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C (alphabetical)</button>\n' )
+            html_f.write( '<button class="view-button preclick-communityheatmapa-button buttontooltip"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A (' + self.community.quant_data_type +')<span class="tooltiptext">Toggle truncated/full heatmaps</span></button>\n' )
+            html_f.write( '<button class="view-button preclick-communityheatmapb-button buttontooltip"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B (annotations x ' + self.community.quant_data_type +')<span class="tooltiptext">Toggle truncated/full heatmaps</span></button>\n' )
+            html_f.write( '<button class="view-button preclick-communityheatmapc-button buttontooltip"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C (alphabetical)<span class="tooltiptext">Toggle truncated/full heatmaps</span></button>\n' )
         
         
         
@@ -2541,9 +2541,9 @@ class metaGroup( community ):
 #            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C</button>\n' )
 #        
         
-            html_f.write( '<button class="view-button preclick-metaheatmapa-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A (' + self.quant_data_type +')</button>\n')
-            html_f.write( '<button class="view-button preclick-metaheatmapb-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B (annotations x ' + self.quant_data_type +')</button>\n')
-            html_f.write( '<button class="view-button preclick-metaheatmapc-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C (alphabetical)</button>\n')
+            html_f.write( '<button class="view-button preclick-metaheatmapa-button buttontooltip"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A (' + self.quant_data_type +')<span class="tooltiptext">Toggle truncated/full heatmaps</span></button>\n')
+            html_f.write( '<button class="view-button preclick-metaheatmapb-button buttontooltip"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B (annotations x ' + self.quant_data_type +')<span class="tooltiptext">Toggle truncated/full heatmaps</span></button>\n')
+            html_f.write( '<button class="view-button preclick-metaheatmapc-button buttontooltip"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C (alphabetical)<span class="tooltiptext">Toggle truncated/full heatmaps</span></button>\n')
         
         
         html_f.write( '<button class="view-button preclick-metalitsearch-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'upset\', true , \'Literature search\')">Literature search</button>\n' )
@@ -2577,7 +2577,7 @@ class etgContainer:
                  silplot_img_path , silplot_img_width, silplot_img_height,
                  comparisonplot_oc_img_path , comparisonplot_oc_img_width, comparisonplot_oc_img_height,
                  comparisonplot_ji_img_path , comparisonplot_ji_img_width, comparisonplot_ji_img_height,
-                 default_meta_view, default_community_view):
+                 default_meta_view, default_community_view, tooltips):
         self.name = etg_name
         self.lower_name = 'gfmulti_' + etg_name.lower().replace(" ", "")
         self.text_details = etg_text_details
@@ -2604,6 +2604,7 @@ class etgContainer:
         self.comparisonplot_ji_img_height = comparisonplot_ji_img_height
         self.default_meta_view = default_meta_view
         self.default_community_view = default_community_view
+        self.tooltips = tooltips
         
     def print_csv(self):
         csv_f = open(self.output_dir + '/' + self.rel_tables_dir + '/' + self.csv_filename , 'w')
@@ -2629,7 +2630,8 @@ class etgContainer:
                                             self.meta_communities , self.singleton_meta_communities , self.singleton_communities , 
                                             self.silplot_img_path, self.silplot_img_width, self.silplot_img_height, 
                                             self.comparisonplot_oc_img_path, self.comparisonplot_oc_img_width, self.comparisonplot_oc_img_height,
-                                            self.comparisonplot_ji_img_path, self.comparisonplot_ji_img_width, self.comparisonplot_ji_img_height, 
+                                            self.comparisonplot_ji_img_path, self.comparisonplot_ji_img_width, self.comparisonplot_ji_img_height,
+                                            self.tooltips,
                                             self.relative_main_html, etgContainers )
         my_summaryPrinter.print_html()
         my_summaryPrinter.print_html('communities_silhouette')
@@ -3098,19 +3100,72 @@ class etgContainer:
         html_f.write("  z-index:1\n")
         html_f.write("}\n\n")
         
-        html_f.write(".preclick-metacircos-button{}")
-        html_f.write(".preclick-metaupset-button{}")
-        html_f.write(".preclick-metaheatmapa-button{}")
-        html_f.write(".preclick-metaheatmapb-button{}")
-        html_f.write(".preclick-metaheatmapc-button{}")
-        html_f.write(".preclick-metalitsearch-button{}")
         
-        html_f.write(".preclick-communitycircos-button{}")
-        html_f.write(".preclick-communityupset-button{}")
-        html_f.write(".preclick-communityheatmapa-button{}")
-        html_f.write(".preclick-communityheatmapb-button{}")
-        html_f.write(".preclick-communityheatmapc-button{}")
-        html_f.write(".preclick-communitylitsearch-button{}")
+        html_f.write(".tooltip {\n")
+        html_f.write("  position: relative;\n")
+        html_f.write("  display: inline-block;\n")
+        html_f.write("  border-bottom: 1px dotted black;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".buttontooltip {\n")
+        html_f.write("  position: relative;\n")
+        html_f.write("  display: inline-block;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".tooltip .tooltiptext {\n")
+        html_f.write("  visibility: hidden;\n")
+        html_f.write("  width: 200px;\n")
+        html_f.write("  background-color: black;\n")
+        html_f.write("  color: #fff;\n")
+        html_f.write("  text-align: center;\n")
+        html_f.write("  border-radius: 6px;\n")
+        html_f.write("  padding: 5px 0;\n")
+
+        html_f.write("  /* Position the tooltip */\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  z-index: 1;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".tooltip:hover .tooltiptext {\n")
+        html_f.write("  visibility: visible;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".buttontooltip .tooltiptext {\n")
+        html_f.write("  visibility: hidden;\n")
+        html_f.write("  width: 200px;\n")
+        html_f.write("  background-color: black;\n")
+        html_f.write("  color: #fff;\n")
+        html_f.write("  opacity: 0.4;\n")
+        html_f.write("  text-align: center;\n")
+        html_f.write("  border-radius: 6px;\n")
+        html_f.write("  padding: 5px 0;\n")
+
+        html_f.write("  /* Position the tooltip */\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  z-index: 1;\n")
+        html_f.write("  top: 70%;\n")
+        html_f.write("  left: 50%;\n")
+        html_f.write("  margin-left: -100px;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".buttontooltip:hover .tooltiptext {\n")
+        html_f.write("  visibility: visible;\n")
+        html_f.write("}\n\n")
+        
+        
+        html_f.write(".preclick-metacircos-button{}\n")
+        html_f.write(".preclick-metaupset-button{}\n")
+        html_f.write(".preclick-metaheatmapa-button{}\n")
+        html_f.write(".preclick-metaheatmapb-button{}\n")
+        html_f.write(".preclick-metaheatmapc-button{}\n")
+        html_f.write(".preclick-metalitsearch-button{}\n")
+        
+        html_f.write(".preclick-communitycircos-button{}\n")
+        html_f.write(".preclick-communityupset-button{}\n")
+        html_f.write(".preclick-communityheatmapa-button{}\n")
+        html_f.write(".preclick-communityheatmapb-button{}\n")
+        html_f.write(".preclick-communityheatmapc-button{}\n")
+        html_f.write(".preclick-communitylitsearch-button{}\n")
         
         html_f.write("</style>\n")
         html_f.write("</head>\n")
@@ -3260,6 +3315,8 @@ class etgContainer:
         print("\nGenerating JavaScript for HTML report")
         jSPrinter.print_html_for_event_listeners( html_f )
         jSPrinter.print_html_for_preclickbuttons( html_f, self.default_meta_view, self.default_community_view )
+        jSPrinter.print_html_for_tooltips(html_f, self.tooltips)
+        
         html_f.write("</body>\n")
         html_f.write("</html>\n")
         html_f.close()
@@ -3270,7 +3327,8 @@ class summaryPrinter:
     def __init__( self , summary_id , summary_title , output_dir , report_html , rel_images_dir, meta_communities , singleton_meta_communities , singleton_communities , 
                   silplot_img_path, silplot_img_width, silplot_img_height, 
                   comparisonplot_oc_img_path, comparisonplot_oc_img_width, comparisonplot_oc_img_height,
-                  comparisonplot_ji_img_path, comparisonplot_ji_img_width, comparisonplot_ji_img_height, 
+                  comparisonplot_ji_img_path, comparisonplot_ji_img_width, comparisonplot_ji_img_height,
+                  tooltips,
                   backlink = '' , etgContainers = [] ):
         self.summary_id = summary_id
         self.summary_title = summary_title
@@ -3289,9 +3347,10 @@ class summaryPrinter:
         self.comparisonplot_ji_img_path = comparisonplot_ji_img_path
         self.comparisonplot_ji_img_width = comparisonplot_ji_img_width
         self.comparisonplot_ji_img_height = comparisonplot_ji_img_height
+        self.tooltips = tooltips
         self.backlink = backlink
         self.etgContainers = etgContainers
-        
+        self.jSPrinter = javaScriptPrinter()
     
     def print_html( self , summary_type="communities_summary", gf_single=False ):
         
@@ -3581,6 +3640,56 @@ class summaryPrinter:
         html_f.write("  z-index:1\n")
         html_f.write("}\n\n")
         
+        html_f.write(".tooltip {\n")
+        html_f.write("  position: relative;\n")
+        html_f.write("  display: inline-block;\n")
+        html_f.write("  border-bottom: 1px dotted black;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".buttontooltip {\n")
+        html_f.write("  position: relative;\n")
+        html_f.write("  display: inline-block;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".tooltip .tooltiptext {\n")
+        html_f.write("  visibility: hidden;\n")
+        html_f.write("  width: 200px;\n")
+        html_f.write("  background-color: black;\n")
+        html_f.write("  color: #fff;\n")
+        html_f.write("  text-align: center;\n")
+        html_f.write("  border-radius: 6px;\n")
+        html_f.write("  padding: 5px 0;\n")
+
+        html_f.write("  /* Position the tooltip */\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  z-index: 1;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".tooltip:hover .tooltiptext {\n")
+        html_f.write("  visibility: visible;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".buttontooltip .tooltiptext {\n")
+        html_f.write("  visibility: hidden;\n")
+        html_f.write("  width: 200px;\n")
+        html_f.write("  background-color: black;\n")
+        html_f.write("  color: #fff;\n")
+        html_f.write("  opacity: 0.4;\n")
+        html_f.write("  text-align: center;\n")
+        html_f.write("  border-radius: 6px;\n")
+        html_f.write("  padding: 5px 0;\n")
+
+        html_f.write("  /* Position the tooltip */\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  z-index: 1;\n")
+        html_f.write("  top: 70%;\n")
+        html_f.write("  left: 50%;\n")
+        html_f.write("  margin-left: -100px;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".buttontooltip:hover .tooltiptext {\n")
+        html_f.write("  visibility: visible;\n")
+        html_f.write("}\n\n")
         
         html_f.write("</style>\n")
         
@@ -3783,6 +3892,8 @@ class summaryPrinter:
             html_f.write('</div>\n')
         
         
+        self.jSPrinter.print_html_for_tooltips(html_f, self.tooltips)
+        
         html_f.write("</body>\n")
         html_f.write("</html>\n")
         html_f.close()
@@ -3981,6 +4092,16 @@ class javaScriptPrinter:
         html_f.write('  coll[i].click();')
         html_f.write('}\n')
         html_f.write("</script>\n")
+        
+    
+    def print_html_for_tooltips(self, html_f, tooltips):
+        if(not(tooltips)):
+            html_f.write('<script>\n')
+            html_f.write('var coll = document.getElementsByClassName("tooltiptext");\n')
+            html_f.write('var i;\n')
+            html_f.write('for (i = 0; i < coll.length; i++) {\n')
+            html_f.write('  coll[i].style.display="none";}\n')
+            html_f.write('</script>\n')
 
 
 # END CLASSES *****************************************************************
