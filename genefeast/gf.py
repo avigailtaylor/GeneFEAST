@@ -458,11 +458,13 @@ def gf(setup_yaml_path, output_dir):
     term_community_pairs = gfb.get_big_community_labels_for_terms(big_communities)
         
     TEST = False
+    no_silhoutte_plot = True
     if(not(TEST) and (len(big_communities) >= 2) & (len(big_communities) <= (len(term_community_pairs)-1))):
         terms_distance_matrix = gfb.build_terms_distance_matrix(term_community_pairs, _term_genes_dict, TT_OVERLAP_MEASURE)
         print("\nGenerating silhouette plot for communities detected with chosen parameters")
         ( silplot_img_path , silplot_img_width, silplot_img_height ) = gfb.make_silhouette_plot(terms_distance_matrix, np.array([c for (t,c) in term_community_pairs]), big_communities, _term_genes_dict, 
                                                                                                 abs_images_dir, rel_images_dir, '', NEW_H * 2.5)
+        no_silhoutte_plot = False
     else:
         # preconditions for silhouette coefficient not met, so generate empty figure.
         pyplot.figure(figsize=(10, 10))
@@ -492,7 +494,7 @@ def gf(setup_yaml_path, output_dir):
     # 7. GENERATE HTML REPORT *****************************************************
     print("\nGenerating HTML report")
     my_summaryPrinter = gfc.summaryPrinter(summary_id, summary_id, output_dir, 'gf_' + info_string + '.html', rel_images_dir, meta_communities, singleton_meta_communities, singleton_communities,
-                                           silplot_img_path, silplot_img_width, silplot_img_height, 
+                                           silplot_img_path, silplot_img_width, silplot_img_height, no_silhoutte_plot,
                                            comparisonplot_oc_img_path, comparisonplot_oc_img_width, comparisonplot_oc_img_height,
                                            comparisonplot_ji_img_path, comparisonplot_ji_img_width, comparisonplot_ji_img_height,
                                            TOOLTIPS)
@@ -980,12 +982,12 @@ def gf(setup_yaml_path, output_dir):
 
     html_f.write(".tooltip .tooltiptext {\n")
     html_f.write("  visibility: hidden;\n")
-    html_f.write("  width: 200px;\n")
-    html_f.write("  background-color: black;\n")
-    html_f.write("  color: #fff;\n")
-    html_f.write("  text-align: center;\n")
+    html_f.write("  width: 500px;\n")
+    html_f.write("  background-color: grey;\n")
+    html_f.write("  color: white;\n")
+    html_f.write("  text-align: justify;\n")
     html_f.write("  border-radius: 6px;\n")
-    html_f.write("  padding: 5px 0;\n")
+    html_f.write("  padding: 5px 5px;\n")
 
     html_f.write("  /* Position the tooltip */\n")
     html_f.write("  position: absolute;\n")
@@ -1053,7 +1055,7 @@ def gf(setup_yaml_path, output_dir):
     html_f.write('<li class="dropdown">\n')
     html_f.write('<button class="dropbtn" onclick="document.location=\'GeneFEAST_REPORT_' + summary_id + '.html\'">Communities overview</button>\n')
     html_f.write('<div class="dropdown-content">\n')
-    html_f.write('<a href="GeneFEAST_REPORT_' + summary_id + '.html">List of communities</a>\n')
+    html_f.write('<a href="GeneFEAST_REPORT_' + summary_id + '.html">Meta communities, communities, and terms</a>\n')
     html_f.write('<a href="gf_' + summary_id + '_communities_silhouette.html">Silhouette plot</a>\n')
     
     
@@ -1141,14 +1143,13 @@ def gf(setup_yaml_path, output_dir):
     mc_total=len(meta_communities)
     for mc in meta_communities:
         
-        print("Generating HTML for meta community " + str(mc_index) + " of " + str(mc_total))
+        print("\nGenerating HTML for meta community " + str(mc_index) + " of " + str(mc_total))
         mc.print_html(html_f, 'GeneFEAST_REPORT_' + summary_id + '.html', first_print)
         first_print = False
         
         bc_index=1
         bc_total=len(mc.communities)
         for bc in mc.communities:
-            
             print("Generating HTML for community " + str(bc_index) + " of " + str(bc_total) + " in meta community " + str(mc_index))
             bc.print_html(html_f, 'GeneFEAST_REPORT_' + summary_id + '.html', first_print)
             bc_index+=1
@@ -1158,6 +1159,8 @@ def gf(setup_yaml_path, output_dir):
     bc_index=1
     bc_total=len(singleton_meta_communities)
     for bc in singleton_meta_communities:
+        if(bc_index==1):
+            print("\n")
         print("Generating HTML for community " + str(bc_index) + " of " + str(bc_total))
         bc.print_html(html_f, 'GeneFEAST_REPORT_' + summary_id + '.html', first_print)
         first_print = False
@@ -1166,6 +1169,8 @@ def gf(setup_yaml_path, output_dir):
     sc_index=1
     sc_total=len(singleton_communities)
     for sc in singleton_communities:
+        if(sc_index==1):
+            print("\n")
         print("Generating HTML for term " + str(sc_index) + " of " + str(sc_total))
         sc.print_html(html_f, 'GeneFEAST_REPORT_' + summary_id + '.html', first_print)
         first_print = False

@@ -571,11 +571,13 @@ def gf_multi(setup_yaml_path, output_dir):
         _term_community_pairs = gfb.get_big_community_labels_for_terms(_big_communities)
         
         TEST = False
+        no_silhoutte_plot=True
         if(not(TEST) and (len(_big_communities) >= 2) & (len(_big_communities) <= (len(_term_community_pairs)-1))):
             _terms_distance_matrix = gfb.build_terms_distance_matrix(_term_community_pairs, _term_genes_dict, TT_OVERLAP_MEASURE)
             print("\nGenerating silhouette plot for communities detected with chosen parameters")
             ( silplot_img_path , silplot_img_width, silplot_img_height ) = gfb.make_silhouette_plot(_terms_distance_matrix, np.array([c for (t,c) in _term_community_pairs]), _big_communities, _term_genes_dict, 
                                                                                                     _abs_images_dir, _rel_images_dir, _etg_name, NEW_H * 2.5)
+            no_silhoutte_plot = False
         else:
             # preconditions for silhouette coefficient not met, so generate empty figure.
             pyplot.figure(figsize=(10, 10))
@@ -702,7 +704,7 @@ def gf_multi(setup_yaml_path, output_dir):
         etgContainers.append( gfc.etgContainer( _etg_name , _etg_text_details , _key_i_str , output_dir , REL_MAIN_HYPERLINK  , 
                                                _rel_images_dir, _rel_tables_dir,
                                                _meta_communities , _singleton_meta_communities , _singleton_communities , NEW_H, 
-                                               silplot_img_path , silplot_img_width, silplot_img_height,
+                                               silplot_img_path , silplot_img_width, silplot_img_height, no_silhoutte_plot,
                                                comparisonplot_oc_img_path , comparisonplot_oc_img_width, comparisonplot_oc_img_height,
                                                comparisonplot_ji_img_path , comparisonplot_ji_img_width, comparisonplot_ji_img_height,
                                                DEFAULT_META_VIEW, DEFAULT_COMMUNITY_VIEW, TOOLTIPS) )
@@ -727,14 +729,14 @@ def gf_multi(setup_yaml_path, output_dir):
     html_f.write(".grid-container {\n")
     html_f.write("display: grid;\n")
     html_f.write("grid-template-areas:\n")
-    html_f.write("'blank'\n")
+    html_f.write("'overview'\n")
     html_f.write("'figure';\n")
     html_f.write("grid-gap: 10px;\n")
     html_f.write("background-color: #0aa8a8;\n")
     html_f.write("padding: 10px;\n")
     html_f.write("}\n")
     
-    html_f.write(".blank{ grid-area: blank; }\n")
+    html_f.write(".overview{ grid-area: overview; }\n")
     html_f.write(".figure { grid-area: figure;\n")
     html_f.write("overflow: scroll;}\n")
     
@@ -895,12 +897,12 @@ def gf_multi(setup_yaml_path, output_dir):
 
     html_f.write(".tooltip .tooltiptext {\n")
     html_f.write("  visibility: hidden;\n")
-    html_f.write("  width: 200px;\n")
-    html_f.write("  background-color: black;\n")
-    html_f.write("  color: #fff;\n")
-    html_f.write("  text-align: center;\n")
+    html_f.write("  width: 500px;\n")
+    html_f.write("  background-color: grey;\n")
+    html_f.write("  color: white;\n")
+    html_f.write("  text-align: justify;\n")
     html_f.write("  border-radius: 6px;\n")
-    html_f.write("  padding: 5px 0;\n")
+    html_f.write("  padding: 5px 5px;\n")
 
     html_f.write("  /* Position the tooltip */\n")
     html_f.write("  position: absolute;\n")
@@ -955,18 +957,35 @@ def gf_multi(setup_yaml_path, output_dir):
     html_f.write('</ul>\n')
     html_f.write('</div>\n')
     
-    
-    html_f.write('<div>\n')
-    html_f.write('<ul class="subnav">\n')
-    html_f.write('<li class="rightlink"><a style="color:white;">FEA term-set intersections for ' + ', '.join(_exp_ids[0:-1]) + ' and ' + _exp_ids[-1] + '</a></li>\n')
-    html_f.write('</ul>\n')
-    html_f.write('</div>\n')
     html_f.write('</div>\n')
     html_f.write('<div class="subtitlebanner">\n')
-    html_f.write('  <li><a style="color:black;">UpSet plot</a></li>\n')
+    #html_f.write('  <li><a style="color:black;">UpSet plot</a></li>\n')
+    html_f.write('<li><a style="color:black;">FEA term-set intersections for ' + ', '.join(_exp_ids[0:-1]) + ' and ' + _exp_ids[-1] + '</a></li>\n')
     html_f.write('</div>\n')
     html_f.write('<div class="grid-container">\n')
+    
+    html_f.write('<div class="overview">\n')
+    html_f.write('<b>Overview</b>\n')
+    html_f.write('<p>This report summarises ' + str(len(_exp_ids)) + ' functional enrichment analyses (FEAs):</p>\n')
+    html_f.write('<ul style="list-style-type: disc; background-color: transparent;">\n')
+    for exp_id in _exp_ids:
+        html_f.write('<li style="float: none;">' + exp_id + '</li>\n')
+        
+    html_f.write('</ul>\n')
+    html_f.write("""
+    Each functional enrichment analysis yields a set of enriched terms which we refer to as a functional enrichment analysis term-set, or FEATS.
+
+    <p>The <b>UpSet plot</b> below shows the size of each FEATS, as well as sizes of subsets of terms enriched in only one FEA, and sizes of subsets of terms enriched in two or more FEAs.</p>
+
+    <p>We refer to a subset of terms enriched in two or more FEAs as a functional enrichment analysis term-set intersection, or FEATSI.</p>
+
+    <p>Use the <b>Reports</b> menu, above, to navigate to GeneFEAST reports for each FEATSI identified amongst the FEAs listed above.</p>
+    """)
+    
+    html_f.write('</div>\n')
+    
     html_f.write('<div class="figure">\n')
+    html_f.write('<b>UpSet plot</b><br><br>\n')
     html_f.write('<img src="' + upset_img_path + '" width="' + str(upset_img_width)  + '" height="' + str(NEW_H) + '">\n')
     html_f.write('</div>\n')
     html_f.write('</div>\n')
@@ -981,9 +1000,9 @@ def gf_multi(setup_yaml_path, output_dir):
     etg_index=1
     etg_total=len(etgContainers)
     for etgContainer in etgContainers:
-        print("Generating HTML for FEATSI " + str(etg_index) + " of " + str(etg_total))
+        print("\n\nGenerating HTML for FEATSI " + str(etg_index) + " of " + str(etg_total))
         etgContainer.print_html(etgContainers)
-        etg_total+=1
+        etg_index+=1
     
     print("\nGenerating csv files")
     for etgContainer in etgContainers:

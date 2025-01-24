@@ -897,6 +897,11 @@ def make_sil_violinplots(min_weight_tt_edge, max_community_size_thresh, combine_
                 
                 axis.set_title("OM=" + tested_overlap_measure + ", GSO=" + str(min_weight_tt_edge_try) + ", MCS=" + str(max_community_size_thresh_try))
             else:
+                if((tested_overlap_measure == tt_overlap_measure) & 
+                   (min_weight_tt_edge_try == min_weight_tt_edge) & 
+                   (max_community_size_thresh_try==max_community_size_thresh)):
+                    axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].set_facecolor("yellow")
+                
                 axis = axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i]
                 ax_twin = axes[min_weight_tt_edge_try_i, max_community_size_thresh_try_i].twinx()
                 ax_twin.set_ylim([0,100])
