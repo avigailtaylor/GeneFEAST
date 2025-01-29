@@ -518,6 +518,19 @@ HEATMAP_MAX: 4
 # quantitative data for your genes of interest and have replaced this column with a singular, dummy, variable, you should set these
 # values so that your dummy value is in the range.
 
+# **************************************************************************************************************************
+# *** Parameters affecting HTML report ***
+# **************************************************************************************************************************
+
+TOOLTIPS: False
+# If set to True, the HTML report will be rendered with tooltips to help the novice user better understand the report's contents.
+
+DEFAULT_META_VIEW: circos
+# This parameter sets the default first plot shown for meta communities. Accepted values are: "circos","upset","heatmapa","heatmapb","heatmapc", and "litsearch".
+
+DEFAULT_COMMUNITY_VIEW: circos
+# This parameter sets the default first plot shown for communities. Accepted values are: "circos","upset","heatmapa","heatmapb","heatmapc", and "litsearch".
+
 </code></pre>
 
 </details>
