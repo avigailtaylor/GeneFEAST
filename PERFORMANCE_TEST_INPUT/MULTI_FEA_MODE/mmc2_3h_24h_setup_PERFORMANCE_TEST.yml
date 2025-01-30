@@ -1,0 +1,9 @@
+FEAs:
+    - id: "mmc2_3h"
+      goi_file: "mmc2_goi_3h_PERFORMANCE_TEST.csv"
+      fea_file: "GO_BP_3h_0.0001_4GF_basic_PERFORMANCE_TEST.csv"
+      
+    - id: "mmc2_24h"
+      goi_file: "mmc2_goi_24h_PERFORMANCE_TEST.csv"
+      fea_file: "GO_BP_24h_0.0001_4GF_basic_PERFORMANCE_TEST.csv"
+
