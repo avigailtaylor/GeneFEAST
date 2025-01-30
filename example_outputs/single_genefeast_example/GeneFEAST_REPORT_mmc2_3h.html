@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.title {
+  margin: 5px;
+}
+.view-button {
+  padding: 5;
+  border: none;
+  font: inherit;
+  color: white;
+  cursor: pointer;
+  background-color: dodgerblue;
+  border-radius: 20px;
+  transition-duration: 0.1s;
+}
+.grid-container {
+  display: grid;
+  grid-template-areas:
+    'report_title'
+    'meta_communities'
+    'singleton_meta_communities'
+    'singleton_communities';
+  grid-gap: 10px;
+  background-color: #0aa8a8;
+  padding: 10px;
+}
+.report_title{ grid-area: report_title; }
+.meta_communities { grid-area: meta_communities;
+                    overflow: scroll;}
+.singleton_meta_communities { grid-area: singleton_meta_communities;
+                         overflow: scroll;}
+.singleton_communities { grid-area: singleton_communities;
+                              overflow: scroll;}
+.grid-container > div {
+  max-height: 760px;
+  overflow: scroll;
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: left;
+  padding: 15px;
+  font-size: small;
+  margin:0;
+}
+.navgrid-container {
+display: grid;
+grid-template-columns: auto;
+position: fixed; top: 0; left: 0; width:100%; height: 55px; z-index:1;
+}
+ul {
+list-style-type: none;
+margin: 0;
+padding: 0;
+background-color: #088F8F;
+top: 0; left: 0; width: 100%; height: 55px; z-index:1;
+}
+li {
+  float: left;
+}
+li a {
+  display: block;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+.navactive {
+  text-decoration:underline;
+}
+.logo {
+  display: block;
+  color: yellow;
+  text-align: center;
+  text-decoration: none;
+  padding: 9px 16px;
+  padding-right: 75px;
+  font-family: arial black, sans-serif;
+  font-size: 18px;
+}
+.rightlink {
+  float: right;
+}
+.subnav {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #0aa8a8;
+}
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+.dropdown .dropbtn {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  font-weight: bold;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+.dropbtnactive {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  text-decoration:underline;
+  font-weight: bold;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #0aa8a8;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+.dropdown-content a {
+  float: none;
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  font-size: small;
+}
+.dropdown-content a:hover {
+  background-color: #088F8F;
+}
+.dropdown:hover .dropdown-content {
+  display: block;
+  position:fixed;
+  z-index: 9999;
+}
+
+.dropdownsub {
+  float: left;
+  overflow: hidden;
+}
+
+.dropdown-content .dropdownsub {
+  float: none;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdownsub-content{
+  display: none;
+  position: absolute;
+  background-color: #0aa8a8;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.dropdownsub-content a {
+  float: none;
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  font-size: small;
+}
+
+.dropdownsub:hover .dropdownsub-content {
+  display: block;
+  position:absolute;
+  z-index: 9999;
+  left: 50%;
+}
+
+.dropdownsubsub {
+  float: left;
+  overflow: hidden;
+}
+
+.dropdownsub-content .dropdownsubsub {
+  float: none;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdownsubsub-content{
+  display: none;
+  position: absolute;
+  background-color: #0aa8a8;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.dropdownsubsub-content a {
+  float: none;
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  font-size: small;
+}
+
+.dropdownsubsub:hover .dropdownsubsub-content {
+  display: block;
+  position:absolute;
+  z-index: 9999;
+  left: 50%;
+}
+
+.subtitlebanner {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #0aa8a8;
+  margin-top:110px;
+  z-index:1
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.buttontooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 500px;
+  background-color: grey;
+  color: white;
+  text-align: justify;
+  border-radius: 6px;
+  padding: 5px 5px;
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.buttontooltip .tooltiptext {
+  visibility: hidden;
+  width: 200px;
+  background-color: black;
+  color: #fff;
+  opacity: 0.4;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 70%;
+  left: 50%;
+  margin-left: -100px;
+}
+
+.buttontooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+</style>
+</head>
+<body style="background-color:#0aa8a8; font-family: arial, sans-serif;">
+<div class="navgrid-container">
+<div>
+<ul>
+<li class="logo">GeneFEAST</li>
+</ul>
+</div>
+<div>
+<ul class="subnav">
+<li class="dropdown">
+<button class="dropbtnactive" onclick="document.location='GeneFEAST_REPORT_mmc2_3h.html'">Communities overview</button>
+<div class="dropdown-content">
+<a href="GeneFEAST_REPORT_mmc2_3h.html">Meta communities, communities, and terms</a>
+<a href="gf_mmc2_3h_communities_silhouette.html">Silhouette plot</a>
+<div class="dropdownsub" style="width:450px">
+<a href="javascript:;">Graphical grid search of community detection parameters</a>
+<div class="dropdownsub-content" style="width:450px">
+<a href="gf_mmc2_3h_communities_paramcomparison_oc.html">Graphical grid search of community detection parameters (OC)</a>
+<a href="gf_mmc2_3h_communities_paramcomparison_ji.html">Graphical grid search of community detection parameters (JI)</a>
+</div>
+</div>
+</div>
+</li> 
+<li class="dropdown">
+<button class="dropbtn" onclick="document.location='gf_mmc2_3h.html'">Full report</button>
+<div class="dropdown-content">
+<div class="dropdownsub" style="width:300px">
+<a href="gf_mmc2_3h.html#meta community 01">Meta communities</a>
+<div class="dropdownsub-content">
+<div class="dropdownsubsub" style="width:300px">
+<a href="gf_mmc2_3h.html#meta community 01">meta community 01</a>
+<div class="dropdownsubsub-content" style="width:600px;max-height:200px;overflow:scroll;">
+<a href="gf_mmc2_3h.html#community 01 (GO)">community 01 (GO) GO:0002237 - response to molecule of bacterial origin</a>
+<a href="gf_mmc2_3h.html#community 02 (GO)">community 02 (GO) GO:0030217 - T cell differentiation</a>
+<a href="gf_mmc2_3h.html#community 03 (GO)">community 03 (GO) GO:0009615 - response to virus</a>
+<a href="gf_mmc2_3h.html#community 04 (GO)">community 04 (GO) GO:0030522 - intracellular receptor signaling pathway</a>
+<a href="gf_mmc2_3h.html#community 06 (GO)">community 06 (GO) GO:0043410 - positive regulation of MAPK cascade</a>
+</div>
+</div>
+<div class="dropdownsubsub" style="width:300px">
+<a href="gf_mmc2_3h.html#meta community 02">meta community 02</a>
+<div class="dropdownsubsub-content" style="width:600px;max-height:200px;overflow:scroll;">
+<a href="gf_mmc2_3h.html#community 05 (GO)">community 05 (GO) GO:0061448 - connective tissue development</a>
+<a href="gf_mmc2_3h.html#community 07 (GO)">community 07 (GO) GO:0072001 - renal system development</a>
+<a href="gf_mmc2_3h.html#community 08 (GO)">community 08 (GO) GO:0070482 - response to oxygen levels</a>
+<a href="gf_mmc2_3h.html#community 09 (GO)">community 09 (GO) GO:0060562 - epithelial tube morphogenesis</a>
+<a href="gf_mmc2_3h.html#community 10 (GO)">community 10 (GO) GO:0033002 - muscle cell proliferation</a>
+</div>
+</div>
+</div>
+</div>
+<a href="javascript:;">Communities</a>
+<div class="dropdownsub" style="width:300px">
+<a href="gf_mmc2_3h.html#GO:0002064">Terms</a>
+<div class="dropdownsub-content" style="width:600px;max-height:200px;overflow:scroll;">
+<a href="gf_mmc2_3h.html#GO:0002064">GO:0002064 - epithelial cell development</a>
+<a href="gf_mmc2_3h.html#GO:0007264">GO:0007264 - small GTPase mediated signal transduction</a>
+<a href="gf_mmc2_3h.html#GO:0030099">GO:0030099 - myeloid cell differentiation</a>
+<a href="gf_mmc2_3h.html#GO:0034612">GO:0034612 - response to tumor necrosis factor</a>
+<a href="gf_mmc2_3h.html#GO:0048545">GO:0048545 - response to steroid hormone</a>
+<a href="gf_mmc2_3h.html#GO:0048568">GO:0048568 - embryonic organ development</a>
+<a href="gf_mmc2_3h.html#GO:0050673">GO:0050673 - epithelial cell proliferation</a>
+<a href="gf_mmc2_3h.html#GO:0050678">GO:0050678 - regulation of epithelial cell proliferation</a>
+<a href="gf_mmc2_3h.html#GO:0060485">GO:0060485 - mesenchyme development</a>
+<a href="gf_mmc2_3h.html#GO:0071774">GO:0071774 - response to fibroblast growth factor</a>
+<a href="gf_mmc2_3h.html#GO:0098781">GO:0098781 - ncRNA transcription</a>
+</div>
+</div>
+</div>
+</li>
+<li class="rightlink"><a style="color:white;">mmc2_3h</a></li>
+</ul>
+</div>
+</div>
+<div class="subtitlebanner">
+<li><a style="color:black;">Meta communities, communities, and terms identified in mmc2_3h</a></li>
+</div>
+<div class="grid-container">
+<div class="meta_communities">
+<table>
+<tr><td class="tooltip"><b>Meta communities</b><span class="tooltiptext"> 
+                         To highlight gene-sets driving multiple enrichments, 
+                         GeneFEAST groups terms into communities using a gene-set-overlap metric.
+                         These communities are grouped into larger meta communities when weaker, 
+                         residual gene-set overlap remains between terms from different communities, 
+                         or when strong gene-set overlap exists between terms from different databases, 
+                         but multi-database agglomeration is switched off (the default). 
+                         </span></td><td></td><td></td></tr>
+<tr><td><a href="gf_mmc2_3h.html#meta community 01">meta community 01</a></td><td><a href="gf_mmc2_3h.html#community 01 (GO)">community 01 (GO)</a></td><td>GO:0002237 - response to molecule of bacterial origin</td></tr>
+<tr><td></td><td><a href="gf_mmc2_3h.html#community 02 (GO)">community 02 (GO)</a></td><td>GO:0030217 - T cell differentiation</td></tr>
+<tr><td></td><td><a href="gf_mmc2_3h.html#community 03 (GO)">community 03 (GO)</a></td><td>GO:0009615 - response to virus</td></tr>
+<tr><td></td><td><a href="gf_mmc2_3h.html#community 04 (GO)">community 04 (GO)</a></td><td>GO:0030522 - intracellular receptor signaling pathway</td></tr>
+<tr><td></td><td><a href="gf_mmc2_3h.html#community 06 (GO)">community 06 (GO)</a></td><td>GO:0043410 - positive regulation of MAPK cascade</td></tr>
+<tr><td></td><td></td><td></td></tr>
+<tr><td><a href="gf_mmc2_3h.html#meta community 02">meta community 02</a></td><td><a href="gf_mmc2_3h.html#community 05 (GO)">community 05 (GO)</a></td><td>GO:0061448 - connective tissue development</td></tr>
+<tr><td></td><td><a href="gf_mmc2_3h.html#community 07 (GO)">community 07 (GO)</a></td><td>GO:0072001 - renal system development</td></tr>
+<tr><td></td><td><a href="gf_mmc2_3h.html#community 08 (GO)">community 08 (GO)</a></td><td>GO:0070482 - response to oxygen levels</td></tr>
+<tr><td></td><td><a href="gf_mmc2_3h.html#community 09 (GO)">community 09 (GO)</a></td><td>GO:0060562 - epithelial tube morphogenesis</td></tr>
+<tr><td></td><td><a href="gf_mmc2_3h.html#community 10 (GO)">community 10 (GO)</a></td><td>GO:0033002 - muscle cell proliferation</td></tr>
+<tr><td></td><td></td><td></td></tr>
+</table>
+</div>
+<div class="singleton_meta_communities">
+<table>
+<tr><td class="tooltip"><b>Communities</b><span class="tooltiptext">
+                         To highlight gene-sets driving multiple enrichments, 
+                         GeneFEAST groups terms into communities using a gene-set-overlap metric.
+                         Communities listed in this section were not identified as being part of a larger
+                         meta community.
+                         </span></td><td></td></tr>
+</table>
+</div>
+<div class="singleton_communities">
+<table>
+<tr><td class="tooltip"><b>Terms</b><span class="tooltiptext" style="width:400px">Terms listed here were not identified as being part of any community.</span></td></tr>
+<tr><td><a href="gf_mmc2_3h.html#GO:0002064">GO:0002064 - epithelial cell development</a></td></tr>
+<tr><td></td></tr>
+<tr><td><a href="gf_mmc2_3h.html#GO:0007264">GO:0007264 - small GTPase mediated signal transduction</a></td></tr>
+<tr><td></td></tr>
+<tr><td><a href="gf_mmc2_3h.html#GO:0030099">GO:0030099 - myeloid cell differentiation</a></td></tr>
+<tr><td></td></tr>
+<tr><td><a href="gf_mmc2_3h.html#GO:0034612">GO:0034612 - response to tumor necrosis factor</a></td></tr>
+<tr><td></td></tr>
+<tr><td><a href="gf_mmc2_3h.html#GO:0048545">GO:0048545 - response to steroid hormone</a></td></tr>
+<tr><td></td></tr>
+<tr><td><a href="gf_mmc2_3h.html#GO:0048568">GO:0048568 - embryonic organ development</a></td></tr>
+<tr><td></td></tr>
+<tr><td><a href="gf_mmc2_3h.html#GO:0050673">GO:0050673 - epithelial cell proliferation</a></td></tr>
+<tr><td></td></tr>
+<tr><td><a href="gf_mmc2_3h.html#GO:0050678">GO:0050678 - regulation of epithelial cell proliferation</a></td></tr>
+<tr><td></td></tr>
+<tr><td><a href="gf_mmc2_3h.html#GO:0060485">GO:0060485 - mesenchyme development</a></td></tr>
+<tr><td></td></tr>
+<tr><td><a href="gf_mmc2_3h.html#GO:0071774">GO:0071774 - response to fibroblast growth factor</a></td></tr>
+<tr><td></td></tr>
+<tr><td><a href="gf_mmc2_3h.html#GO:0098781">GO:0098781 - ncRNA transcription</a></td></tr>
+<tr><td></td></tr>
+</table>
+</div>
+</div>
+</body>
+</html>
