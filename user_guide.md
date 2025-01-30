@@ -703,7 +703,7 @@ A top navigation bar with ‘Communities overview’ and ‘Full report’ dropd
 <b>TOP TIP!</b>
 <ul>
 <li>To help the novice user understand the contents of a GeneFEAST report, run GeneFEAST with tooltips switched on.</li>
-<li>Do this by adding the line <pre><code>TOOLTIPS: True</code></pre> to the setup YAML file.</li>
+<li>Do this by adding this line to the setup YAML file: <code>TOOLTIPS: True</code>.</li>
 </ul>
 </blockquote>
 <br>
@@ -725,7 +725,7 @@ Where applicable, community frames have links back to their meta community and a
 <blockquote>
 <b>TOP TIP!</b>
 <ul>
-<li>The default first plot shown for communities is a circos plot, but you can change this by setting <pre><code>DEFAULT_COMMUNITY_VIEW</pre></code> in the setup YAML file.</li>
+<li>The default first plot shown for communities is a circos plot, but you can change this by setting <code>DEFAULT_COMMUNITY_VIEW</code> in the setup YAML file.</li>
 <li>Accepted values are "circos","upset","heatmapa","heatmapb","heatmapc", and "litsearch".</li>
 <li>Note that term frames will also be affected by this setting, except when "upset" or "circos" are chosen as the default first plot.</li>
 </ul>
@@ -745,7 +745,7 @@ In addition, meta community frames have links to member communities (black, dash
 <blockquote>
 <b>TOP TIP!</b>
 <ul>
-<li>The default first plot shown for meta communities is a circos plot, but you can change this by setting <pre><code>DEFAULT_META_VIEW</pre></code> in the setup YAML file.</li>
+<li>The default first plot shown for meta communities is a circos plot, but you can change this by setting <code>DEFAULT_META_VIEW</code> in the setup YAML file.</li>
 <li>Accepted values are "circos","upset","heatmapa","heatmapb","heatmapc", and "litsearch".</li>
 </ul>
 </blockquote>
