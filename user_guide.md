@@ -698,6 +698,16 @@ A top navigation bar with ‘Communities overview’ and ‘Full report’ dropd
 
 <p><b>Reports summarising multiple FEAs</b> start with a front page showing an upset plot of the sets of terms identified as enriched in each of the input FEAs (top left green frame). We refer to each set of terms found in two or more FEAs as a "FEA term-set intersection". The navigation bar at the top of this front page provides a ‘Reports’ dropdown menu from which the user can navigate to separate reports summarising the terms in each FEA term-set intersection. Each of the separate reports has the structure of a report summarising a single FEA, as described above.</p>
 
+<br>
+<blockquote>
+<b>TOP TIP!</b>
+<ul>
+<li>To help the novice user understand the contents of a GeneFEAST report, run GeneFEAST with tooltips switched on.</li>
+<li>Do this by adding the line <pre><code>TOOLTIPS: True</code></pre> to the setup YAML file.</li>
+</ul>
+</blockquote>
+<br>
+
 <p>For each <b>community</b> of enriched terms, GeneFEAST reports:
 <ul>
 <li>member terms;</li>
@@ -711,6 +721,18 @@ Where applicable, community frames have links back to their meta community and a
 
 <p><b>Term</b> frames have similar, reduced content of community frames. In particular, they do not include upset plots and dot plots, and the term-gene heatmap element of their <a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/split_heatmaps.md">split heatmaps</a> is extended to highlight which genes, if any, contribute to enriched terms that have been clustered into a community; in this case the corresponding gene-community pair is depicted in the heatmap. Term frames have links back to weakly connected communities (black, dotted arrow).</p>
 
+<br>
+<blockquote>
+<b>TOP TIP!</b>
+<ul>
+<li>The default first plot shown for communities is a circos plot, but you can change this by setting <pre><code>DEFAULT_COMMUNITY_VIEW</pre></code> in the setup YAML file.</li>
+<li>Accepted values are "circos","upset","heatmapa","heatmapb","heatmapc", and "litsearch".</li>
+<li>Note that term frames will also be affected by this setting, except when "upset" or "circos" are chosen as the default first plot.</li>
+</ul>
+</blockquote>
+<br>
+
+
 <p><b>Meta community</b> frames contain:
 <ul>
 <li><a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/circos_and_upset.md">circos plot and upset plot</a> showing the gene-set overlap of member communities;</li>
@@ -719,6 +741,14 @@ Where applicable, community frames have links back to their meta community and a
 </ul>
 In addition, meta community frames have links to member communities (black, dashed arrow).</p>
 
+<br>
+<blockquote>
+<b>TOP TIP!</b>
+<ul>
+<li>The default first plot shown for meta communities is a circos plot, but you can change this by setting <pre><code>DEFAULT_META_VIEW</pre></code> in the setup YAML file.</li>
+<li>Accepted values are "circos","upset","heatmapa","heatmapb","heatmapc", and "litsearch".</li>
+</ul>
+</blockquote>
 <br>
 
 <b>Further information on GeneFEAST report elements:</b>
