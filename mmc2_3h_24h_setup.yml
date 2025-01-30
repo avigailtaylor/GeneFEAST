@@ -13,3 +13,4 @@ SEARCH_WORDS:
 
 EA_FILE: mmc2_3h_24h_extra_annotations.txt
       
+TOOLTIPS: True

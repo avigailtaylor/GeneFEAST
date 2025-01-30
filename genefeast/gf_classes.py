@@ -944,9 +944,9 @@ class bigBasicCommunityPrinter():
         html_f.write('<div class="plot_buttons">\n')
         
         
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.circos_img_path + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.circos_img_width) + '\' ,\'Circos plot\',1)">Circos plot</button>\n')
+        html_f.write('<button class="view-button preclick-communitycircos-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.circos_img_path + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.circos_img_width) + '\' ,\'Circos plot\',1)">Circos plot</button>\n')
         
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.upset_img_path + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.upset_img_width) + '\' ,\'UpSet plot\',1)">UpSet plot</button>\n')
+        html_f.write('<button class="view-button preclick-communityupset-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.upset_img_path + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.upset_img_width) + '\' ,\'UpSet plot\',1)">UpSet plot</button>\n')
         
         
         
@@ -959,9 +959,9 @@ class bigBasicCommunityPrinter():
         
         
         if(len(self.community.heatmap_img_paths_list) == 3):
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[0] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[0]) + '\' ,\'' + self.community.heatmap_img_titles_list[0] + '\',1)">Heatmap A (' + self.community.quant_data_type +')</button>\n')
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[1] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[1]) + '\' ,\'' + self.community.heatmap_img_titles_list[1] + '\',1)">Heatmap B (annotations x ' + self.community.quant_data_type +')</button>\n')
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[2] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[2]) + '\' ,\'' + self.community.heatmap_img_titles_list[2] + '\',1)">Heatmap C (alphabetical)</button>\n')
+            html_f.write('<button class="view-button preclick-communityheatmapa-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[0] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[0]) + '\' ,\'' + self.community.heatmap_img_titles_list[0] + '\',1)">Heatmap A (' + self.community.quant_data_type +')</button>\n')
+            html_f.write('<button class="view-button preclick-communityheatmapb-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[1] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[1]) + '\' ,\'' + self.community.heatmap_img_titles_list[1] + '\',1)">Heatmap B (annotations x ' + self.community.quant_data_type +')</button>\n')
+            html_f.write('<button class="view-button preclick-communityheatmapc-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + self.community.heatmap_img_paths_list[2] + '\' ,' + str(self.community.new_h) + ',\'' + str(self.community.heatmap_img_widths_list[2]) + '\' ,\'' + self.community.heatmap_img_titles_list[2] + '\',1)">Heatmap C (alphabetical)</button>\n')
         else:
             heatmap_img_paths_array_as_str_A = ','.join( [self.community.heatmap_img_paths_list[x] for x in [0,3]] )
             heatmap_widths_array_as_str_A = ','.join( map( str , [self.community.heatmap_img_widths_list[x] for x in [0,3]] ) )
@@ -975,9 +975,9 @@ class bigBasicCommunityPrinter():
             heatmap_widths_array_as_str_C = ','.join( map( str , [self.community.heatmap_img_widths_list[x] for x in [2,5]] ) )
             heatmap_img_titles_array_as_str_C = ','.join( [self.community.heatmap_img_titles_list[x] for x in [2,5]] )
             
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A (' + self.community.quant_data_type +')</button>\n' )
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B (annotations x ' + self.community.quant_data_type +')</button>\n' )
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C (alphabetical)</button>\n' )
+            html_f.write( '<button class="view-button preclick-communityheatmapa-button buttontooltip"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A (' + self.community.quant_data_type +')<span class="tooltiptext">Toggle truncated/full heatmaps</span></button>\n' )
+            html_f.write( '<button class="view-button preclick-communityheatmapb-button buttontooltip"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B (annotations x ' + self.community.quant_data_type +')<span class="tooltiptext">Toggle truncated/full heatmaps</span></button>\n' )
+            html_f.write( '<button class="view-button preclick-communityheatmapc-button buttontooltip"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.community.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C (alphabetical)<span class="tooltiptext">Toggle truncated/full heatmaps</span></button>\n' )
         
         
         
@@ -993,7 +993,7 @@ class bigBasicCommunityPrinter():
                 html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.community.name + '\' , \'plotbox\' , \'' + dotplot_img_paths_array_as_str + '\' ,' + str(self.community.new_h) + ',\'' + dotplot_widths_array_as_str + '\',\'' + dotplot_img_titles_array_as_str + '\',1)">Dot plots</button>\n')
 
         
-        html_f.write('<button class="view-button"  onclick="changeTable( \'' + self.community.name + '\' , 0 , 1 ,\'plotbox\', true , \'Literature search\')">Literature search</button>\n')
+        html_f.write('<button class="view-button preclick-communitylitsearch-button"  onclick="changeTable( \'' + self.community.name + '\' , 0 , 1 ,\'plotbox\', true , \'Literature search\')">Literature search</button>\n')
         
         html_f.write('</div>\n')
         
@@ -2201,12 +2201,12 @@ class singletonCommunity( community ):
         
         html_f.write('<div class="plot_buttons3">\n')
         #html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + heatmap_img_paths_array_as_str + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str + '\',\'' + heatmap_img_titles_array_as_str + '\',1)">Heatmaps</button>\n' )
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\',\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A (' + self.quant_data_type +')</button>\n' )
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\',\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B (annotations x ' + self.quant_data_type +')</button>\n' )
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\',\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C (alphabetical)</button>\n' )
+        html_f.write('<button class="view-button preclick-communityheatmapa-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\',\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A (' + self.quant_data_type +')</button>\n' )
+        html_f.write('<button class="view-button preclick-communityheatmapb-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\',\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B (annotations x ' + self.quant_data_type +')</button>\n' )
+        html_f.write('<button class="view-button preclick-communityheatmapc-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\'  , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str( self.new_h ) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\',\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C (alphabetical)</button>\n' )
         
         
-        html_f.write('<button class="view-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'heatmap\', true , \'Literature search\')">Literature search</button>\n' )
+        html_f.write('<button class="view-button preclick-communitylitsearch-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'heatmap\', true , \'Literature search\')">Literature search</button>\n' )
     
         if( len(self.exp_ids) > 1 and ( self.num_extra_images > 1 ) ):# only want a button to toggle through extra images if there is more than one such image... len(self.exp_ids) > 1
                                                                       # is necessary, but not sufficient for this to be the case, hence the extra check here.
@@ -2508,9 +2508,9 @@ class metaGroup( community ):
         
         html_f.write('<div class="plot_buttons2">\n')
         
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.circos_img_path + '\' ,' + str(self.new_h) + ',\'' + str(self.circos_img_width) + '\' ,\'Circos plot\',1)">Circos plot</button>\n')
+        html_f.write('<button class="view-button preclick-metacircos-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.circos_img_path + '\' ,' + str(self.new_h) + ',\'' + str(self.circos_img_width) + '\' ,\'Circos plot\',1)">Circos plot</button>\n')
         
-        html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.upset_img_path + '\' ,' + str(self.new_h) + ',\'' + str(self.upset_img_width) + '\' ,\'UpSet plot\',1)">UpSet plot</button>\n')
+        html_f.write('<button class="view-button preclick-metaupset-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.upset_img_path + '\' ,' + str(self.new_h) + ',\'' + str(self.upset_img_width) + '\' ,\'UpSet plot\',1)">UpSet plot</button>\n')
         
         
         
@@ -2519,9 +2519,9 @@ class metaGroup( community ):
 #            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\' ,\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B</button>\n')
 #            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\' ,\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C</button>\n')
         
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\' ,\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A (' + self.quant_data_type +')</button>\n')
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\' ,\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B (annotations x ' + self.quant_data_type +')</button>\n')
-            html_f.write('<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\' ,\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C (alphabetical)</button>\n')
+            html_f.write('<button class="view-button preclick-metaheatmapa-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[0] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[0]) + '\' ,\'' + self.heatmap_img_titles_list[0] + '\',1)">Heatmap A (' + self.quant_data_type +')</button>\n')
+            html_f.write('<button class="view-button preclick-metaheatmapb-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[1] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[1]) + '\' ,\'' + self.heatmap_img_titles_list[1] + '\',1)">Heatmap B (annotations x ' + self.quant_data_type +')</button>\n')
+            html_f.write('<button class="view-button preclick-metaheatmapc-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + self.heatmap_img_paths_list[2] + '\' ,' + str(self.new_h) + ',\'' + str(self.heatmap_img_widths_list[2]) + '\' ,\'' + self.heatmap_img_titles_list[2] + '\',1)">Heatmap C (alphabetical)</button>\n')
         
         else:
             heatmap_img_paths_array_as_str_A = ','.join( [self.heatmap_img_paths_list[x] for x in [0,3]] )
@@ -2541,12 +2541,12 @@ class metaGroup( community ):
 #            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'heatmap\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C</button>\n' )
 #        
         
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A (' + self.quant_data_type +')</button>\n')
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B (annotations x ' + self.quant_data_type +')</button>\n')
-            html_f.write( '<button class="view-button"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C (alphabetical)</button>\n')
+            html_f.write( '<button class="view-button preclick-metaheatmapa-button buttontooltip"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_A + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_A + '\',\'' + heatmap_img_titles_array_as_str_A + '\',1)">Heatmap A (' + self.quant_data_type +')<span class="tooltiptext">Toggle truncated/full heatmaps</span></button>\n')
+            html_f.write( '<button class="view-button preclick-metaheatmapb-button buttontooltip"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_B + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_B + '\',\'' + heatmap_img_titles_array_as_str_B + '\',1)">Heatmap B (annotations x ' + self.quant_data_type +')<span class="tooltiptext">Toggle truncated/full heatmaps</span></button>\n')
+            html_f.write( '<button class="view-button preclick-metaheatmapc-button buttontooltip"  onclick="changeImg( \'' + self.name + '\' , \'upset\' , \'' + heatmap_img_paths_array_as_str_C + '\' ,' + str( self.new_h ) + ',\'' + heatmap_widths_array_as_str_C + '\',\'' + heatmap_img_titles_array_as_str_C + '\',1)">Heatmap C (alphabetical)<span class="tooltiptext">Toggle truncated/full heatmaps</span></button>\n')
         
         
-        html_f.write( '<button class="view-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'upset\', true , \'Literature search\')">Literature search</button>\n' )
+        html_f.write( '<button class="view-button preclick-metalitsearch-button"  onclick="changeTable( \'' + self.name + '\' , 0 , 1 ,\'upset\', true , \'Literature search\')">Literature search</button>\n' )
 
         html_f.write('</div>\n')
         
@@ -2573,19 +2573,22 @@ class metaGroup( community ):
         #html_f.write('<br>\n')
 
 class etgContainer:
-    def __init__( self , etg_name , etg_text_details , key_i_str ,  output_dir , relative_main_html , rel_images_dir, meta_communities , singleton_meta_communities , singleton_communities , new_h, 
-                 silplot_img_path , silplot_img_width, silplot_img_height,
+    def __init__( self , etg_name , etg_text_details , key_i_str ,  output_dir , relative_main_html , rel_images_dir, rel_tables_dir, meta_communities , singleton_meta_communities , singleton_communities , new_h, 
+                 silplot_img_path , silplot_img_width, silplot_img_height, no_silhouette_plot,
                  comparisonplot_oc_img_path , comparisonplot_oc_img_width, comparisonplot_oc_img_height,
-                 comparisonplot_ji_img_path , comparisonplot_ji_img_width, comparisonplot_ji_img_height):
+                 comparisonplot_ji_img_path , comparisonplot_ji_img_width, comparisonplot_ji_img_height,
+                 default_meta_view, default_community_view, tooltips):
         self.name = etg_name
+        self.lower_name = 'gfmulti_' + etg_name.lower().replace(" ", "")
         self.text_details = etg_text_details
         self.key_i_str = key_i_str
-        self.hyperlink = key_i_str + '_report.html'
-        self.summary_hyperlink = key_i_str + '_communities_summary.html'
-        self.csv_filename = key_i_str + '_report.csv'
+        self.hyperlink = self.lower_name + '_report.html'
+        self.summary_hyperlink = self.lower_name + '_communities_summary.html'
+        self.csv_filename = 'GeneFEAST_TABLE_' + self.lower_name + '.csv'
         self.output_dir = output_dir
         self.relative_main_html = relative_main_html
         self.rel_images_dir = rel_images_dir
+        self.rel_tables_dir = rel_tables_dir
         self.meta_communities = meta_communities
         self.singleton_meta_communities = singleton_meta_communities
         self.singleton_communities = singleton_communities
@@ -2593,15 +2596,19 @@ class etgContainer:
         self.silplot_img_path = silplot_img_path
         self.silplot_img_width = silplot_img_width
         self.silplot_img_height = silplot_img_height
+        self.no_silhouette_plot = no_silhouette_plot
         self.comparisonplot_oc_img_path = comparisonplot_oc_img_path
         self.comparisonplot_oc_img_width = comparisonplot_oc_img_width
         self.comparisonplot_oc_img_height = comparisonplot_oc_img_height
         self.comparisonplot_ji_img_path = comparisonplot_ji_img_path
         self.comparisonplot_ji_img_width = comparisonplot_ji_img_width
         self.comparisonplot_ji_img_height = comparisonplot_ji_img_height
+        self.default_meta_view = default_meta_view
+        self.default_community_view = default_community_view
+        self.tooltips = tooltips
         
     def print_csv(self):
-        csv_f = open(self.output_dir + '/' + self.csv_filename , 'w')
+        csv_f = open(self.output_dir + '/' + self.rel_tables_dir + '/' + self.csv_filename , 'w')
         for mc in self.meta_communities:
             for bc in mc.communities:
                 bc.print_csv(csv_f)
@@ -2618,13 +2625,14 @@ class etgContainer:
         return self.summary_hyperlink # used by external code
     
 
-    def print_html( self, etgContainers ):
+    def print_html( self, etgContainers):
         # Can we refactor this to pass the etgContainer object, rather than all of its attributes? The question is, how will this affect instances of summaryPrinter not called by an etgContainer?
-        my_summaryPrinter = summaryPrinter( self.key_i_str , self.name + ': ' + self.text_details , self.output_dir , self.hyperlink , self.rel_images_dir, 
+        my_summaryPrinter = summaryPrinter( self.lower_name , self.name + ': ' + self.text_details , self.output_dir , self.hyperlink , self.rel_images_dir, 
                                             self.meta_communities , self.singleton_meta_communities , self.singleton_communities , 
-                                            self.silplot_img_path, self.silplot_img_width, self.silplot_img_height, 
+                                            self.silplot_img_path, self.silplot_img_width, self.silplot_img_height, self.no_silhouette_plot,
                                             self.comparisonplot_oc_img_path, self.comparisonplot_oc_img_width, self.comparisonplot_oc_img_height,
-                                            self.comparisonplot_ji_img_path, self.comparisonplot_ji_img_width, self.comparisonplot_ji_img_height, 
+                                            self.comparisonplot_ji_img_path, self.comparisonplot_ji_img_width, self.comparisonplot_ji_img_height,
+                                            self.tooltips,
                                             self.relative_main_html, etgContainers )
         my_summaryPrinter.print_html()
         my_summaryPrinter.print_html('communities_silhouette')
@@ -3093,6 +3101,73 @@ class etgContainer:
         html_f.write("  z-index:1\n")
         html_f.write("}\n\n")
         
+        
+        html_f.write(".tooltip {\n")
+        html_f.write("  position: relative;\n")
+        html_f.write("  display: inline-block;\n")
+        html_f.write("  border-bottom: 1px dotted black;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".buttontooltip {\n")
+        html_f.write("  position: relative;\n")
+        html_f.write("  display: inline-block;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".tooltip .tooltiptext {\n")
+        html_f.write("  visibility: hidden;\n")
+        html_f.write("  width: 500px;\n")
+        html_f.write("  background-color: grey;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  text-align: justify;\n")
+        html_f.write("  border-radius: 6px;\n")
+        html_f.write("  padding: 5px 5px;\n")
+
+        html_f.write("  /* Position the tooltip */\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  z-index: 1;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".tooltip:hover .tooltiptext {\n")
+        html_f.write("  visibility: visible;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".buttontooltip .tooltiptext {\n")
+        html_f.write("  visibility: hidden;\n")
+        html_f.write("  width: 200px;\n")
+        html_f.write("  background-color: black;\n")
+        html_f.write("  color: #fff;\n")
+        html_f.write("  opacity: 0.4;\n")
+        html_f.write("  text-align: center;\n")
+        html_f.write("  border-radius: 6px;\n")
+        html_f.write("  padding: 5px 0;\n")
+
+        html_f.write("  /* Position the tooltip */\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  z-index: 1;\n")
+        html_f.write("  top: 70%;\n")
+        html_f.write("  left: 50%;\n")
+        html_f.write("  margin-left: -100px;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".buttontooltip:hover .tooltiptext {\n")
+        html_f.write("  visibility: visible;\n")
+        html_f.write("}\n\n")
+        
+        
+        html_f.write(".preclick-metacircos-button{}\n")
+        html_f.write(".preclick-metaupset-button{}\n")
+        html_f.write(".preclick-metaheatmapa-button{}\n")
+        html_f.write(".preclick-metaheatmapb-button{}\n")
+        html_f.write(".preclick-metaheatmapc-button{}\n")
+        html_f.write(".preclick-metalitsearch-button{}\n")
+        
+        html_f.write(".preclick-communitycircos-button{}\n")
+        html_f.write(".preclick-communityupset-button{}\n")
+        html_f.write(".preclick-communityheatmapa-button{}\n")
+        html_f.write(".preclick-communityheatmapb-button{}\n")
+        html_f.write(".preclick-communityheatmapc-button{}\n")
+        html_f.write(".preclick-communitylitsearch-button{}\n")
+        
         html_f.write("</style>\n")
         html_f.write("</head>\n")
 
@@ -3122,17 +3197,17 @@ class etgContainer:
         html_f.write('<div>\n')
         html_f.write('<ul class="subnav">\n')
         html_f.write('<li class="dropdown">\n')
-        html_f.write('<button class="dropbtn" onclick="document.location=\'' + self.key_i_str + '_communities_summary.html\'">Communities overview</button>\n')
+        html_f.write('<button class="dropbtn" onclick="document.location=\'' + self.lower_name + '_communities_summary.html\'">Communities overview</button>\n')
         html_f.write('<div class="dropdown-content">\n')
-        html_f.write('<a href="' + self.key_i_str + '_communities_summary.html">List of communities</a>\n')
-        html_f.write('<a href="' + self.key_i_str + '_communities_silhouette.html">Silhouette plot</a>\n')
+        html_f.write('<a href="' + self.lower_name + '_communities_summary.html">Meta communities, communities, and terms</a>\n')
+        html_f.write('<a href="' + self.lower_name + '_communities_silhouette.html">Silhouette plot</a>\n')
         #html_f.write('<a href="' + self.key_i_str + '_communities_paramcomparison.html">Graphical grid search of community detection parameters</a>\n')
         
         html_f.write('<div class="dropdownsub" style="width:450px">\n')
         html_f.write('<a href="javascript:;">Graphical grid search of community detection parameters</a>\n')
         html_f.write('<div class="dropdownsub-content" style="width:450px">\n')
-        html_f.write('<a href="' + self.key_i_str + '_communities_paramcomparison_oc.html">Graphical grid search of community detection parameters (OC)</a>\n')
-        html_f.write('<a href="' + self.key_i_str + '_communities_paramcomparison_ji.html">Graphical grid search of community detection parameters (JI)</a>\n')
+        html_f.write('<a href="' + self.lower_name + '_communities_paramcomparison_oc.html">Graphical grid search of community detection parameters (OC)</a>\n')
+        html_f.write('<a href="' + self.lower_name + '_communities_paramcomparison_ji.html">Graphical grid search of community detection parameters (JI)</a>\n')
         html_f.write('</div>\n')
         html_f.write('</div>\n')
         
@@ -3204,22 +3279,49 @@ class etgContainer:
             
         
         first_print = True
+        
+        mc_index=1
+        mc_total=len(self.meta_communities)
         for mc in self.meta_communities:
+            
+            print("\nGenerating HTML for meta community " + str(mc_index) + " of " + str(mc_total))
             mc.print_html( html_f , self.summary_hyperlink , first_print, backlink = self.relative_main_html )
             first_print = False
             
+            bc_index=1
+            bc_total=len(mc.communities)
             for bc in mc.communities:
+                print("Generating HTML for community " + str(bc_index) + " of " + str(bc_total) + " in meta community " + str(mc_index))
                 bc.print_html( html_f , self.summary_hyperlink , first_print, backlink = self.relative_main_html )
+                bc_index+=1
                 
+            mc_index+=1
+        
+        bc_index=1
+        bc_total=len(self.singleton_meta_communities)    
         for bc in self.singleton_meta_communities:
+            if(bc_index==1):
+                print("\n")
+            print("Generating HTML for community " + str(bc_index) + " of " + str(bc_total))
             bc.print_html( html_f , self.summary_hyperlink , first_print, backlink = self.relative_main_html )
             first_print = False
-            
+            bc_index+=1
+        
+        sc_index=1
+        sc_total=len(self.singleton_communities)    
         for sc in self.singleton_communities:
+            if(sc_index==1):
+                print("\n")
+            print("Generating HTML for term " + str(sc_index) + " of " + str(sc_total))
             sc.print_html( html_f , self.summary_hyperlink , first_print, backlink = self.relative_main_html )
             first_print = False
+            sc_index+=1
 
+        print("\nGenerating JavaScript for HTML report")
         jSPrinter.print_html_for_event_listeners( html_f )
+        jSPrinter.print_html_for_preclickbuttons( html_f, self.default_meta_view, self.default_community_view )
+        jSPrinter.print_html_for_tooltips(html_f, self.tooltips)
+        
         html_f.write("</body>\n")
         html_f.write("</html>\n")
         html_f.close()
@@ -3228,9 +3330,10 @@ class etgContainer:
 class summaryPrinter:
     #Can we refactor this? See note and query in etgContainer object...
     def __init__( self , summary_id , summary_title , output_dir , report_html , rel_images_dir, meta_communities , singleton_meta_communities , singleton_communities , 
-                  silplot_img_path, silplot_img_width, silplot_img_height, 
+                  silplot_img_path, silplot_img_width, silplot_img_height, no_silhouette_plot,
                   comparisonplot_oc_img_path, comparisonplot_oc_img_width, comparisonplot_oc_img_height,
-                  comparisonplot_ji_img_path, comparisonplot_ji_img_width, comparisonplot_ji_img_height, 
+                  comparisonplot_ji_img_path, comparisonplot_ji_img_width, comparisonplot_ji_img_height,
+                  tooltips,
                   backlink = '' , etgContainers = [] ):
         self.summary_id = summary_id
         self.summary_title = summary_title
@@ -3243,18 +3346,31 @@ class summaryPrinter:
         self.silplot_img_path = silplot_img_path
         self.silplot_img_width = silplot_img_width
         self.silplot_img_height = silplot_img_height
+        self.no_silhouette_plot = no_silhouette_plot
         self.comparisonplot_oc_img_path = comparisonplot_oc_img_path
         self.comparisonplot_oc_img_width = comparisonplot_oc_img_width
         self.comparisonplot_oc_img_height = comparisonplot_oc_img_height
         self.comparisonplot_ji_img_path = comparisonplot_ji_img_path
         self.comparisonplot_ji_img_width = comparisonplot_ji_img_width
         self.comparisonplot_ji_img_height = comparisonplot_ji_img_height
+        self.tooltips = tooltips
         self.backlink = backlink
         self.etgContainers = etgContainers
-        
+        self.jSPrinter = javaScriptPrinter()
     
-    def print_html( self , summary_type="communities_summary" ):
-        html_f = open( self.output_dir + '/' + self.summary_id + '_' + summary_type + '.html', 'w' )
+    def print_html( self , summary_type="communities_summary", gf_single=False ):
+        
+        #if(summary_type=="communities_summary" and gf_single):
+        
+        if(gf_single):
+            if(summary_type=="communities_summary"):
+                html_f = open( self.output_dir + '/GeneFEAST_REPORT_' + self.summary_id + '.html', 'w' )
+            else:
+                html_f = open( self.output_dir + '/gf_' + self.summary_id + '_' + summary_type + '.html', 'w' )
+        else:
+            html_f = open( self.output_dir + '/' + self.summary_id + '_' + summary_type + '.html', 'w' )
+        
+        
         html_f.write("<!DOCTYPE html>\n")
         html_f.write("<html>\n")
 
@@ -3530,6 +3646,56 @@ class summaryPrinter:
         html_f.write("  z-index:1\n")
         html_f.write("}\n\n")
         
+        html_f.write(".tooltip {\n")
+        html_f.write("  position: relative;\n")
+        html_f.write("  display: inline-block;\n")
+        html_f.write("  border-bottom: 1px dotted black;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".buttontooltip {\n")
+        html_f.write("  position: relative;\n")
+        html_f.write("  display: inline-block;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".tooltip .tooltiptext {\n")
+        html_f.write("  visibility: hidden;\n")
+        html_f.write("  width: 500px;\n")
+        html_f.write("  background-color: grey;\n")
+        html_f.write("  color: white;\n")
+        html_f.write("  text-align: justify;\n")
+        html_f.write("  border-radius: 6px;\n")
+        html_f.write("  padding: 5px 5px;\n")
+
+        html_f.write("  /* Position the tooltip */\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  z-index: 1;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".tooltip:hover .tooltiptext {\n")
+        html_f.write("  visibility: visible;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".buttontooltip .tooltiptext {\n")
+        html_f.write("  visibility: hidden;\n")
+        html_f.write("  width: 200px;\n")
+        html_f.write("  background-color: black;\n")
+        html_f.write("  color: #fff;\n")
+        html_f.write("  opacity: 0.4;\n")
+        html_f.write("  text-align: center;\n")
+        html_f.write("  border-radius: 6px;\n")
+        html_f.write("  padding: 5px 0;\n")
+
+        html_f.write("  /* Position the tooltip */\n")
+        html_f.write("  position: absolute;\n")
+        html_f.write("  z-index: 1;\n")
+        html_f.write("  top: 70%;\n")
+        html_f.write("  left: 50%;\n")
+        html_f.write("  margin-left: -100px;\n")
+        html_f.write("}\n\n")
+
+        html_f.write(".buttontooltip:hover .tooltiptext {\n")
+        html_f.write("  visibility: visible;\n")
+        html_f.write("}\n\n")
         
         html_f.write("</style>\n")
         
@@ -3558,17 +3724,32 @@ class summaryPrinter:
         html_f.write('<div>\n')
         html_f.write('<ul class="subnav">\n')
         html_f.write('<li class="dropdown">\n')
-        html_f.write('<button class="dropbtnactive" onclick="document.location=\'' + self.summary_id + '_communities_summary.html\'">Communities overview</button>\n')
-        html_f.write('<div class="dropdown-content">\n')
-        html_f.write('<a href="' + self.summary_id + '_communities_summary.html">List of communities</a>\n')
-        html_f.write('<a href="' + self.summary_id + '_communities_silhouette.html">Silhouette plot</a>\n')
+        
+        if(gf_single):
+            html_f.write('<button class="dropbtnactive" onclick="document.location=\'GeneFEAST_REPORT_' + self.summary_id + '.html\'">Communities overview</button>\n')
+            html_f.write('<div class="dropdown-content">\n')
+            html_f.write('<a href="GeneFEAST_REPORT_' + self.summary_id + '.html">Meta communities, communities, and terms</a>\n')
+            html_f.write('<a href="gf_' + self.summary_id + '_communities_silhouette.html">Silhouette plot</a>\n')
+        else:
+            html_f.write('<button class="dropbtnactive" onclick="document.location=\'' + self.summary_id + '_communities_summary.html\'">Communities overview</button>\n')
+            html_f.write('<div class="dropdown-content">\n')
+            html_f.write('<a href="' + self.summary_id + '_communities_summary.html">Meta communities, communities, and terms</a>\n')
+            html_f.write('<a href="' + self.summary_id + '_communities_silhouette.html">Silhouette plot</a>\n')
+        
+        #html_f.write('<a href="' + self.summary_id + '_communities_silhouette.html">Silhouette plot</a>\n')
         #html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison.html">Graphical grid search of community detection parameters</a>\n')
         
         html_f.write('<div class="dropdownsub" style="width:450px">\n')
         html_f.write('<a href="javascript:;">Graphical grid search of community detection parameters</a>\n')
         html_f.write('<div class="dropdownsub-content" style="width:450px">\n')
-        html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison_oc.html">Graphical grid search of community detection parameters (OC)</a>\n')
-        html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison_ji.html">Graphical grid search of community detection parameters (JI)</a>\n')
+        
+        if(gf_single):
+            html_f.write('<a href="gf_' + self.summary_id + '_communities_paramcomparison_oc.html">Graphical grid search of community detection parameters (OC)</a>\n')
+            html_f.write('<a href="gf_' + self.summary_id + '_communities_paramcomparison_ji.html">Graphical grid search of community detection parameters (JI)</a>\n')
+        else:
+            html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison_oc.html">Graphical grid search of community detection parameters (OC)</a>\n')
+            html_f.write('<a href="' + self.summary_id + '_communities_paramcomparison_ji.html">Graphical grid search of community detection parameters (JI)</a>\n')
+        
         html_f.write('</div>\n')
         html_f.write('</div>\n')
         
@@ -3641,14 +3822,21 @@ class summaryPrinter:
         
         if(summary_type == "communities_summary"):
             html_f.write('<div class="subtitlebanner">\n')
-            html_f.write('<li><a style="color:black;">List of communities</a></li>\n')
+            html_f.write('<li><a style="color:black;">Meta communities, communities, and terms identified in ' + self.summary_title + '</a></li>\n')
             html_f.write('</div>\n')
             html_f.write('<div class="grid-container">\n')
             
             
             html_f.write('<div class="meta_communities">\n')
             html_f.write('<table>\n')
-            html_f.write('<tr><td><b>Meta communities</b></td><td></td><td></td></tr>\n' )
+            html_f.write("""<tr><td class="tooltip"><b>Meta communities</b><span class="tooltiptext"> 
+                         To highlight gene-sets driving multiple enrichments, 
+                         GeneFEAST groups terms into communities using a gene-set-overlap metric.
+                         These communities are grouped into larger meta communities when weaker, 
+                         residual gene-set overlap remains between terms from different communities, 
+                         or when strong gene-set overlap exists between terms from different databases, 
+                         but multi-database agglomeration is switched off (the default). 
+                         </span></td><td></td><td></td></tr>\n""" )
             for mg in self.meta_communities:
                 html_f.write('<tr><td><a href="' + self.report_html + '#' + mg.name + '">' + mg.name + '</a></td><td><a href="' + self.report_html + '#' + mg.communities[0].name + '">' + mg.communities[0].name + '</a></td><td>' + mg.communities[0].top_term + '</td></tr>\n' )
                 
@@ -3661,7 +3849,12 @@ class summaryPrinter:
             
             html_f.write('<div class="singleton_meta_communities">\n')
             html_f.write('<table>\n')
-            html_f.write('<tr><td><b>Communities</b></td><td></td></tr>\n' )
+            html_f.write("""<tr><td class="tooltip"><b>Communities</b><span class="tooltiptext">
+                         To highlight gene-sets driving multiple enrichments, 
+                         GeneFEAST groups terms into communities using a gene-set-overlap metric.
+                         Communities listed in this section were not identified as being part of a larger
+                         meta community.
+                         </span></td><td></td></tr>\n""" )
             for bc in self.singleton_meta_communities:
                 html_f.write('<tr><td><a href="' + self.report_html + '#' + bc.name + '">' + bc.name + '</a></td><td>' + bc.top_term + '</td></tr>\n' )
                 html_f.write('<tr><td></td><td></td></tr>\n' )
@@ -3671,7 +3864,7 @@ class summaryPrinter:
             
             html_f.write('<div class="singleton_communities">\n')
             html_f.write('<table>\n')
-            html_f.write('<tr><td><b>Terms</b></td></tr>\n' )
+            html_f.write('<tr><td class="tooltip"><b>Terms</b><span class="tooltiptext" style="width:400px">Terms listed here were not identified as being part of any community.</span></td></tr>\n' )
             for sc in self.singleton_communities:
                 if( sc.name == sc.all_term_defs_dict[ sc.name ] ):
                     html_f.write('<tr><td><a href="' + self.report_html + '#' + sc.name + '">' + sc.name + '</a></td></tr>\n' )
@@ -3685,10 +3878,44 @@ class summaryPrinter:
             
         elif(summary_type == "communities_paramcomparison_oc"):
             html_f.write('<div class="subtitlebanner">\n')
-            html_f.write('<li><a style="color:black;">Graphical grid search of community detection parameters (OC)</a></li>\n')
+            html_f.write('<li><a style="color:black;">Graphical grid search of community detection parameters (OC) used on ' 
+                         + self.summary_title + '</a></li>\n')
             html_f.write('</div>\n')
             html_f.write('<div class="grid-container">\n')
             html_f.write('<div class="figure">\n')
+            if(self.tooltips):
+                html_f.write("""
+                             <p class="tooltip"><b>What is this plot telling me?</b><span class="tooltiptext">
+                             GeneFEAST produces a graphical 
+                             grid search for each of the two overlap measures available (Overlap Coefficient (OC) and Jaccard Index (JI)).
+                             
+                             <br><br>
+                             <b>This is the OC graphical grid search.</b>
+                             
+                             <br><br>
+                             
+                             This graphical grid search is comprised of subplots such that each subplot characterises the 
+                             communities obtained for a given tuple of overlap measure, gene-set overlap threshold and 
+                             maximum community size; the title of each subplot indicates the tuple of values used 
+                             (OM = overlap measure, GSO = gene-set overlap, and MCS = maximum community size).
+                             <br><br>
+                             Within each subplot, the x-axis indicates how many communities of terms were obtained with 
+                             this tuple of values, with one bar/ violin plot pair being plotted per community. 
+                             The violin plots are plotted against the left-hand y-axis and show the distribution of 
+                             silhouette scores obtained for terms in each community; the red dotted line then shows the mean 
+                             silhouette score obtained over all terms, and the black dashed line indicates a silhouette score 
+                             of 0.5 (for reference). Underneath these violin plots are bars, plotted against the right-hand y-axis, 
+                             that show the cumulative percentage of terms included in communities. 
+
+                             <br><br>
+                             <u>NOTE: No subplot is drawn when fewer than two communities are identified.</u>
+
+                             <br><br>
+                             The subplot pertaining to the overlap measure, gene-set overlap and maximum community size thresholds set by 
+                             the user is highlighted with a yellow background. Please note that you may need to refer to the JI
+                             graphical grid search to see this highlighted subplot.
+                             </span></p><br><br>
+                             """)
             html_f.write('<img src="' + self.comparisonplot_oc_img_path + '" width="' + str(self.comparisonplot_oc_img_width) + '" height="' + str(self.comparisonplot_oc_img_height) + '">\n')
             #html_f.write('<img src="' + self.rel_images_dir + 'sil_violinplots.svg">\n')
             html_f.write('</div>\n')
@@ -3697,10 +3924,45 @@ class summaryPrinter:
         
         elif(summary_type == "communities_paramcomparison_ji"):
             html_f.write('<div class="subtitlebanner">\n')
-            html_f.write('<li><a style="color:black;">Graphical grid search of community detection parameters (JI)</a></li>\n')
+            html_f.write('<li><a style="color:black;">Graphical grid search of community detection parameters (JI) used on ' 
+                         + self.summary_title + '</a></li>\n')
             html_f.write('</div>\n')
             html_f.write('<div class="grid-container">\n')
             html_f.write('<div class="figure">\n')
+            if(self.tooltips):
+                html_f.write("""
+                             <p class="tooltip"><b>What is this plot telling me?</b><span class="tooltiptext">
+                             GeneFEAST produces a graphical 
+                             grid search for each of the two overlap measures available (Overlap Coefficient (OC) and Jaccard Index (JI)).
+                             
+                             <br><br>
+                             <b>This is the JI graphical grid search.</b>
+                             
+                             <br><br>
+                             
+                             This graphical grid search is comprised of subplots such that each subplot characterises the 
+                             communities obtained for a given tuple of overlap measure, gene-set overlap threshold and 
+                             maximum community size; the title of each subplot indicates the tuple of values used 
+                             (OM = overlap measure, GSO = gene-set overlap, and MCS = maximum community size).
+                             <br><br>
+                             Within each subplot, the x-axis indicates how many communities of terms were obtained with 
+                             this tuple of values, with one bar/ violin plot pair being plotted per community. 
+                             The violin plots are plotted against the left-hand y-axis and show the distribution of 
+                             silhouette scores obtained for terms in each community; the red dotted line then shows the mean 
+                             silhouette score obtained over all terms, and the black dashed line indicates a silhouette score 
+                             of 0.5 (for reference). Underneath these violin plots are bars, plotted against the right-hand y-axis, 
+                             that show the cumulative percentage of terms included in communities. 
+
+                             <br><br>
+                             <u>NOTE: No subplot is drawn when fewer than two communities are identified.</u>
+
+                             <br><br>
+                             The subplot pertaining to the overlap measure, gene-set overlap and maximum community size thresholds set by 
+                             the user is highlighted with a yellow background. Please note that you may need to refer to the OC
+                             graphical grid search to see this highlighted subplot.
+                             </span></p><br><br>
+                             """)
+            
             html_f.write('<img src="' + self.comparisonplot_ji_img_path + '" width="' + str(self.comparisonplot_ji_img_width) + '" height="' + str(self.comparisonplot_ji_img_height) + '">\n')
             #html_f.write('<img src="' + self.rel_images_dir + 'sil_violinplots.svg">\n')
             html_f.write('</div>\n')
@@ -3708,14 +3970,35 @@ class summaryPrinter:
             
         elif(summary_type == "communities_silhouette"):
             html_f.write('<div class="subtitlebanner">\n')
-            html_f.write('<li><a style="color:black;">Silhouette plot</a></li>\n')
+            html_f.write('<li><a style="color:black;">Silhouette plot of communities identified in ' + self.summary_title + '</a></li>\n')
             html_f.write('</div>\n')
             html_f.write('<div class="grid-container">\n')
             html_f.write('<div class="figure">\n')
-            html_f.write('<img src="' + self.silplot_img_path + '" width="' + str(self.silplot_img_width) + '" height="' + str(self.silplot_img_height) + '">\n')
+            
+            if(not(self.no_silhouette_plot)):
+                if(self.tooltips):
+                    html_f.write("""
+                                 <p class="tooltip"><b>What is this plot telling me?</b><span class="tooltiptext">
+                                 This silhouette plot enables evaluation of community consistency. In particular, it visually represents
+                                 how well each term in a community belongs to that community by displaying a "silhouette score" for
+                                 each term. This score is calculated by comparing a term's average gene-set-overlap with terms in
+                                 its own community to its avergage gene-set-overlap with terms in the next 
+                                 most similar community - so higher scores are better.<br><br> 
+                                 The red dashed 
+                                 vertical line indicates the mean silhouette score obtained over all terms. 
+                                 Added to the bottom of the silhouette plot is a green bar on a grey background 
+                                 indicating the proportion of terms identified as being part of any community containing two or more terms.
+                                 </span></p><br><br>
+                                 """)
+                html_f.write('<img src="' + self.silplot_img_path + '" width="' + str(self.silplot_img_width) + '" height="' + str(self.silplot_img_height) + '">\n')
+            
+            else:
+                html_f.write('<p><b>No silhoutte plot available because fewer than two communities have been identified.</b></p>\n')
             html_f.write('</div>\n')
             html_f.write('</div>\n')
         
+        
+        self.jSPrinter.print_html_for_tooltips(html_f, self.tooltips)
         
         html_f.write("</body>\n")
         html_f.write("</html>\n")
@@ -3861,6 +4144,70 @@ class javaScriptPrinter:
         html_f.write('}\n')
         html_f.write("</script>\n")
         
+    def print_html_for_preclickbuttons(self, html_f, default_meta_view, default_community_view):
+        
+        html_f.write("<script>\n")
+        match default_meta_view:
+            case "circos":
+                html_f.write('var coll = document.getElementsByClassName("preclick-metacircos-button");\n')
+            
+            case "upset":
+                html_f.write('var coll = document.getElementsByClassName("preclick-metaupset-button");\n')
+            
+            case "heatmapa":
+                html_f.write('var coll = document.getElementsByClassName("preclick-metaheatmapa-button");\n')
+            
+            case "heatmapb":
+                html_f.write('var coll = document.getElementsByClassName("preclick-metaheatmapb-button");\n')
+            
+            case "heatmapc":
+                html_f.write('var coll = document.getElementsByClassName("preclick-metaheatmapc-button");\n')
+            
+            case "litsearch":
+                html_f.write('var coll = document.getElementsByClassName("preclick-metalitsearch-button");\n')
+        
+        html_f.write('var i;\n')
+        html_f.write('for (i = 0; i < coll.length; i++) {\n')
+        html_f.write('  coll[i].click();')
+        html_f.write('}\n')
+        html_f.write("</script>\n")
+        
+        
+        html_f.write("<script>\n")
+        match default_community_view:
+            case "circos":
+                html_f.write('var coll = document.getElementsByClassName("preclick-communitycircos-button");\n')
+            
+            case "upset":
+                html_f.write('var coll = document.getElementsByClassName("preclick-communityupset-button");\n')
+            
+            case "heatmapa":
+                html_f.write('var coll = document.getElementsByClassName("preclick-communityheatmapa-button");\n')
+            
+            case "heatmapb":
+                html_f.write('var coll = document.getElementsByClassName("preclick-communityheatmapb-button");\n')
+            
+            case "heatmapc":
+                html_f.write('var coll = document.getElementsByClassName("preclick-communityheatmapc-button");\n')
+            
+            case "litsearch":
+                html_f.write('var coll = document.getElementsByClassName("preclick-communitylitsearch-button");\n')
+        
+        html_f.write('var i;\n')
+        html_f.write('for (i = 0; i < coll.length; i++) {\n')
+        html_f.write('  coll[i].click();')
+        html_f.write('}\n')
+        html_f.write("</script>\n")
+        
+    
+    def print_html_for_tooltips(self, html_f, tooltips):
+        if(not(tooltips)):
+            html_f.write('<script>\n')
+            html_f.write('var coll = document.getElementsByClassName("tooltiptext");\n')
+            html_f.write('var i;\n')
+            html_f.write('for (i = 0; i < coll.length; i++) {\n')
+            html_f.write('  coll[i].style.display="none";}\n')
+            html_f.write('</script>\n')
 
 
 # END CLASSES *****************************************************************

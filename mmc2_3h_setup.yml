@@ -4,3 +4,5 @@ FEAs:
       fea_file: "GO_BP_3h_0.0001_4GF_basic.csv"
       
 MAX_COMMUNITY_SIZE_THRESH: 10
+
+TOOLTIPS: True

@@ -73,7 +73,9 @@ def gf_multi(setup_yaml_path, output_dir):
     print("\nSetting up I/O files and directories")
     #(status, message, _mi_dict, _exp_ids) = gfb.get_meta_info(mif_path) # mi short for meta input
     (status, message, _mi_dict, _exp_ids) = gfb.get_meta_info_from_setup(setup_yaml_path) # mi short for meta input
-    print(message)
+    
+    if(message):
+        print(message)
     if(status > 0):
         sys.exit()
         
@@ -81,7 +83,8 @@ def gf_multi(setup_yaml_path, output_dir):
     
     
     (status, message) = gfb.get_output_dir_status(output_dir)
-    print(message)
+    if(message):
+        print(message)
     if(status == 1):
         sys.exit()
     elif(status == 2):
@@ -94,8 +97,15 @@ def gf_multi(setup_yaml_path, output_dir):
     (_rel_images_dir, _abs_images_dir) = gfb.generate_images_dirs(_info_string, output_dir)
     os.mkdir(_abs_images_dir)
     
+    # Make CSV tables output directory
+    
+    _rel_tables_dir = '/GeneFEAST_TABLES_' + _info_string
+    _abs_tables_dir = output_dir + _rel_tables_dir
+    os.mkdir(_abs_tables_dir)
+    
     # Also need to store the file name for the main HTML page - this is auto-generated and should not be part of the config file.
-    MAIN_HYPERLINK = output_dir + '/' + _info_string + '_main.html'
+    REL_MAIN_HYPERLINK = 'GeneFEAST_REPORT_' + _info_string + '.html'
+    ABS_MAIN_HYPERLINK = output_dir + '/' + REL_MAIN_HYPERLINK
     
     # *****************************************************************************
     
@@ -289,6 +299,22 @@ def gf_multi(setup_yaml_path, output_dir):
         QD_INDEX = 1
     else:
         QD_INDEX = setup.get("QD_INDEX")  
+
+    if(setup.get("DEFAULT_META_VIEW") in set(["circos","upset","heatmapa","heatmapb","heatmapc","litsearch"])):
+        DEFAULT_META_VIEW = setup.get("DEFAULT_META_VIEW")
+    else:
+        DEFAULT_META_VIEW = "circos"
+        
+    if(setup.get("DEFAULT_COMMUNITY_VIEW") in set(["circos","upset","heatmapa","heatmapb","heatmapc","litsearch"])):
+        DEFAULT_COMMUNITY_VIEW = setup.get("DEFAULT_COMMUNITY_VIEW")
+    else:
+        DEFAULT_COMMUNITY_VIEW = "circos"
+        
+    
+    if(setup.get("TOOLTIPS") is None):
+        TOOLTIPS = False
+    else:
+        TOOLTIPS = setup.get("TOOLTIPS") 
     
 #    EA_FILE = cfg_yaml['EA_FILE']
     EA_FILE = setup.get("EA_FILE")
@@ -363,6 +389,9 @@ def gf_multi(setup_yaml_path, output_dir):
     log_f.write("MAX_COMMUNITY_SIZE_THRESH: " + str(MAX_COMMUNITY_SIZE_THRESH) + "\n")
     log_f.write("MAX_META_COMMUNITY_SIZE_THRESH: " + str(MAX_META_COMMUNITY_SIZE_THRESH) + "\n")
     log_f.write("COMBINE_TERM_TYPES: " + str(COMBINE_TERM_TYPES) + "\n")
+    log_f.write("DEFAULT_META_VIEW: " + str(DEFAULT_META_VIEW) + "\n" )
+    log_f.write("DEFAULT_COMMUNITY_VIEW: " + str(DEFAULT_COMMUNITY_VIEW) + "\n" )
+    log_f.write("TOOLTIPS: " + str(TOOLTIPS) + "\n" )
     log_f.write("SEARCH_WORDS: " + str(SEARCH_WORDS))
     log_f.close()
     
@@ -394,7 +423,8 @@ def gf_multi(setup_yaml_path, output_dir):
         # Read in the ORA/ GSEA data
         (status, message, term_types_dict_sub, term_defs_dict_sub, exp_term_genes_dict_sub, exp_term_dotplot_dict_sub, exp_terms) = \
             gfb.read_in_ora_data(my_ora_file_path, exp_id, MIN_LEVEL, MAX_DCNT, ENRICH, DOTPLOTS, _GO_term_stats)
-        print(message)
+        if(message):
+            print(message)
         if(status > 0):
             sys.exit()
         
@@ -407,7 +437,8 @@ def gf_multi(setup_yaml_path, output_dir):
     
         # Store quantitative data (qd) values (usually log2 FC) for genes
         (status, message, exp_gene_qd_dict_sub) = gfb.make_gene_qd_dict(my_gene_qd_file_path, exp_id, exp_term_genes_dict_sub, GENE_INDEX, QD_INDEX)
-        print(message)
+        if(message):
+            print(message)
         if(status > 0):
             sys.exit()
     
@@ -540,11 +571,13 @@ def gf_multi(setup_yaml_path, output_dir):
         _term_community_pairs = gfb.get_big_community_labels_for_terms(_big_communities)
         
         TEST = False
+        no_silhoutte_plot=True
         if(not(TEST) and (len(_big_communities) >= 2) & (len(_big_communities) <= (len(_term_community_pairs)-1))):
             _terms_distance_matrix = gfb.build_terms_distance_matrix(_term_community_pairs, _term_genes_dict, TT_OVERLAP_MEASURE)
             print("\nGenerating silhouette plot for communities detected with chosen parameters")
             ( silplot_img_path , silplot_img_width, silplot_img_height ) = gfb.make_silhouette_plot(_terms_distance_matrix, np.array([c for (t,c) in _term_community_pairs]), _big_communities, _term_genes_dict, 
                                                                                                     _abs_images_dir, _rel_images_dir, _etg_name, NEW_H * 2.5)
+            no_silhoutte_plot = False
         else:
             # preconditions for silhouette coefficient not met, so generate empty figure.
             pyplot.figure(figsize=(10, 10))
@@ -667,17 +700,20 @@ def gf_multi(setup_yaml_path, output_dir):
 #        pyplot.close()
     
         # ***************************************************************************** 
-        relative_main_html = _info_string + '_main.html'
-        etgContainers.append( gfc.etgContainer( _etg_name , _etg_text_details , _key_i_str , output_dir , relative_main_html  , _rel_images_dir, _meta_communities , _singleton_meta_communities , _singleton_communities , NEW_H, 
-                                               silplot_img_path , silplot_img_width, silplot_img_height,
+        #relative_main_html = _info_string + '_main.html'
+        etgContainers.append( gfc.etgContainer( _etg_name , _etg_text_details , _key_i_str , output_dir , REL_MAIN_HYPERLINK  , 
+                                               _rel_images_dir, _rel_tables_dir,
+                                               _meta_communities , _singleton_meta_communities , _singleton_communities , NEW_H, 
+                                               silplot_img_path , silplot_img_width, silplot_img_height, no_silhoutte_plot,
                                                comparisonplot_oc_img_path , comparisonplot_oc_img_width, comparisonplot_oc_img_height,
-                                               comparisonplot_ji_img_path , comparisonplot_ji_img_width, comparisonplot_ji_img_height) )
+                                               comparisonplot_ji_img_path , comparisonplot_ji_img_width, comparisonplot_ji_img_height,
+                                               DEFAULT_META_VIEW, DEFAULT_COMMUNITY_VIEW, TOOLTIPS) )
         
     
     # 8. GENERATE HTML REPORT *****************************************************
     
     print("\nGenerating HTML report")
-    html_f = open( MAIN_HYPERLINK , 'w')
+    html_f = open( ABS_MAIN_HYPERLINK , 'w')
     html_f.write("<!DOCTYPE html>\n")
     html_f.write("<html>\n")
     
@@ -693,14 +729,14 @@ def gf_multi(setup_yaml_path, output_dir):
     html_f.write(".grid-container {\n")
     html_f.write("display: grid;\n")
     html_f.write("grid-template-areas:\n")
-    html_f.write("'blank'\n")
+    html_f.write("'overview'\n")
     html_f.write("'figure';\n")
     html_f.write("grid-gap: 10px;\n")
     html_f.write("background-color: #0aa8a8;\n")
     html_f.write("padding: 10px;\n")
     html_f.write("}\n")
     
-    html_f.write(".blank{ grid-area: blank; }\n")
+    html_f.write(".overview{ grid-area: overview; }\n")
     html_f.write(".figure { grid-area: figure;\n")
     html_f.write("overflow: scroll;}\n")
     
@@ -848,6 +884,57 @@ def gf_multi(setup_yaml_path, output_dir):
     html_f.write("}\n\n")
     
     
+    html_f.write(".tooltip {\n")
+    html_f.write("  position: relative;\n")
+    html_f.write("  display: inline-block;\n")
+    html_f.write("  border-bottom: 1px dotted black;\n")
+    html_f.write("}\n\n")
+
+    html_f.write(".buttontooltip {\n")
+    html_f.write("  position: relative;\n")
+    html_f.write("  display: inline-block;\n")
+    html_f.write("}\n\n")
+
+    html_f.write(".tooltip .tooltiptext {\n")
+    html_f.write("  visibility: hidden;\n")
+    html_f.write("  width: 500px;\n")
+    html_f.write("  background-color: grey;\n")
+    html_f.write("  color: white;\n")
+    html_f.write("  text-align: justify;\n")
+    html_f.write("  border-radius: 6px;\n")
+    html_f.write("  padding: 5px 5px;\n")
+
+    html_f.write("  /* Position the tooltip */\n")
+    html_f.write("  position: absolute;\n")
+    html_f.write("  z-index: 1;\n")
+    html_f.write("}\n\n")
+
+    html_f.write(".tooltip:hover .tooltiptext {\n")
+    html_f.write("  visibility: visible;\n")
+    html_f.write("}\n\n")
+
+    html_f.write(".buttontooltip .tooltiptext {\n")
+    html_f.write("  visibility: hidden;\n")
+    html_f.write("  width: 200px;\n")
+    html_f.write("  background-color: black;\n")
+    html_f.write("  color: #fff;\n")
+    html_f.write("  opacity: 0.4;\n")
+    html_f.write("  text-align: center;\n")
+    html_f.write("  border-radius: 6px;\n")
+    html_f.write("  padding: 5px 0;\n")
+
+    html_f.write("  /* Position the tooltip */\n")
+    html_f.write("  position: absolute;\n")
+    html_f.write("  z-index: 1;\n")
+    html_f.write("  top: 70%;\n")
+    html_f.write("  left: 50%;\n")
+    html_f.write("  margin-left: -100px;\n")
+    html_f.write("}\n\n")
+
+    html_f.write(".buttontooltip:hover .tooltiptext {\n")
+    html_f.write("  visibility: visible;\n")
+    html_f.write("}\n\n")
+    
     html_f.write("</style>\n")
     html_f.write("</head>\n")
     
@@ -858,7 +945,7 @@ def gf_multi(setup_yaml_path, output_dir):
     html_f.write('<div>\n')
     html_f.write('<ul>\n')
     html_f.write('<li class="logo">GeneFEAST</li>\n')
-    html_f.write('<li><a href="' + relative_main_html + '" class="navactive">FEA term-set intersections</a></li>\n')
+    html_f.write('<li><a href="' + REL_MAIN_HYPERLINK + '" class="navactive">FEA term-set intersections</a></li>\n')
     html_f.write('<li class="dropdown">\n')
     html_f.write('<button class="dropbtn">Reports\n')
     html_f.write('</button>\n')
@@ -870,28 +957,52 @@ def gf_multi(setup_yaml_path, output_dir):
     html_f.write('</ul>\n')
     html_f.write('</div>\n')
     
-    
-    html_f.write('<div>\n')
-    html_f.write('<ul class="subnav">\n')
-    html_f.write('<li class="rightlink"><a style="color:white;">FEA term-set intersections for ' + ', '.join(_exp_ids[0:-1]) + ' and ' + _exp_ids[-1] + '</a></li>\n')
-    html_f.write('</ul>\n')
-    html_f.write('</div>\n')
     html_f.write('</div>\n')
     html_f.write('<div class="subtitlebanner">\n')
-    html_f.write('  <li><a style="color:black;">UpSet plot</a></li>\n')
+    #html_f.write('  <li><a style="color:black;">UpSet plot</a></li>\n')
+    html_f.write('<li><a style="color:black;">FEA term-set intersections for ' + ', '.join(_exp_ids[0:-1]) + ' and ' + _exp_ids[-1] + '</a></li>\n')
     html_f.write('</div>\n')
     html_f.write('<div class="grid-container">\n')
+    
+    html_f.write('<div class="overview">\n')
+    html_f.write('<b>Overview</b>\n')
+    html_f.write('<p>This report summarises ' + str(len(_exp_ids)) + ' functional enrichment analyses (FEAs):</p>\n')
+    html_f.write('<ul style="list-style-type: disc; background-color: transparent;">\n')
+    for exp_id in _exp_ids:
+        html_f.write('<li style="float: none;">' + exp_id + '</li>\n')
+        
+    html_f.write('</ul>\n')
+    html_f.write("""
+    Each functional enrichment analysis yields a set of enriched terms which we refer to as a functional enrichment analysis term-set, or FEATS.
+
+    <p>The <b>UpSet plot</b> below shows the size of each FEATS, as well as sizes of subsets of terms enriched in only one FEA, and sizes of subsets of terms enriched in two or more FEAs.</p>
+
+    <p>We refer to a subset of terms enriched in two or more FEAs as a functional enrichment analysis term-set intersection, or FEATSI.</p>
+
+    <p>Use the <b>Reports</b> menu, above, to navigate to GeneFEAST reports for each FEATSI identified amongst the FEAs listed above.</p>
+    """)
+    
+    html_f.write('</div>\n')
+    
     html_f.write('<div class="figure">\n')
+    html_f.write('<b>UpSet plot</b><br><br>\n')
     html_f.write('<img src="' + upset_img_path + '" width="' + str(upset_img_width)  + '" height="' + str(NEW_H) + '">\n')
     html_f.write('</div>\n')
     html_f.write('</div>\n')
+    
+    jSPrinter = gfc.javaScriptPrinter()
+    jSPrinter.print_html_for_tooltips(html_f, TOOLTIPS)
     
     html_f.write("</body>\n")
     html_f.write("</html>\n")
     html_f.close()
     
+    etg_index=1
+    etg_total=len(etgContainers)
     for etgContainer in etgContainers:
-        etgContainer.print_html( etgContainers )
+        print("\n\nGenerating HTML for FEATSI " + str(etg_index) + " of " + str(etg_total))
+        etgContainer.print_html(etgContainers)
+        etg_index+=1
     
     print("\nGenerating csv files")
     for etgContainer in etgContainers:

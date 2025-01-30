@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.title {
+  margin: 5px;
+}
+.grid-container {
+display: grid;
+grid-template-areas:
+'overview'
+'figure';
+grid-gap: 10px;
+background-color: #0aa8a8;
+padding: 10px;
+}
+.overview{ grid-area: overview; }
+.figure { grid-area: figure;
+overflow: scroll;}
+.grid-container > div {
+  max-height: 660px;
+  overflow: scroll;
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: left;
+  padding: 15px;
+  font-size: small;
+  margin: 0;
+}
+.navgrid-container {
+display: grid;
+grid-template-columns: auto;
+position: fixed; top: 0; left: 0; width:100%; height: 55px; z-index:1;
+}
+ul {
+list-style-type: none;
+margin: 0;
+padding: 0;
+overflow: hidden;
+background-color: #088F8F;
+top: 0; left: 0; width: 100%; height: 55px; z-index:1;}
+li {
+  float: left;
+}
+li a {
+  display: block;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+.navactive {
+   text-decoration:underline;
+}
+.logo {
+  display: block;
+  color: yellow;
+  text-align: center;
+  text-decoration: none;
+  padding: 9px 16px;
+  padding-right: 75px;
+  font-family: arial black, sans-serif;
+  font-size: 18px;
+}
+.rightlink {
+  float: right;
+}
+.subnav {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #0aa8a8;
+}
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+.dropdown .dropbtn {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  font-weight: bold;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+.dropbtnactive {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  text-decoration:underline;
+  font-weight: bold;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #0aa8a8;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+.dropdown-content a {
+  float: none;
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  font-size: small;
+}
+.dropdown-content a:hover {
+  background-color: #088F8F;
+}
+.dropdown:hover .dropdown-content {
+  display: block;
+  position:fixed;
+  z-index: 9999;
+}
+.subtitlebanner {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #0aa8a8;
+  margin-top:110px;
+  z-index:1
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.buttontooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 500px;
+  background-color: grey;
+  color: white;
+  text-align: justify;
+  border-radius: 6px;
+  padding: 5px 5px;
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.buttontooltip .tooltiptext {
+  visibility: hidden;
+  width: 200px;
+  background-color: black;
+  color: #fff;
+  opacity: 0.4;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 70%;
+  left: 50%;
+  margin-left: -100px;
+}
+
+.buttontooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+</style>
+</head>
+<body style="background-color:#0aa8a8; font-family: arial, sans-serif;">
+<div class="navgrid-container">
+<div>
+<ul>
+<li class="logo">GeneFEAST</li>
+<li><a href="GeneFEAST_REPORT_mmc2_3h_mmc2_24h.html" class="navactive">FEA term-set intersections</a></li>
+<li class="dropdown">
+<button class="dropbtn">Reports
+</button>
+<div class="dropdown-content">
+<a href="gfmulti_featsi01_communities_summary.html">FEATSI 01: mmc2_3h and mmc2_24h</a>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="subtitlebanner">
+<li><a style="color:black;">FEA term-set intersections for mmc2_3h and mmc2_24h</a></li>
+</div>
+<div class="grid-container">
+<div class="overview">
+<b>Overview</b>
+<p>This report summarises 2 functional enrichment analyses (FEAs):</p>
+<ul style="list-style-type: disc; background-color: transparent;">
+<li style="float: none;">mmc2_3h</li>
+<li style="float: none;">mmc2_24h</li>
+</ul>
+
+    Each functional enrichment analysis yields a set of enriched terms which we refer to as a functional enrichment analysis term-set, or FEATS.
+
+    <p>The <b>UpSet plot</b> below shows the size of each FEATS, as well as sizes of subsets of terms enriched in only one FEA, and sizes of subsets of terms enriched in two or more FEAs.</p>
+
+    <p>We refer to a subset of terms enriched in two or more FEAs as a functional enrichment analysis term-set intersection, or FEATSI.</p>
+
+    <p>Use the <b>Reports</b> menu, above, to navigate to GeneFEAST reports for each FEATSI identified amongst the FEAs listed above.</p>
+    </div>
+<div class="figure">
+<b>UpSet plot</b><br><br>
+<img src="images_mmc2_3h_mmc2_24h_AUTO/mmc2_3h_mmc2_24h_recurring_terms_upset.png" width="338" height="300">
+</div>
+</div>
+</body>
+</html>

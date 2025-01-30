@@ -1,0 +1,5 @@
+To run this performance test through the Linux command line, type this at the prompt and hit return:
+
+gf mmc2_3h_24h_setup_PERFORMANCE_TEST.yml output
+
+See user guide for full usage instructions, including running GeneFEAST in a Python environment or via a Docker container.
