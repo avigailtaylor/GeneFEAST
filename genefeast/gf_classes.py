@@ -3830,11 +3830,11 @@ class summaryPrinter:
             html_f.write('<div class="meta_communities">\n')
             html_f.write('<table>\n')
             html_f.write("""<tr><td class="tooltip"><b>Meta communities</b><span class="tooltiptext"> 
-                         To highlight gene-sets driving multiple enrichments, 
-                         GeneFEAST groups terms into communities using a gene-set-overlap metric.
+                         To highlight gene sets driving multiple enrichments, 
+                         GeneFEAST groups terms into communities using a gene set overlap metric.
                          These communities are grouped into larger meta communities when weaker, 
-                         residual gene-set overlap remains between terms from different communities, 
-                         or when strong gene-set overlap exists between terms from different databases, 
+                         residual gene set overlap remains between terms from different communities, 
+                         or when strong gene set overlap exists between terms from different databases, 
                          but multi-database agglomeration is switched off (the default). 
                          </span></td><td></td><td></td></tr>\n""" )
             for mg in self.meta_communities:
@@ -3850,8 +3850,8 @@ class summaryPrinter:
             html_f.write('<div class="singleton_meta_communities">\n')
             html_f.write('<table>\n')
             html_f.write("""<tr><td class="tooltip"><b>Communities</b><span class="tooltiptext">
-                         To highlight gene-sets driving multiple enrichments, 
-                         GeneFEAST groups terms into communities using a gene-set-overlap metric.
+                         To highlight gene sets driving multiple enrichments, 
+                         GeneFEAST groups terms into communities using a gene set overlap metric.
                          Communities listed in this section were not identified as being part of a larger
                          meta community.
                          </span></td><td></td></tr>\n""" )
@@ -3895,9 +3895,9 @@ class summaryPrinter:
                              <br><br>
                              
                              This graphical grid search is comprised of subplots such that each subplot characterises the 
-                             communities obtained for a given tuple of overlap measure, gene-set overlap threshold and 
+                             communities obtained for a given tuple of overlap measure, gene set overlap threshold and 
                              maximum community size; the title of each subplot indicates the tuple of values used 
-                             (OM = overlap measure, GSO = gene-set overlap, and MCS = maximum community size).
+                             (OM = overlap measure, GSO = gene set overlap, and MCS = maximum community size).
                              <br><br>
                              Within each subplot, the x-axis indicates how many communities of terms were obtained with 
                              this tuple of values, with one bar/ violin plot pair being plotted per community. 
@@ -3911,7 +3911,7 @@ class summaryPrinter:
                              <u>NOTE: No subplot is drawn when fewer than two communities are identified.</u>
 
                              <br><br>
-                             The subplot pertaining to the overlap measure, gene-set overlap and maximum community size thresholds set by 
+                             The subplot pertaining to the overlap measure, gene set overlap and maximum community size thresholds set by 
                              the user is highlighted with a yellow background. Please note that you may need to refer to the JI
                              graphical grid search to see this highlighted subplot.
                              </span></p><br><br>
@@ -3941,9 +3941,9 @@ class summaryPrinter:
                              <br><br>
                              
                              This graphical grid search is comprised of subplots such that each subplot characterises the 
-                             communities obtained for a given tuple of overlap measure, gene-set overlap threshold and 
+                             communities obtained for a given tuple of overlap measure, gene set overlap threshold and 
                              maximum community size; the title of each subplot indicates the tuple of values used 
-                             (OM = overlap measure, GSO = gene-set overlap, and MCS = maximum community size).
+                             (OM = overlap measure, GSO = gene set overlap, and MCS = maximum community size).
                              <br><br>
                              Within each subplot, the x-axis indicates how many communities of terms were obtained with 
                              this tuple of values, with one bar/ violin plot pair being plotted per community. 
@@ -3957,7 +3957,7 @@ class summaryPrinter:
                              <u>NOTE: No subplot is drawn when fewer than two communities are identified.</u>
 
                              <br><br>
-                             The subplot pertaining to the overlap measure, gene-set overlap and maximum community size thresholds set by 
+                             The subplot pertaining to the overlap measure, gene set overlap and maximum community size thresholds set by 
                              the user is highlighted with a yellow background. Please note that you may need to refer to the OC
                              graphical grid search to see this highlighted subplot.
                              </span></p><br><br>
@@ -3981,8 +3981,8 @@ class summaryPrinter:
                                  <p class="tooltip"><b>What is this plot telling me?</b><span class="tooltiptext">
                                  This silhouette plot enables evaluation of community consistency. In particular, it visually represents
                                  how well each term in a community belongs to that community by displaying a "silhouette score" for
-                                 each term. This score is calculated by comparing a term's average gene-set-overlap with terms in
-                                 its own community to its avergage gene-set-overlap with terms in the next 
+                                 each term. This score is calculated by comparing a term's average gene set overlap with terms in
+                                 its own community to its avergage gene set overlap with terms in the next 
                                  most similar community - so higher scores are better.<br><br> 
                                  The red dashed 
                                  vertical line indicates the mean silhouette score obtained over all terms. 

@@ -197,7 +197,7 @@ RARA,1.444539048
 <br>
 <b>IMPORTANT NOTE ABOUT BEST PRACTICE FOR GENEFEAST ANALYSIS OF GSEA-TYPE FEAs</b>
 <ul>
-  <li>Standard GSEAs look for enrichment of gene-sets amongst <b>either</b> the most over-expressed <b>or</b> the most under-expressed genes in a list of genes ranked by expression.</li>
+  <li>Standard GSEAs look for enrichment of gene sets amongst <b>either</b> the most over-expressed <b>or</b> the most under-expressed genes in a list of genes ranked by expression.</li>
   <li>Thus, for any significantly enriched term, <b>either</b> a positive enrichment score (corresponding to enrichment amongst over-expressed genes) <b>or</b> a negative enrichment score (corresponding to enrichment amongst under-expressed genes) is reported, <b>but never both</b>.</li>
   <li>Consequently, in the GeneFEAST setting, you should <b>split your GSEA results into two FEA results files:</b> one for positive scoring terms and one for negative scoring terms, then treat these as <b>separate FEA results files</b> for GeneFEAST summarisation purposes.</li>
 </ul>
@@ -714,7 +714,7 @@ A top navigation bar with ‘Communities overview’ and ‘Full report’ dropd
 <li>further information about terms, such as GO hierarchies and KEGG pathway diagrams;</li>
 <li>external hyperlinks to literature searches for each gene of interest, incorporating additional search terms if you have supplied them.</li>
 </ul>
-Where applicable, community frames have links back to their meta community and also to sibling communities in their meta community (black, dashed arrows); separately, they also have a list of links to terms sharing some gene-set overlap, where that overlap was too weak for membership of the community (black, dotted arrow).</p> 
+Where applicable, community frames have links back to their meta community and also to sibling communities in their meta community (black, dashed arrows); separately, they also have a list of links to terms sharing some gene set overlap, where that overlap was too weak for membership of the community (black, dotted arrow).</p> 
 
 <p><b>Term</b> frames have similar, reduced content of community frames. In particular, they do not include upset plots and dot plots, and the term-gene heatmap element of their <a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/split_heatmaps.md">split heatmaps</a> is extended to highlight which genes, if any, contribute to enriched terms that have been clustered into a community; in this case the corresponding gene-community pair is depicted in the heatmap. Term frames have links back to weakly connected communities (black, dotted arrow).</p>
 
@@ -732,7 +732,7 @@ Where applicable, community frames have links back to their meta community and a
 
 <p><b>Meta community</b> frames contain:
 <ul>
-<li><a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/circos_and_upset.md">circos plot and upset plot</a> showing the gene-set overlap of member communities;</li>
+<li><a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/circos_and_upset.md">circos plot and upset plot</a> showing the gene set overlap of member communities;</li>
 <li><a href="https://github.com/avigailtaylor/GeneFEAST/blob/main/split_heatmaps.md">split heatmaps</a>, wherein term annotation is replaced by gene-community membership in the top heatmap, and <b>only genes present in two or more communities</b> are shown;</li>
 <li>external hyperlinks to literature searches for each gene of interest, incorporating additional search terms if you have supplied them.</li>
 </ul>
